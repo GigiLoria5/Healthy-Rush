@@ -35,8 +35,6 @@
 		CC52E55825D9E337001F3A8C /* jump.wav in Resources */ = {isa = PBXBuildFile; fileRef = CC52E55325D9E337001F3A8C /* jump.wav */; };
 		CC52E55925D9E337001F3A8C /* backgroundMusic.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CC52E55425D9E337001F3A8C /* backgroundMusic.mp3 */; };
 		CC59DEC325D486DB0089C664 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC59DEC225D486DB0089C664 /* AppDelegate.swift */; };
-		CC59DEC525D486DB0089C664 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = CC59DEC425D486DB0089C664 /* GameScene.sks */; };
-		CC59DEC725D486DB0089C664 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = CC59DEC625D486DB0089C664 /* Actions.sks */; };
 		CC59DEC925D486DB0089C664 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC59DEC825D486DB0089C664 /* GameScene.swift */; };
 		CC59DECB25D486DB0089C664 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC59DECA25D486DB0089C664 /* GameViewController.swift */; };
 		CC59DECE25D486DB0089C664 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CC59DECC25D486DB0089C664 /* Main.storyboard */; };
@@ -126,8 +124,6 @@
 		CC52E55425D9E337001F3A8C /* backgroundMusic.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = backgroundMusic.mp3; sourceTree = "<group>"; };
 		CC59DEBF25D486DB0089C664 /* Healthy Rush.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Healthy Rush.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC59DEC225D486DB0089C664 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		CC59DEC425D486DB0089C664 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
-		CC59DEC625D486DB0089C664 /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
 		CC59DEC825D486DB0089C664 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		CC59DECA25D486DB0089C664 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		CC59DECD25D486DB0089C664 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -243,8 +239,6 @@
 			children = (
 				CCBD64CC261A37E400FD5995 /* Healthy Rush.entitlements */,
 				CC59DEC225D486DB0089C664 /* AppDelegate.swift */,
-				CC59DEC425D486DB0089C664 /* GameScene.sks */,
-				CC59DEC625D486DB0089C664 /* Actions.sks */,
 				CC74199325D73A00007EC6B8 /* Types */,
 				CC59DEF325D48ED70089C664 /* MyUtilis */,
 				CC59DEDB25D487270089C664 /* Scenes */,
@@ -443,7 +437,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC59DECE25D486DB0089C664 /* Main.storyboard in Resources */,
-				CC59DEC525D486DB0089C664 /* GameScene.sks in Resources */,
 				CC59DED025D486DC0089C664 /* Assets.xcassets in Resources */,
 				CC52E55625D9E337001F3A8C /* gameOver.wav in Resources */,
 				CC51944325E2DECB002E2DEA /* buttonSound.wav in Resources */,
@@ -452,7 +445,6 @@
 				CC5BFE35261CE71B001030FB /* LaunchScreen.storyboard in Resources */,
 				CC51944D25E2DEDF002E2DEA /* playerSelect.mp3 in Resources */,
 				CC52E55825D9E337001F3A8C /* jump.wav in Resources */,
-				CC59DEC725D486DB0089C664 /* Actions.sks in Resources */,
 				CC52E55925D9E337001F3A8C /* backgroundMusic.mp3 in Resources */,
 				CC52E55725D9E337001F3A8C /* collision.wav in Resources */,
 				CC42372B261F02530016EAD4 /* GoogleService-Info.plist in Resources */,
@@ -825,7 +817,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Healthy Rush/Healthy Rush.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K45S4G34QN;
+				DEVELOPMENT_TEAM = K8WJKQA676;
 				INFOPLIST_FILE = "Healthy Rush/Resources/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -849,7 +841,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Healthy Rush/Healthy Rush.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K45S4G34QN;
+				DEVELOPMENT_TEAM = K8WJKQA676;
 				INFOPLIST_FILE = "Healthy Rush/Resources/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
