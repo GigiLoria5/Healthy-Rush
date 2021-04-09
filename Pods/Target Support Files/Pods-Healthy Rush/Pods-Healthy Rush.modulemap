@@ -1,0 +1,6 @@
+framework module Pods_Healthy_Rush {
+  umbrella header "Pods-Healthy Rush-umbrella.h"
+
+  export *
+  module * { export * }
+}
