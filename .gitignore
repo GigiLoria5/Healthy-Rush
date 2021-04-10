@@ -106,3 +106,6 @@ iOSInjectionProject/
 # End of https://www.toptal.com/developers/gitignore/api/swift,xcode
 .DS_Store
 *.xcuserstate
+Pods/Pods.xcodeproj/xcuserdata/mario.xcuserdatad/xcschemes/xcschememanagement.plist
+Healthy Rush.xcworkspace/xcuserdata/mario.xcuserdatad/UserInterfaceState.xcuserstate
+.DS_Store
