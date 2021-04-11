@@ -20,6 +20,12 @@
 		62EA6C0D25E17371006DF000 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62EA6C0C25E17371006DF000 /* Types.swift */; };
 		991C5D7E1700CEF7198C4E12 /* Pods_Healthy_Rush_WatchApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F9452D9B124306CEE0290C4 /* Pods_Healthy_Rush_WatchApp.framework */; };
 		A446204584EA22101A9E37A9 /* Pods_Healthy_Rush.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8993CCA99A755AD43ED3F66 /* Pods_Healthy_Rush.framework */; };
+		ACD66BD02622FBBF00B675A2 /* BodyPoseProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD66BCF2622FBBF00B675A2 /* BodyPoseProcessor.swift */; };
+		ACD66BDA2622FC0100B675A2 /* VideoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD66BD92622FC0100B675A2 /* VideoCapture.swift */; };
+		ACD66BDF2622FC0900B675A2 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD66BDE2622FC0900B675A2 /* Common.swift */; };
+		ACD66BE42622FC0F00B675A2 /* CGImage+DrawPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD66BE32622FC0F00B675A2 /* CGImage+DrawPoint.swift */; };
+		ACD66BE92622FC1D00B675A2 /* AVCaptureVideoOrientation+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD66BE82622FC1D00B675A2 /* AVCaptureVideoOrientation+Extension.swift */; };
+		ACD66BF62622FC5D00B675A2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD66BF52622FC5D00B675A2 /* ViewController.swift */; };
 		CC15AEF425D91B010014EB61 /* GameOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC15AEF325D91B010014EB61 /* GameOver.swift */; };
 		CC15AEF725D9242D0014EB61 /* SKTAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC15AEF625D9242D0014EB61 /* SKTAudio.swift */; };
 		CC15AEFA25D9281B0014EB61 /* SKAction+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC15AEF925D9281B0014EB61 /* SKAction+Ext.swift */; };
@@ -106,6 +112,12 @@
 		62B125DC25DEE04500B7471E /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
 		62EA6C0C25E17371006DF000 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		8CD81F097F00EB3282CF438F /* Pods-Healthy Rush.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush.release.xcconfig"; path = "Target Support Files/Pods-Healthy Rush/Pods-Healthy Rush.release.xcconfig"; sourceTree = "<group>"; };
+		ACD66BCF2622FBBF00B675A2 /* BodyPoseProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BodyPoseProcessor.swift; sourceTree = "<group>"; };
+		ACD66BD92622FC0100B675A2 /* VideoCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCapture.swift; sourceTree = "<group>"; };
+		ACD66BDE2622FC0900B675A2 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
+		ACD66BE32622FC0F00B675A2 /* CGImage+DrawPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGImage+DrawPoint.swift"; sourceTree = "<group>"; };
+		ACD66BE82622FC1D00B675A2 /* AVCaptureVideoOrientation+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AVCaptureVideoOrientation+Extension.swift"; sourceTree = "<group>"; };
+		ACD66BF52622FC5D00B675A2 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		C8993CCA99A755AD43ED3F66 /* Pods_Healthy_Rush.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Healthy_Rush.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB5AA288E88E39098B79A60D /* Pods-Healthy Rush WatchApp Extension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush WatchApp Extension.debug.xcconfig"; path = "Target Support Files/Pods-Healthy Rush WatchApp Extension/Pods-Healthy Rush WatchApp Extension.debug.xcconfig"; sourceTree = "<group>"; };
 		CC15AEF325D91B010014EB61 /* GameOver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOver.swift; sourceTree = "<group>"; };
@@ -201,6 +213,19 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		ACD66BD52622FBE100B675A2 /* VisioPose Controller */ = {
+			isa = PBXGroup;
+			children = (
+				ACD66BF52622FC5D00B675A2 /* ViewController.swift */,
+				ACD66BCF2622FBBF00B675A2 /* BodyPoseProcessor.swift */,
+				ACD66BDE2622FC0900B675A2 /* Common.swift */,
+				ACD66BD92622FC0100B675A2 /* VideoCapture.swift */,
+				ACD66BE82622FC1D00B675A2 /* AVCaptureVideoOrientation+Extension.swift */,
+				ACD66BE32622FC0F00B675A2 /* CGImage+DrawPoint.swift */,
+			);
+			path = "VisioPose Controller";
+			sourceTree = "<group>";
+		};
 		AEF4987C9E8870C84CBB16E4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -239,6 +264,7 @@
 			children = (
 				CCBD64CC261A37E400FD5995 /* Healthy Rush.entitlements */,
 				CC59DEC225D486DB0089C664 /* AppDelegate.swift */,
+				ACD66BD52622FBE100B675A2 /* VisioPose Controller */,
 				CC74199325D73A00007EC6B8 /* Types */,
 				CC59DEF325D48ED70089C664 /* MyUtilis */,
 				CC59DEDB25D487270089C664 /* Scenes */,
@@ -558,9 +584,15 @@
 				CC59DEF525D48F000089C664 /* CGPoint+Ext.swift in Sources */,
 				CC15AEF725D9242D0014EB61 /* SKTAudio.swift in Sources */,
 				CC59DEC925D486DB0089C664 /* GameScene.swift in Sources */,
+				ACD66BD02622FBBF00B675A2 /* BodyPoseProcessor.swift in Sources */,
+				ACD66BDA2622FC0100B675A2 /* VideoCapture.swift in Sources */,
 				CC37F64225D88D71003BA290 /* ScoreGenerator.swift in Sources */,
+				ACD66BDF2622FC0900B675A2 /* Common.swift in Sources */,
+				ACD66BE42622FC0F00B675A2 /* CGImage+DrawPoint.swift in Sources */,
 				CC15AEFA25D9281B0014EB61 /* SKAction+Ext.swift in Sources */,
+				ACD66BF62622FC5D00B675A2 /* ViewController.swift in Sources */,
 				CC15AEF425D91B010014EB61 /* GameOver.swift in Sources */,
+				ACD66BE92622FC1D00B675A2 /* AVCaptureVideoOrientation+Extension.swift in Sources */,
 				CC37F64525D89006003BA290 /* MainMenu.swift in Sources */,
 				CC59DECB25D486DB0089C664 /* GameViewController.swift in Sources */,
 				CC59DEF925D4989A0089C664 /* CGFloat+Ext.swift in Sources */,
