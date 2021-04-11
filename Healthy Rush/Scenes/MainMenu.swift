@@ -32,8 +32,10 @@ class MainMenu: SKScene {
     var pageInfoNum : Int = 3
     var istanceInfoActive : Bool = false
     
-    //for the controller choice
+    //for the controller choice panel
     var istanceControllerActive : Bool = false
+    var cameraIsSelected : Bool = false
+    var watchIsSelected : Bool = false
     
     // Facebook var
     var fbUserLogged = false
@@ -99,6 +101,26 @@ class MainMenu: SKScene {
                 setupControllerChoicePanel()
                 istanceControllerActive = true
             }
+        case "bgControllerCamera":
+            if #available(iOS 14.0, *) {
+                
+                if(cameraIsSelected){
+                    cameraIsSelected = false
+                }
+                else{
+                    cameraIsSelected = true
+                }
+                watchIsSelected = false
+                updateControllerChoicePanel()
+            }
+        case "bgControllerWatch":
+            if(watchIsSelected){
+                watchIsSelected = false
+            }else{
+                watchIsSelected = true
+            }
+            cameraIsSelected = false
+            updateControllerChoicePanel()
         case "info":
             if(!istanceInfoActive){
                 run(SKAction.playSoundFileNamed("buttonSound.wav"))
@@ -180,17 +202,17 @@ extension MainMenu {
         addChild(setting)
         
         let info = SKSpriteNode(imageNamed: "info")
-        info.setScale(0.625)
+        info.setScale(0.8)
         info.zPosition = 50.0
         info.name = "info"
         info.position = CGPoint(x: info.frame.width/2 + 50, y: size.height/2 + play.frame.height + 120)
         addChild(info)
         
         let controllerSelect = SKSpriteNode(imageNamed: "selController")
-        controllerSelect.setScale(0.75)
+        controllerSelect.setScale(0.8)
         controllerSelect.zPosition = 50.0
         controllerSelect.name = "controllerSelect"
-        controllerSelect.position = CGPoint(x: info.position.x, y: size.height/2 - play.frame.height)
+        controllerSelect.position = CGPoint(x: size.width - controllerSelect.frame.width, y: info.position.y)
         addChild(controllerSelect)
         
     }
@@ -419,41 +441,107 @@ extension MainMenu {
     }
     
     
-    
+    //aggiunto da mario 11 aprile
     func setupControllerChoicePanel(){
         // Create a Container
         setupContainer()
         
         // Create a panel inside the container
         let panel = SKSpriteNode(imageNamed: "bigPanel")
-        panel.name = "bigInfoPanel"
-        panel.setScale(1)
+        panel.name = "controllerRoot"
+        panel.setScale(1.3)
         panel.zPosition = 20.0
         panel.position = .zero
         containerNode.addChild(panel)
         
+        let bgCamera = SKSpriteNode(imageNamed: "bgController")
+        bgCamera.name = "bgControllerCamera"
+        bgCamera.setScale(0.9)
+        bgCamera.zPosition = 21.0
+        bgCamera.position = CGPoint(x: panel.size.width/5, y: panel.position.y)
+        panel.addChild(bgCamera)
+        bgCamera.colorBlendFactor = 1 //transparent when created (matches the background color)
         
-        let infoLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
-        infoLbl.name = "textController"
-        infoLbl.fontColor = .black
-        infoLbl.fontSize = 65.0
-        infoLbl.zPosition = 25.0
-        infoLbl.preferredMaxLayoutWidth = panel.frame.width - 200
-        infoLbl.numberOfLines = 0
-        infoLbl.verticalAlignmentMode = .center
-        infoLbl.horizontalAlignmentMode = .center
-        infoLbl.lineBreakMode = .byWordWrapping
         
+        let bgWatch = SKSpriteNode(imageNamed: "bgController")
+        bgWatch.name = "bgControllerWatch"
+        bgWatch.setScale(0.9)
+        bgWatch.zPosition = 21.0
+        bgWatch.position = CGPoint(x: -(panel.size.width/5), y: panel.position.y)
+        panel.addChild(bgWatch)
+        bgWatch.colorBlendFactor = 1 //transparent when created (matches the background color)
+        
+        
+        let controllerLblcamera = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+        controllerLblcamera.name = "textControllerCamera"
+        controllerLblcamera.fontColor = .black
+        controllerLblcamera.fontSize = 35.0
+        controllerLblcamera.zPosition = 25.0
+        controllerLblcamera.preferredMaxLayoutWidth = bgCamera.frame.width
+        controllerLblcamera.numberOfLines = 0
+        controllerLblcamera.verticalAlignmentMode = .center
+        controllerLblcamera.horizontalAlignmentMode = .center
+        controllerLblcamera.lineBreakMode = .byWordWrapping
+        controllerLblcamera.position = CGPoint(x: controllerLblcamera.position.x, y: controllerLblcamera.position.y - bgCamera.size.height/3)
+        
+        let controllerLblWatch = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+        controllerLblWatch.name = "textControllerWatch"
+        controllerLblWatch.fontColor = .black
+        controllerLblWatch.fontSize = 35.0
+        controllerLblWatch.zPosition = 25.0
+        controllerLblWatch.preferredMaxLayoutWidth = bgWatch.frame.width
+        controllerLblWatch.numberOfLines = 0
+        controllerLblWatch.verticalAlignmentMode = .center
+        controllerLblWatch.horizontalAlignmentMode = .center
+        controllerLblWatch.lineBreakMode = .byWordWrapping
+        controllerLblWatch.position = CGPoint(x: controllerLblWatch.position.x, y: controllerLblWatch.position.y - bgWatch.size.height/3)
+
         //add text according to ios version
         if #available(iOS 14.0, *) {
             // Add text
-            infoLbl.text = "Vision disponibile"
+            controllerLblcamera.text = "Camera Tracking"
         } else {
-            infoLbl.text = "Vision NON disponibile"
+            bgCamera.color = .gray
+            controllerLblcamera.text = "Vision NON disponibile"
         }
+        controllerLblWatch.text = "Apple Watch"
         
-        panel.addChild(infoLbl)
         
+        
+        bgCamera.addChild(controllerLblcamera)
+        bgWatch.addChild(controllerLblWatch)
+        
+    }
+    //aggiunto da mario 11 aprile
+    func updateControllerChoicePanel(){
+        let panel = containerNode.childNode(withName: "controllerRoot")as! SKSpriteNode
+        let bgCamera = panel.childNode(withName: "bgControllerCamera") as? SKSpriteNode
+        let bgWatch = panel.childNode(withName: "bgControllerWatch") as? SKSpriteNode
+        let labelCamera = bgCamera?.childNode(withName: "textControllerCamera") as? SKLabelNode
+        let labelWatch = bgWatch?.childNode(withName: "textControllerWatch") as? SKLabelNode
+        
+        
+        if(cameraIsSelected){
+            bgCamera?.colorBlendFactor = 0
+            bgWatch?.colorBlendFactor = 1
+            labelCamera?.text = "camera selezionata"
+            labelWatch?.text = "Apple Watch"
+        }
+        else if (watchIsSelected){
+            bgCamera?.colorBlendFactor = 1
+            bgWatch?.colorBlendFactor = 0
+            labelWatch?.text = "watch selezionato"
+            labelCamera?.text = "Camera Tracking"
+        }
+        else if(!cameraIsSelected && !watchIsSelected){
+            bgWatch?.colorBlendFactor = 1
+            labelWatch?.text = "Apple Watch"
+            if #available(iOS 14.0, *) {
+                labelCamera?.text = "Camera Tracking"
+                bgCamera?.colorBlendFactor = 1
+            }
+            
+        }
     }
     
     
