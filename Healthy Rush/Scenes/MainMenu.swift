@@ -32,6 +32,9 @@ class MainMenu: SKScene {
     var pageInfoNum : Int = 3
     var istanceInfoActive : Bool = false
     
+    //for the controller choice
+    var istanceControllerActive : Bool = false
+    
     // Facebook var
     var fbUserLogged = false
     let facebookLoginLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold") // login in with facebook label
@@ -79,7 +82,7 @@ class MainMenu: SKScene {
             node.texture = SKTexture(imageNamed: effectEnabled ? "effectOn" : "effectOff")
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
         case "facebookBtn":
-            if fbUserLogged == false {
+            if !fbUserLogged{
                 fbActionSignIn()
             } else {
                 fbActionSignOut()
@@ -87,8 +90,17 @@ class MainMenu: SKScene {
             let node = node as! SKSpriteNode
             node.texture = SKTexture(imageNamed: fbUserLogged ? "facebookOn" : "facebookOff")
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
+        case "controllerSelect":
+            if(!istanceControllerActive){
+                run(SKAction.playSoundFileNamed("buttonSound.wav"))
+                if(containerNode != nil) {
+                    containerNode.removeFromParent() // Remove any other panel already active
+                }
+                setupControllerChoicePanel()
+                istanceControllerActive = true
+            }
         case "info":
-            if(istanceInfoActive == false){
+            if(!istanceInfoActive){
                 run(SKAction.playSoundFileNamed("buttonSound.wav"))
                 if(containerNode != nil) {
                     containerNode.removeFromParent() // Remove any other panel already active
@@ -111,6 +123,7 @@ class MainMenu: SKScene {
         case "container":
             currInfoPageNum = 1 //reset the page counter
             istanceInfoActive = false
+            istanceControllerActive = false
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
             containerNode.removeFromParent()
         case "theBoy":
@@ -172,6 +185,14 @@ extension MainMenu {
         info.name = "info"
         info.position = CGPoint(x: info.frame.width/2 + 50, y: size.height/2 + play.frame.height + 120)
         addChild(info)
+        
+        let controllerSelect = SKSpriteNode(imageNamed: "selController")
+        controllerSelect.setScale(0.75)
+        controllerSelect.zPosition = 50.0
+        controllerSelect.name = "controllerSelect"
+        controllerSelect.position = CGPoint(x: info.position.x, y: size.height/2 - play.frame.height)
+        addChild(controllerSelect)
+        
     }
     
     func setupPlayer() {
@@ -396,6 +417,45 @@ extension MainMenu {
             print("Error signing out: %@", signOutError)
         }
     }
+    
+    
+    
+    func setupControllerChoicePanel(){
+        // Create a Container
+        setupContainer()
+        
+        // Create a panel inside the container
+        let panel = SKSpriteNode(imageNamed: "bigPanel")
+        panel.name = "bigInfoPanel"
+        panel.setScale(1)
+        panel.zPosition = 20.0
+        panel.position = .zero
+        containerNode.addChild(panel)
+        
+        
+        let infoLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+        infoLbl.name = "textController"
+        infoLbl.fontColor = .black
+        infoLbl.fontSize = 65.0
+        infoLbl.zPosition = 25.0
+        infoLbl.preferredMaxLayoutWidth = panel.frame.width - 200
+        infoLbl.numberOfLines = 0
+        infoLbl.verticalAlignmentMode = .center
+        infoLbl.horizontalAlignmentMode = .center
+        infoLbl.lineBreakMode = .byWordWrapping
+        
+        //add text according to ios version
+        if #available(iOS 14.0, *) {
+            // Add text
+            infoLbl.text = "Vision disponibile"
+        } else {
+            infoLbl.text = "Vision NON disponibile"
+        }
+        
+        panel.addChild(infoLbl)
+        
+    }
+    
     
     func setupInfoPanel() {
         // Create a Container
