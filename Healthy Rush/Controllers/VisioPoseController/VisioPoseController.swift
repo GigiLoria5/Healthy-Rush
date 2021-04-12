@@ -7,7 +7,8 @@
 
 import UIKit
 import Vision
-class ViewController: UIViewController {
+
+class VisioPoseController: UIViewController {
 
     //Initial image dimension (set to zero)
     var imageSize = CGSize.zero
@@ -212,7 +213,7 @@ class ViewController: UIViewController {
 
 // MARK: - VideoCaptureDelegate
 
-extension ViewController: VideoCaptureDelegate {
+extension VisioPoseController: VideoCaptureDelegate {
     func videoCapture(_ videoCapture: VideoCapture, didCaptureFrame capturedImage: CGImage?) {
 
         guard let image = capturedImage else {
