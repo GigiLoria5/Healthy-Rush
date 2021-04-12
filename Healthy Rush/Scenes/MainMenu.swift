@@ -101,7 +101,7 @@ class MainMenu: SKScene {
                 setupControllerChoicePanel()
                 istanceControllerActive = true
             }
-        case "bgControllerCamera":
+        case "cameraImage":
             if #available(iOS 14.0, *) {
                 
                 if(cameraIsSelected){
@@ -113,7 +113,7 @@ class MainMenu: SKScene {
                 watchIsSelected = false
                 updateControllerChoicePanel()
             }
-        case "bgControllerWatch":
+        case "watchImage":
             if(watchIsSelected){
                 watchIsSelected = false
             }else{
@@ -454,22 +454,19 @@ extension MainMenu {
         panel.position = .zero
         containerNode.addChild(panel)
         
-        let bgCamera = SKSpriteNode(imageNamed: "bgController")
-        bgCamera.name = "bgControllerCamera"
-        bgCamera.setScale(0.9)
-        bgCamera.zPosition = 21.0
-        bgCamera.position = CGPoint(x: panel.size.width/5, y: panel.position.y)
-        panel.addChild(bgCamera)
-        bgCamera.colorBlendFactor = 1 //transparent when created (matches the background color)
+        let cameraImage = SKSpriteNode(imageNamed: "camera")
+        cameraImage.name = "cameraImage"
+        cameraImage.setScale(0.8)
+        cameraImage.zPosition = 21.0
+        cameraImage.position = CGPoint(x: panel.size.width/5, y: panel.position.y)
+        panel.addChild(cameraImage)
         
-        
-        let bgWatch = SKSpriteNode(imageNamed: "bgController")
-        bgWatch.name = "bgControllerWatch"
-        bgWatch.setScale(0.9)
-        bgWatch.zPosition = 21.0
-        bgWatch.position = CGPoint(x: -(panel.size.width/5), y: panel.position.y)
-        panel.addChild(bgWatch)
-        bgWatch.colorBlendFactor = 1 //transparent when created (matches the background color)
+        let watchImage = SKSpriteNode(imageNamed: "watch")
+        watchImage.name = "watchImage"
+        watchImage.setScale(0.7)
+        watchImage.zPosition = 21.0
+        watchImage.position = CGPoint(x: -(panel.size.width/5), y: panel.position.y)
+        panel.addChild(watchImage)
         
         
         let controllerLblcamera = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
@@ -477,68 +474,69 @@ extension MainMenu {
         controllerLblcamera.fontColor = .black
         controllerLblcamera.fontSize = 35.0
         controllerLblcamera.zPosition = 25.0
-        controllerLblcamera.preferredMaxLayoutWidth = bgCamera.frame.width
+        controllerLblcamera.preferredMaxLayoutWidth = cameraImage.frame.width
         controllerLblcamera.numberOfLines = 0
         controllerLblcamera.verticalAlignmentMode = .center
         controllerLblcamera.horizontalAlignmentMode = .center
         controllerLblcamera.lineBreakMode = .byWordWrapping
-        controllerLblcamera.position = CGPoint(x: controllerLblcamera.position.x, y: controllerLblcamera.position.y - bgCamera.size.height/3)
+        controllerLblcamera.position = CGPoint(x: cameraImage.position.x, y: cameraImage.size.height/1.5 + cameraImage.position.y)
         
         let controllerLblWatch = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         controllerLblWatch.name = "textControllerWatch"
         controllerLblWatch.fontColor = .black
         controllerLblWatch.fontSize = 35.0
         controllerLblWatch.zPosition = 25.0
-        controllerLblWatch.preferredMaxLayoutWidth = bgWatch.frame.width
+        controllerLblWatch.preferredMaxLayoutWidth = watchImage.frame.width
         controllerLblWatch.numberOfLines = 0
         controllerLblWatch.verticalAlignmentMode = .center
         controllerLblWatch.horizontalAlignmentMode = .center
         controllerLblWatch.lineBreakMode = .byWordWrapping
-        controllerLblWatch.position = CGPoint(x: controllerLblWatch.position.x, y: controllerLblWatch.position.y - bgWatch.size.height/3)
+        controllerLblWatch.position = CGPoint(x: watchImage.position.x, y: watchImage.size.height/1.5 + watchImage.position.y)
 
         //add text according to ios version
         if #available(iOS 14.0, *) {
             // Add text
             controllerLblcamera.text = "Camera Tracking"
         } else {
-            bgCamera.color = .gray
             controllerLblcamera.text = "Vision NON disponibile"
         }
         controllerLblWatch.text = "Apple Watch"
         
         
         
-        bgCamera.addChild(controllerLblcamera)
-        bgWatch.addChild(controllerLblWatch)
+        panel.addChild(controllerLblcamera)
+        panel.addChild(controllerLblWatch)
         
     }
     //aggiunto da mario 11 aprile
     func updateControllerChoicePanel(){
         let panel = containerNode.childNode(withName: "controllerRoot")as! SKSpriteNode
-        let bgCamera = panel.childNode(withName: "bgControllerCamera") as? SKSpriteNode
-        let bgWatch = panel.childNode(withName: "bgControllerWatch") as? SKSpriteNode
+        let bgCamera = panel.childNode(withName: "cameraImage") as? SKSpriteNode
+        let bgWatch = panel.childNode(withName: "watchImage") as? SKSpriteNode
         let labelCamera = bgCamera?.childNode(withName: "textControllerCamera") as? SKLabelNode
         let labelWatch = bgWatch?.childNode(withName: "textControllerWatch") as? SKLabelNode
         
+        let blendFactor = CGFloat(0.4)
         
+        //debugPrint(cameraIsSelected,watchIsSelected)
         if(cameraIsSelected){
+            bgWatch?.colorBlendFactor = blendFactor
             bgCamera?.colorBlendFactor = 0
-            bgWatch?.colorBlendFactor = 1
             labelCamera?.text = "camera selezionata"
             labelWatch?.text = "Apple Watch"
         }
         else if (watchIsSelected){
-            bgCamera?.colorBlendFactor = 1
+            bgCamera?.colorBlendFactor = blendFactor
             bgWatch?.colorBlendFactor = 0
             labelWatch?.text = "watch selezionato"
             labelCamera?.text = "Camera Tracking"
         }
         else if(!cameraIsSelected && !watchIsSelected){
-            bgWatch?.colorBlendFactor = 1
+            bgWatch?.colorBlendFactor = 0
             labelWatch?.text = "Apple Watch"
             if #available(iOS 14.0, *) {
                 labelCamera?.text = "Camera Tracking"
-                bgCamera?.colorBlendFactor = 1
+                bgCamera?.colorBlendFactor = 0
             }
             
         }
