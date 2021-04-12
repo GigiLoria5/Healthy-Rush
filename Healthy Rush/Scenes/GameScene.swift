@@ -536,11 +536,18 @@ extension GameScene {
         life -= 1
         if life <= 0 { life = 0}
         lifeNodes[life].texture = SKTexture(imageNamed: "life-off")
-        
-        if life <= 0 && !gameOver {
+        if life == 0{
             gameOver = true
         }
     }
+    
+    func hurtedAnimation(){
+        let colorize = SKAction.colorize(with: .red, colorBlendFactor: 0.6, duration: 0.2)
+        let decolorize = SKAction.colorize(with: .red, colorBlendFactor: -0.6, duration: 0.6)
+        player.run(colorize)
+        player.run(decolorize)
+    }
+    
 }
 
 //MARK: - SKPhysicsContactDelegate
@@ -573,8 +580,10 @@ extension GameScene: SKPhysicsContactDelegate {
                 scoreLbl.text = "\(numScore)"
         
             case PhysicsCategory.Obstacle:
+                hurtedAnimation() // the obstable hurts the player
                 setupGameOver()
                 run(soundCollision) // collision sound
+                
         
             case PhysicsCategory.Jewel:
                 if let node = other.node {
