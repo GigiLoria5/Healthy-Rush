@@ -47,7 +47,7 @@ class GameScene: SKScene {
     // In-game utilities
     var numScore: Int = 0
     var gameOver = false
-    var life: Int = 3
+    var livesNumber: Int = 3
     
     // Add labels, icons and buttons
     var lifeNodes: [SKSpriteNode] = []
@@ -79,8 +79,8 @@ class GameScene: SKScene {
     var cameraRect: CGRect {
         let width = playableRect.width
         let height = playableRect.height
-        let x = cameraNode.position.x - size.width/2.0 + (size.width - width)/2.0
-        let y = cameraNode.position.y - size.height/2.0 + (size.height - height)/2.0
+        let x = cameraNode.position.x -  (width/2.0)
+        let y = cameraNode.position.y - (height/2.0)
         
         return CGRect(x: x, y: y, width: width, height: height)
     }
@@ -447,15 +447,14 @@ extension GameScene {
     }
     
     func setupLife() {
-        let node1 = SKSpriteNode(imageNamed: "life-on")
-        let node2 = SKSpriteNode(imageNamed: "life-on")
-        let node3 = SKSpriteNode(imageNamed: "life-on")
-        setupLifePos(node1, i: 1.0, j: 0.0)
-        setupLifePos(node2, i: 2.0, j: 8.0)
-        setupLifePos(node3, i: 3.0, j: 16.0)
-        lifeNodes.append(node1)
-        lifeNodes.append(node2)
-        lifeNodes.append(node3)
+        
+        var livesSprites = [SKSpriteNode]()
+        //add livesNumber hearts to the player
+        for i in 0..<livesNumber{
+            livesSprites.append(SKSpriteNode(imageNamed: "life-on"))
+            setupLifePos(livesSprites[i], i: CGFloat(i+1), j: CGFloat(i*8))
+            lifeNodes.append(livesSprites[i])
+        }
     }
     
     func setupLifePos(_ node: SKSpriteNode, i: CGFloat, j: CGFloat) {
@@ -533,10 +532,10 @@ extension GameScene {
     }
     
     func setupGameOver() {
-        life -= 1
-        if life <= 0 { life = 0}
-        lifeNodes[life].texture = SKTexture(imageNamed: "life-off")
-        if life == 0{
+        livesNumber -= 1
+        if livesNumber <= 0 { livesNumber = 0}
+        lifeNodes[livesNumber].texture = SKTexture(imageNamed: "life-off")
+        if livesNumber == 0{
             gameOver = true
         }
     }
