@@ -16,8 +16,39 @@
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb3873462442741212</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>FacebookAppID</key>
+	<string>3873462442741212</string>
+	<key>FacebookDisplayName</key>
+	<string>Healthy Rush</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fbapi20130214</string>
+		<string>fbapi20130410</string>
+		<string>fbapi20130702</string>
+		<string>fbapi20131010</string>
+		<string>fbapi20131219</string>
+		<string>fbapi20140410</string>
+		<string>fbapi20140116</string>
+		<string>fbapi20150313</string>
+		<string>fbapi20150629</string>
+		<string>fbapi20160328</string>
+		<string>fbauth</string>
+		<string>fb-messenger-share-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
@@ -46,40 +77,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-    
-    <!-- Facebook Configuration -->
-    <key>CFBundleURLTypes</key>
-    <array>
-     <dict>
-     <key>CFBundleURLSchemes</key>
-     <array>
-      <string>fb3873462442741212</string>
-     </array>
-     </dict>
-    </array>
-    <key>FacebookAppID</key>
-    <string>3873462442741212</string>
-    <key>FacebookDisplayName</key>
-    <string>Healthy Rush</string>
-    
-    <!-- Per usare una delle finestre di dialogo di Facebook (ad es. Accedi, Condividi, inviti a installare l'app, ecc.) che consentono di passare da un'app alle app Facebook -->
-    <key>LSApplicationQueriesSchemes</key>
-    <array>
-      <string>fbapi</string>
-      <string>fbapi20130214</string>
-      <string>fbapi20130410</string>
-      <string>fbapi20130702</string>
-      <string>fbapi20131010</string>
-      <string>fbapi20131219</string>
-      <string>fbapi20140410</string>
-      <string>fbapi20140116</string>
-      <string>fbapi20150313</string>
-      <string>fbapi20150629</string>
-      <string>fbapi20160328</string>
-      <string>fbauth</string>
-      <string>fb-messenger-share-api</string>
-      <string>fbauth2</string>
-      <string>fbshareextension</string>
-    </array>
 </dict>
 </plist>

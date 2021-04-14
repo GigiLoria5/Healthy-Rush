@@ -10,6 +10,7 @@ import GameplayKit
 
 class GameScene: SKScene {
     
+    
     //MARK: - Properties
     var ground: SKSpriteNode!
     var player: SKSpriteNode!
@@ -73,7 +74,7 @@ class GameScene: SKScene {
         let playableHeight = size.width / ratio
         let playableMargin = (size.height - playableHeight) / 2.0
         
-        return CGRect(x: 0.0, y: playableMargin, width: size.width, height: playableHeight)
+        return CGRect(x: frame.width/3, y: playableMargin, width: size.width, height: playableHeight)
     }
     
     var cameraRect: CGRect {
@@ -257,7 +258,7 @@ extension GameScene {
         }
         player.zPosition = 5.0
         player.setScale(0.4)
-        player.position = CGPoint(x: frame.width/2.0, y: ground.frame.maxY + player.frame.height/2.0)
+        player.position = CGPoint(x: 2*frame.width/3.0, y: ground.frame.maxY + player.frame.height/2.0)
         player.physicsBody = SKPhysicsBody(rectangleOf: player.size)
         player.physicsBody!.affectedByGravity = false
         player.physicsBody!.restitution = 0.0
@@ -458,11 +459,11 @@ extension GameScene {
     }
     
     func setupLifePos(_ node: SKSpriteNode, i: CGFloat, j: CGFloat) {
-        let width = playableRect.width
+//        let width = playableRect.width
         let height = playableRect.height
         node.setScale(0.5)
         node.zPosition = 50.0
-        node.position = CGPoint(x: -width/2.0 + node.frame.width * i + j - 15.0,
+        node.position = CGPoint(x: node.frame.width * i + j - 15.0,
                                 y: height/2.0 - node.frame.height/2.0)
         cameraNode.addChild(node)
     }
@@ -472,7 +473,7 @@ extension GameScene {
         jewelIcon = SKSpriteNode(imageNamed: "jewel/0")
         jewelIcon.setScale(0.6)
         jewelIcon.zPosition = 50.0
-        jewelIcon.position = CGPoint(x: -playableRect.width/2.0 + jewelIcon.frame.width, y: playableRect.height/2.0 - lifeNodes[0].frame.height - jewelIcon.frame.height/2.0)
+        jewelIcon.position = CGPoint(x: jewelIcon.frame.width, y: playableRect.height/2.0 - lifeNodes[0].frame.height - jewelIcon.frame.height/2.0)
         cameraNode.addChild(jewelIcon)
         
         // Score Label
@@ -481,7 +482,7 @@ extension GameScene {
         scoreLbl.horizontalAlignmentMode = .left
         scoreLbl.verticalAlignmentMode = .top
         scoreLbl.zPosition = 50.0
-        scoreLbl.position = CGPoint(x: -playableRect.width/2.0 + jewelIcon.frame.width * 2.0 - 10.0,
+        scoreLbl.position = CGPoint(x: jewelIcon.frame.width * 2.0 - 10.0,
                                     y: jewelIcon.position.y + jewelIcon.frame.height/2.0 - 8.0)
         cameraNode.addChild(scoreLbl)
     }
@@ -523,7 +524,7 @@ extension GameScene {
     
     func boundCheckPlayer() {
         // Check that the player touches the screen border
-        let bottomLeft = CGPoint(x: cameraRect.minX, y: cameraRect.minY)
+        let bottomLeft = CGPoint(x: cameraRect.minX + frame.width/2, y: cameraRect.minY)
         if player.position.x <= bottomLeft.x {
             player.position.x = bottomLeft.x
             lifeNodes.forEach({ $0.texture = SKTexture(imageNamed: "life-off") })

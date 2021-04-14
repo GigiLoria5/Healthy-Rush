@@ -213,7 +213,7 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		AC85ACC526243CF100AAA8E8 /* VisioPoseController */ = {
+		AC5A37872627346D0081FAD3 /* visioPose controller */ = {
 			isa = PBXGroup;
 			children = (
 				ACD66BF52622FC5D00B675A2 /* VisioPoseController.swift */,
@@ -223,7 +223,7 @@
 				ACD66BE82622FC1D00B675A2 /* AVCaptureVideoOrientation+Extension.swift */,
 				ACD66BE32622FC0F00B675A2 /* CGImage+DrawPoint.swift */,
 			);
-			path = VisioPoseController;
+			path = "visioPose controller";
 			sourceTree = "<group>";
 		};
 		AEF4987C9E8870C84CBB16E4 /* Frameworks */ = {
@@ -288,7 +288,7 @@
 		CC59DED925D4871C0089C664 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				AC85ACC526243CF100AAA8E8 /* VisioPoseController */,
+				AC5A37872627346D0081FAD3 /* visioPose controller */,
 				CC59DECA25D486DB0089C664 /* GameViewController.swift */,
 			);
 			path = Controllers;
@@ -849,14 +849,14 @@
 				CODE_SIGN_ENTITLEMENTS = "Healthy Rush/Healthy Rush.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K8WJKQA676;
+				DEVELOPMENT_TEAM = 86RN233R34;
 				INFOPLIST_FILE = "Healthy Rush/Resources/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "it.unisa.applefoundationprogram.Healthy-Rush";
+				PRODUCT_BUNDLE_IDENTIFIER = "it.unisa.mariomario.Healthy-Rush";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -873,14 +873,14 @@
 				CODE_SIGN_ENTITLEMENTS = "Healthy Rush/Healthy Rush.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K8WJKQA676;
+				DEVELOPMENT_TEAM = 86RN233R34;
 				INFOPLIST_FILE = "Healthy Rush/Resources/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "it.unisa.applefoundationprogram.Healthy-Rush";
+				PRODUCT_BUNDLE_IDENTIFIER = "it.unisa.mariomario.Healthy-Rush";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
