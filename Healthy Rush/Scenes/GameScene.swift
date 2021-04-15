@@ -10,7 +10,18 @@ import GameplayKit
 
 class GameScene: SKScene {
     
+    var touchStart: CGPoint?
+    var startTime : TimeInterval?
+    let minSpeed:CGFloat = 1000
+    let maxSpeed:CGFloat = 5000
+    let minDistance:CGFloat = 25
+    let minDuration:TimeInterval = 0.1
     
+    enum swipeDirection{
+        case left,right,up,down,None
+    }
+    var currentSwipe : swipeDirection!
+
     //MARK: - Properties
     var ground: SKSpriteNode!
     var player: SKSpriteNode!
@@ -104,8 +115,13 @@ class GameScene: SKScene {
         UserDefaults.standard.setValue(groundSelected, forKey: "groundSelectedKey")
     }
     
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
+        
+        touchStart = touches.first?.location(in: self)
+        startTime = touches.first?.timestamp
+        
         guard let touch = touches.first else { return } // we focus only on the first touch
         let node = atPoint(touch.location(in: self)) // get the node touched
         
@@ -143,6 +159,61 @@ class GameScene: SKScene {
     
     // In order to introduce a tinier jump
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard var touchStart = self.touchStart else {
+             return
+         }
+         guard var startTime = self.startTime else {
+             return
+         }
+         guard let location = touches.first?.location(in: self) else {
+             return
+         }
+         guard let time = touches.first?.timestamp else {
+             return
+         }
+         var dx = location.x - touchStart.x
+         var dy = location.y - touchStart.y
+         // Distance of the gesture
+         let distance = sqrt(dx*dx+dy*dy)
+         if distance >= minDistance {
+             // Duration of the gesture
+             let deltaTime = time - startTime
+             if deltaTime > minDuration {
+                 // Speed of the gesture
+                 let speed = distance / CGFloat(deltaTime)
+                 if speed >= minSpeed && speed <= maxSpeed {
+                     // Normalize by distance to obtain unit vector
+                     dx /= distance
+                     dy /= distance
+                     // Swipe detected
+                    
+                    if(abs(dy) < 0.1){
+                        if(dx > 0){
+                            debugPrint("destra")
+                            currentSwipe = .right
+                            
+                        }
+                        else{
+                            debugPrint("sinistra")
+                            currentSwipe = .left
+                        }
+                    }else if(abs(dx) < 0.1){
+                        if(dy > 0){
+                            debugPrint("su")
+                            currentSwipe = .up
+                        }else{
+                            debugPrint("giu")
+                            currentSwipe = .down
+                        }
+                    }else{
+                        currentSwipe = .None
+                    }
+                 }
+             }
+         }
+         // Reset variables
+        touchStart = .zero
+        startTime = 0
         super.touchesEnded(touches, with: event)
         if velocityY < -12.5 {
             velocityY = -12.5
