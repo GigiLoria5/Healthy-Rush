@@ -106,18 +106,18 @@ class VisioPoseController: UIViewController {
         // Process each observation
         if observations.count == 0 {
 //            poseLabel.text = "no body detected"
-            guard let currentFrame = self.currentFrame else {
+            guard self.currentFrame != nil else {
                 return
             }
             //a new image is created after processing body points in current frame
-            let image = UIImage(cgImage: currentFrame)
+//            let image = UIImage(cgImage: currentFrame)
             //open a thread that shows the preview image
             DispatchQueue.main.async {
 //                self.previewImageView.image = image
             }
         } else {
             //creates a list of points according to the observation
-            let points = observations.map { (observation) -> [CGPoint] in
+            _ = observations.map { (observation) -> [CGPoint] in
                 let ps = processObservation(observation)
                 
                 let joints = getBodyJointsFor(observation: observation)
@@ -134,7 +134,7 @@ class VisioPoseController: UIViewController {
                 return ps ?? []
             }
             //converts the list to a monodimensional array
-            let flatten = points.flatMap{$0}
+//            let flatten = points.flatMap{$0}
 
 //            let image = currentFrame?.drawPoints(points: flatten)
 //            DispatchQueue.main.async {

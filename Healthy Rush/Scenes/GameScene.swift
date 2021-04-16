@@ -9,18 +9,6 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
-    
-    var touchStart: CGPoint?
-    var startTime : TimeInterval?
-    let minSpeed:CGFloat = 1000
-    let maxSpeed:CGFloat = 5000
-    let minDistance:CGFloat = 25
-    let minDuration:TimeInterval = 0.1
-    
-    enum swipeDirection{
-        case left,right,up,down,None
-    }
-    var currentSwipe : swipeDirection!
 
     //MARK: - Properties
     var ground: SKSpriteNode!
@@ -35,6 +23,21 @@ class GameScene: SKScene {
     var cameraMovePointPerSecond: CGFloat = 400.0 // Scene Speed
     var lastUpdateTime: TimeInterval = 0.0
     var dt: TimeInterval = 0.0
+    
+    //for the swipe gestures
+    var touchStart: CGPoint?
+    var startTime : TimeInterval?
+    let minSpeed:CGFloat = 1200
+    let maxSpeed:CGFloat = 6000
+    let minDistance:CGFloat = 25
+    let minDuration:TimeInterval = 0.1
+    let minAngle: CGFloat = 0.26 //sin^-1(0.26) = 15 degrees ca.
+    
+    enum swipeDirection{
+        case left,right,up,down,None
+    }
+    var currentSwipe : swipeDirection!
+    
     
     // Settings
     var isTimeMaxObstacle: CGFloat = 8.5 // Max spawn time
@@ -119,6 +122,7 @@ class GameScene: SKScene {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         
+        //saves the initial touch point and the instant when it was pressed
         touchStart = touches.first?.location(in: self)
         startTime = touches.first?.timestamp
         
@@ -159,35 +163,36 @@ class GameScene: SKScene {
     
     // In order to introduce a tinier jump
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        //check if exists a starting touch when and where it was recognized
         guard var touchStart = self.touchStart else {
              return
          }
          guard var startTime = self.startTime else {
              return
          }
-         guard let location = touches.first?.location(in: self) else {
+         guard let currLocation = touches.first?.location(in: self) else {
              return
          }
-         guard let time = touches.first?.timestamp else {
+         guard let currTime = touches.first?.timestamp else {
              return
          }
-         var dx = location.x - touchStart.x
-         var dy = location.y - touchStart.y
+         var dx = currLocation.x - touchStart.x
+         var dy = currLocation.y - touchStart.y
          // Distance of the gesture
          let distance = sqrt(dx*dx+dy*dy)
          if distance >= minDistance {
              // Duration of the gesture
-             let deltaTime = time - startTime
-             if deltaTime > minDuration {
+             let deltaT = currTime - startTime
+             if deltaT > minDuration {
                  // Speed of the gesture
-                 let speed = distance / CGFloat(deltaTime)
+                 let speed = distance / CGFloat(deltaT)
                  if speed >= minSpeed && speed <= maxSpeed {
                      // Normalize by distance to obtain unit vector
                      dx /= distance
                      dy /= distance
                      // Swipe detected
-                    
-                    if(abs(dy) < 0.1){
+                    //currentSwipe will contain the direction of the swipe
+                    if(abs(dy) < minAngle){
                         if(dx > 0){
                             debugPrint("destra")
                             currentSwipe = .right
@@ -197,7 +202,7 @@ class GameScene: SKScene {
                             debugPrint("sinistra")
                             currentSwipe = .left
                         }
-                    }else if(abs(dx) < 0.1){
+                    }else if(abs(dx) < minAngle){
                         if(dy > 0){
                             debugPrint("su")
                             currentSwipe = .up
@@ -214,6 +219,7 @@ class GameScene: SKScene {
          // Reset variables
         touchStart = .zero
         startTime = 0
+        
         super.touchesEnded(touches, with: event)
         if velocityY < -12.5 {
             velocityY = -12.5
