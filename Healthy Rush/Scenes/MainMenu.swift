@@ -18,6 +18,9 @@ class MainMenu: SKScene {
     // Controller reference
     var viewController: GameViewController!
     
+//    visio controller
+    var visioPoseController : VisioController!
+    
     // Settings
     let buttonScale: CGFloat = 1.2
     let buttonScaleBigger: CGFloat = 1.44
