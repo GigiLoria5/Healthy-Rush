@@ -19,6 +19,10 @@ class GameScene: SKScene {
     var obstacles = [SKSpriteNode]()
     var jewel: SKSpriteNode!
     
+    
+    //for camera controller
+    var visioPoseController : VisioController!
+    
     // For the scene movement
     var cameraMovePointPerSecond: CGFloat = 400.0 // Scene Speed
     var lastUpdateTime: TimeInterval = 0.0
@@ -52,6 +56,9 @@ class GameScene: SKScene {
     var maxIndexObstacles = 6 // obstacle-index for setupObstacle
     var maxIndexBlocks = 3 // block-index for setupObstacle
     var groundSelected = Int.random(in: 1...4) // ground selected randomly
+    
+    var cameraMode : Bool = false
+    var watchMode : Bool = false
 
     // Don't touch
     var onGround = true
@@ -76,6 +83,19 @@ class GameScene: SKScene {
     var soundJewelDrop = SKAction.playSoundFileNamed("diamondLost.wav")
     var soundJump = SKAction.playSoundFileNamed("jump.wav")
     var soundCollision = SKAction.playSoundFileNamed("collision.wav")
+    
+    
+    init(size: CGSize, camera:Bool, watch: Bool) {
+        super.init(size: size)
+        self.cameraMode = camera
+        self.watchMode = watch
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
+    
     
     var playableRect: CGRect {
         let ratio: CGFloat
@@ -112,6 +132,13 @@ class GameScene: SKScene {
             playerSelectedRunIndex = 20
             playerSelectedJumpIndex = 30
         }
+        
+        if(cameraMode){
+            setupCameraMode()
+        }else if(watchMode){
+            setupWatchMode()
+        }
+        
         // Setup all nodes
         setupNodes()
         // Save this for the gameover
@@ -142,6 +169,11 @@ class GameScene: SKScene {
             isPaused = false
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
         } else if node.name == "quit" {
+            
+            if(cameraMode){
+                visioPoseController.stopCapture()
+            }
+            
             isPaused = false
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
             let scene = MainMenu(size: size)
@@ -276,6 +308,16 @@ class GameScene: SKScene {
 
 //MARK: - Configurations
 extension GameScene {
+    
+    
+    func setupCameraMode(){
+        visioPoseController = VisioController()
+        visioPoseController.startCapture()
+    }
+    func setupWatchMode(){
+        print("DA IMPLEMENTARE")
+    }
+    
     
     func setupNodes() {
         createBG()
@@ -614,7 +656,13 @@ extension GameScene {
         if livesNumber <= 0 { livesNumber = 0}
         lifeNodes[livesNumber].texture = SKTexture(imageNamed: "life-off")
         if livesNumber == 0{
-            gameOver = true
+            gameOver = true //game over state
+            
+            //stop the capture if in cameraMode
+            if(cameraMode){
+                visioPoseController.stopCapture()
+            }
+            
         }
     }
     

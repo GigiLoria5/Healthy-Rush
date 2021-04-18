@@ -1,67 +1,63 @@
 //
-//  ViewController.swift
-//  VisionPose
+//  VisioController.swift
+//  Healthy Rush
 //
-//  Created by Mario on 03/04/2021.
+//  Created by mario on 17/04/21.
 //
 
 import UIKit
 import Vision
 
-class VisioPoseController: UIViewController {
-
+class VisioController{
+    
     //Initial image dimension (set to zero)
     var imageSize = CGSize.zero
-    
-    private let videoCapture = VideoCapture()
-    
-    private var currentFrame: CGImage?
-    
-    private var minConfidenceAllowed: Float = 0.3
-    
-    
+    private let videoCapture = VideoCapture(quality: .low)
     //creates a new body processor
-    private let bodyProcessor = BodyPoseProcessor()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        //initialize and start capturing video frames
-        setupVideoFrms()
-    }
+    private var scaleFactor: CGFloat!
+    private var bodyProcessor : BodyPoseProcessor! = nil
+    private var minConfidenceAllowed: Float = 0.3
+    var bodyState : BodyPoseProcessor.BodyState!
     
     
-    private func setupVideoFrms() {
+    func startCapture() {
+        
+        switch videoCapture.preferredQuality! {
+        case .high:
+            scaleFactor = 1
+        case .medium:
+            scaleFactor = 1/3
+        case .low:
+            scaleFactor = 1/5
+        default:
+            scaleFactor = 1
+        }
+        
+        bodyProcessor = BodyPoseProcessor(scaleFactor: scaleFactor)
+        
         videoCapture.setupCapture { error in
             if let error = error {
                 print("Impossibile inizializzare la camera: \(error)")
                 return
             }
             self.videoCapture.captureDelegate = self
-            
-            self.videoCapture.startCapturing()
+            if self.videoCapture.captureDelegate != nil{
+                self.videoCapture.startCapturing()
+            }else{
+                print("inizializzazione cattura fallita")
+            }
         }
-    }
-        
-    //terminates the capturing if view closes
-    override func viewWillDisappear(_ animated: Bool) {
-        videoCapture.stopCapturing {
-            super.viewWillDisappear(animated)
-            
-            //reset the body Processor
-            self.bodyProcessor.reset()
-            
-        }
-    }
-
-    override func viewWillTransition(to size: CGSize,
-                                     with coordinator: UIViewControllerTransitionCoordinator) {
-        //Reinitialize camera to handle the orientation change
-        setupVideoFrms()
     }
     
-    //function linked to the changing camera button
-    //flip internal camera with external if pressed
-    @IBAction func onCameraButtonTapped(_ sender: Any) {
+    func stopCapture(){
+        
+        self.videoCapture.stopCapturing(){
+            
+            self.bodyProcessor.reset()
+        }
+    }
+    
+    func flipCamera(){
         videoCapture.flipCamera { error in
             if let error = error {
                 print("Cambio della camera non riuscito: \(error)")
@@ -72,10 +68,7 @@ class VisioPoseController: UIViewController {
         }
     }
     
-    /**
-     The function requests to process the image passed as parameter
-     to Vision framework
-     */
+    
     @available(iOS 14.0, *)
     func estimation(_ cgImage:CGImage) {
         imageSize = CGSize(width: cgImage.width, height: cgImage.height)
@@ -94,6 +87,7 @@ class VisioPoseController: UIViewController {
         }
     }
     
+    
     /**
      Processes observations and generate the preview on screen of
      recognized human body pose
@@ -105,16 +99,7 @@ class VisioPoseController: UIViewController {
         
         // Process each observation
         if observations.count == 0 {
-//            poseLabel.text = "no body detected"
-            guard self.currentFrame != nil else {
-                return
-            }
-            //a new image is created after processing body points in current frame
-//            let image = UIImage(cgImage: currentFrame)
-            //open a thread that shows the preview image
-            DispatchQueue.main.async {
-//                self.previewImageView.image = image
-            }
+            
         } else {
             //creates a list of points according to the observation
             _ = observations.map { (observation) -> [CGPoint] in
@@ -124,22 +109,11 @@ class VisioPoseController: UIViewController {
             
 //              process the current body pose
                 bodyProcessor.processPose(joints)
-                
-//              print on device screen the current body state, which pose is now assuming
-                
-//                poseLabel.text = bodyProcessor.printBodyState()
-                
-//              debugPrint(bodyProcessor.returnBodyState())
+                print(bodyProcessor.printBodyState())
+                bodyState = bodyProcessor.returnBodyState()
                 
                 return ps ?? []
             }
-            //converts the list to a monodimensional array
-//            let flatten = points.flatMap{$0}
-
-//            let image = currentFrame?.drawPoints(points: flatten)
-//            DispatchQueue.main.async {
-//                self.previewImageView.image = image
-//            }
         }
         
     }
@@ -206,19 +180,19 @@ class VisioPoseController: UIViewController {
 
 // MARK: - VideoCaptureDelegate
 
-extension VisioPoseController: VideoCaptureDelegate {
+extension VisioController: VideoCaptureDelegate {
     func videoCapture(_ videoCapture: VideoCapture, didCaptureFrame capturedImage: CGImage?) {
 
         guard let image = capturedImage else {
             fatalError("Immagine catturata è NULL")
         }
-
-        currentFrame = image
         
         if #available(iOS 14.0, *) {
             estimation(image)
         } else {
             // Fallback on earlier versions
+            print("Impossibile avviare stima immagine")
         }
     }
+    
 }

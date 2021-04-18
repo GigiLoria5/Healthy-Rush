@@ -18,9 +18,6 @@ class MainMenu: SKScene {
     // Controller reference
     var viewController: GameViewController!
     
-//    visio controller
-    var visioPoseController : VisioController!
-    
     // Settings
     let buttonScale: CGFloat = 1.2
     let buttonScaleBigger: CGFloat = 1.44
@@ -66,7 +63,7 @@ class MainMenu: SKScene {
         switch node.name {
         case "play":
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
-            let scene = GameScene(size: size)
+            let scene = GameScene(size: size,camera: cameraIsSelected,watch: watchIsSelected)
             scene.scaleMode = scaleMode
             view!.presentScene(scene, transition: .doorsOpenVertical(withDuration: 0.3))
         case "highscore":

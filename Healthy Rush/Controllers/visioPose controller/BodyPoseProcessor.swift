@@ -8,6 +8,17 @@
 import CoreGraphics
 import Vision
 
+@available(iOS 14.0, *)
+let jointsOfInterest: [VNHumanBodyPoseObservation.JointName] = [
+    .rightElbow,
+    .leftElbow,
+   .rightShoulder,
+   .leftShoulder,
+    .neck,
+    .rightKnee,
+    .leftKnee,
+    .root
+]
 
 class BodyPoseProcessor{
     
@@ -149,8 +160,6 @@ class BodyPoseProcessor{
     private var leftElbowIsUp: Bool
     private var rightElbowIsUp: Bool
     
-    
-    
     /**
         The thresholds  are useful to identify the transition zones between one state and another
      */
@@ -163,12 +172,17 @@ class BodyPoseProcessor{
     private let legMovementThresh : CGFloat
     private let armsMovementThresh: CGFloat
     
+    
+    private let scaleFactor : CGFloat
+    
     /**
      saves previous height values, describes how the height changes during measurements
      */
     private var heightTrend  = Array<CGFloat>([])
     
-    init() {
+    init(scaleFactor : CGFloat) {
+        
+        self.scaleFactor = scaleFactor
         
         self.leftShoulderPos = 0
         self.rightShoulderPos = 0
@@ -187,14 +201,24 @@ class BodyPoseProcessor{
         self.shouldersWidth = 0
         self.relativeBodyHeight = 0
         
-        self.heightThreshold = 10.0
-        self.widthThreshold  = 80.0
-        self.crouchedThresh  = 150.0
-        self.jumpingThresh   = 50.0
-        self.kneeToWaistThresh = 150.0
-        self.legMovementThresh = 80.0
-        self.elbowToNeckThresh = 50.0
+        self.heightThreshold = 10.0 * self.scaleFactor
+        self.widthThreshold  = 80.0 * self.scaleFactor
+        self.jumpingThresh   = 50.0 * self.scaleFactor
+        self.kneeToWaistThresh = 150.0 * self.scaleFactor
+        self.elbowToNeckThresh = 50.0 * self.scaleFactor
         self.armsMovementThresh = 80.0
+        
+//      the scale factor doesn't work when scale factor is 0.2,
+//      because the screen rate is diffenent
+//      it should be set manually
+        if(scaleFactor == 1/5){
+            self.crouchedThresh  = 18
+            self.legMovementThresh = 8
+        }
+        else{
+            self.crouchedThresh = 150 * self.scaleFactor
+            self.legMovementThresh = 80 * self.scaleFactor
+        }
        
         self.maxEvaluations = 5
         self.heightEvalCounter = 0

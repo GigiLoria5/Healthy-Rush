@@ -16,7 +16,6 @@ class GameViewController: UIViewController{
         let scene = MainMenu(size: CGSize(width: 2048, height: 1536))
         scene.scaleMode = .aspectFill
         scene.viewController = self // save controller reference for the main menu
-        scene.visioPoseController = VisioController(reference: self)
         let skView = view as! SKView
         skView.showsFPS = false
         skView.showsNodeCount = false

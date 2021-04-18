@@ -31,6 +31,8 @@ class VideoCapture: NSObject {
     let captureSession = AVCaptureSession()
 
     let videoOutput = AVCaptureVideoDataOutput()
+    
+    let preferredQuality : AVCaptureSession.Preset!
 
     //Set the internal camera as the default initial capture device
     private var cameraPstn = AVCaptureDevice.Position.front
@@ -39,6 +41,9 @@ class VideoCapture: NSObject {
     private let sessionQueue = DispatchQueue(
         label: "poseEstimateSessionQueue")
     
+    init(quality: AVCaptureSession.Preset){
+        preferredQuality = quality
+    }
     
     /**
      Switches front to rear camera and viceversa.

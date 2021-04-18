@@ -14,24 +14,6 @@ import UIKit
 import Vision
 
 
-
-struct CouplePoints{
-    var point1: CGPoint
-    var point2: CGPoint
-}
-
-@available(iOS 14.0, *)
-let jointsOfInterest: [VNHumanBodyPoseObservation.JointName] = [
-    .rightElbow,
-    .leftElbow,
-   .rightShoulder,
-   .leftShoulder,
-    .neck,
-    .rightKnee,
-    .leftKnee,
-    .root
-]
-
 func normalizedToImagePoints(point normalizedPoint: CGPoint,w imageWidth: Int,h imgHeight: Int) -> CGPoint{
     return VNImagePointForNormalizedPoint(normalizedPoint,imageWidth,imgHeight)
 }
