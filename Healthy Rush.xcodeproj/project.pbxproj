@@ -20,6 +20,7 @@
 		62EA6C0D25E17371006DF000 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62EA6C0C25E17371006DF000 /* Types.swift */; };
 		991C5D7E1700CEF7198C4E12 /* Pods_Healthy_Rush_WatchApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F9452D9B124306CEE0290C4 /* Pods_Healthy_Rush_WatchApp.framework */; };
 		A446204584EA22101A9E37A9 /* Pods_Healthy_Rush.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8993CCA99A755AD43ED3F66 /* Pods_Healthy_Rush.framework */; };
+		ACC5B892262D708C00F2C4F4 /* GameSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC5B891262D708C00F2C4F4 /* GameSettings.swift */; };
 		ACD66BD02622FBBF00B675A2 /* BodyPoseProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD66BCF2622FBBF00B675A2 /* BodyPoseProcessor.swift */; };
 		ACD66BDA2622FC0100B675A2 /* VideoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD66BD92622FC0100B675A2 /* VideoCapture.swift */; };
 		ACD66BDF2622FC0900B675A2 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD66BDE2622FC0900B675A2 /* Common.swift */; };
@@ -111,6 +112,7 @@
 		62B125DC25DEE04500B7471E /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
 		62EA6C0C25E17371006DF000 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		8CD81F097F00EB3282CF438F /* Pods-Healthy Rush.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush.release.xcconfig"; path = "Target Support Files/Pods-Healthy Rush/Pods-Healthy Rush.release.xcconfig"; sourceTree = "<group>"; };
+		ACC5B891262D708C00F2C4F4 /* GameSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSettings.swift; sourceTree = "<group>"; };
 		ACD66BCF2622FBBF00B675A2 /* BodyPoseProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BodyPoseProcessor.swift; sourceTree = "<group>"; };
 		ACD66BD92622FC0100B675A2 /* VideoCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCapture.swift; sourceTree = "<group>"; };
 		ACD66BDE2622FC0900B675A2 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
@@ -295,6 +297,7 @@
 			isa = PBXGroup;
 			children = (
 				CC59DEC825D486DB0089C664 /* GameScene.swift */,
+				ACC5B891262D708C00F2C4F4 /* GameSettings.swift */,
 				CC37F64425D89006003BA290 /* MainMenu.swift */,
 				CC15AEF325D91B010014EB61 /* GameOver.swift */,
 			);
@@ -588,6 +591,7 @@
 				ACD66BDF2622FC0900B675A2 /* Common.swift in Sources */,
 				CC15AEFA25D9281B0014EB61 /* SKAction+Ext.swift in Sources */,
 				CC15AEF425D91B010014EB61 /* GameOver.swift in Sources */,
+				ACC5B892262D708C00F2C4F4 /* GameSettings.swift in Sources */,
 				ACD66BE92622FC1D00B675A2 /* AVCaptureVideoOrientation+Extension.swift in Sources */,
 				CC37F64525D89006003BA290 /* MainMenu.swift in Sources */,
 				CC59DECB25D486DB0089C664 /* GameViewController.swift in Sources */,

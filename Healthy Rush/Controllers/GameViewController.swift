@@ -9,6 +9,8 @@ import UIKit
 import SpriteKit
 import GameplayKit
 
+var settings = GameSettings(camera: false, watch: false)
+
 class GameViewController: UIViewController{
     
     override func viewDidLoad() {

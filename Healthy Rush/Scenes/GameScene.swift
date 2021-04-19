@@ -85,10 +85,12 @@ class GameScene: SKScene {
     var soundCollision = SKAction.playSoundFileNamed("collision.wav")
     
     
-    init(size: CGSize, camera:Bool, watch: Bool) {
+    override init(size: CGSize) {
         super.init(size: size)
-        self.cameraMode = camera
-        self.watchMode = watch
+        
+//      the controller mode is set according to the game settings
+        self.cameraMode = settings.cameraIsSelected
+        self.watchMode = settings.watchIsSelected
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -176,6 +178,10 @@ class GameScene: SKScene {
             
             isPaused = false
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
+            
+//          return to mainMenu, should increase the counter
+            settings.increaseCalls()
+            
             let scene = MainMenu(size: size)
             scene.scaleMode = scaleMode
             view!.presentScene(scene, transition: .doorsCloseVertical(withDuration: 0.8))
@@ -297,6 +303,10 @@ class GameScene: SKScene {
             if numScore > highscore {
                 ScoreGenerator.sharedInstance.setHighscore(numScore)
             }
+//            should increase calls of mainMenu
+//            it will be called after the gameOver window
+            settings.increaseCalls()
+            
             let scene = GameOver(size: size)
             scene.scaleMode = scaleMode
             view!.presentScene(scene, transition: .doorsCloseVertical(withDuration: 0.8))

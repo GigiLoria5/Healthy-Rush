@@ -34,8 +34,6 @@ class MainMenu: SKScene {
     
     //for the controller choice panel
     var istanceControllerActive : Bool = false
-    var cameraIsSelected : Bool = false
-    var watchIsSelected : Bool = false
     
     // Facebook var
     var fbUserLogged = false
@@ -63,7 +61,7 @@ class MainMenu: SKScene {
         switch node.name {
         case "play":
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
-            let scene = GameScene(size: size,camera: cameraIsSelected,watch: watchIsSelected)
+            let scene = GameScene(size: size)
             scene.scaleMode = scaleMode
             view!.presentScene(scene, transition: .doorsOpenVertical(withDuration: 0.3))
         case "highscore":
@@ -104,22 +102,22 @@ class MainMenu: SKScene {
         case "cameraImage":
             if #available(iOS 14.0, *) {
                 
-                if(cameraIsSelected){
-                    cameraIsSelected = false
+                if(settings.cameraIsSelected){
+                    settings.cameraIsSelected = false
                 }
                 else{
-                    cameraIsSelected = true
+                    settings.cameraIsSelected = true
                 }
-                watchIsSelected = false
+                settings.watchIsSelected = false
                 updateControllerChoicePanel()
             }
         case "watchImage":
-            if(watchIsSelected){
-                watchIsSelected = false
+            if(settings.watchIsSelected){
+                settings.watchIsSelected = false
             }else{
-                watchIsSelected = true
+                settings.watchIsSelected = true
             }
-            cameraIsSelected = false
+            settings.cameraIsSelected = false
             updateControllerChoicePanel()
         case "info":
             if(!istanceInfoActive){
@@ -507,31 +505,36 @@ extension MainMenu {
         panel.addChild(controllerLblcamera)
         panel.addChild(controllerLblWatch)
         
+//        the menu was already called, should update the controller
+//        to show the selected device
+        if(settings.menuCalls > 0){
+            updateControllerChoicePanel()
+        }
+        
     }
     //aggiunto da mario 11 aprile
     func updateControllerChoicePanel(){
         let panel = containerNode.childNode(withName: "controllerRoot")as! SKSpriteNode
         let bgCamera = panel.childNode(withName: "cameraImage") as? SKSpriteNode
         let bgWatch = panel.childNode(withName: "watchImage") as? SKSpriteNode
-        let labelCamera = bgCamera?.childNode(withName: "textControllerCamera") as? SKLabelNode
-        let labelWatch = bgWatch?.childNode(withName: "textControllerWatch") as? SKLabelNode
+        let labelCamera = panel.childNode(withName: "textControllerCamera") as? SKLabelNode
+        let labelWatch = panel.childNode(withName: "textControllerWatch") as? SKLabelNode
         
         let blendFactor = CGFloat(0.4)
         
-        //debugPrint(cameraIsSelected,watchIsSelected)
-        if(cameraIsSelected){
+        if(settings.cameraIsSelected){
             bgWatch?.colorBlendFactor = blendFactor
             bgCamera?.colorBlendFactor = 0
-            labelCamera?.text = "camera selezionata"
+            labelCamera?.text = "Camera selected"
             labelWatch?.text = "Apple Watch"
         }
-        else if (watchIsSelected){
+        else if (settings.watchIsSelected){
             bgCamera?.colorBlendFactor = blendFactor
             bgWatch?.colorBlendFactor = 0
-            labelWatch?.text = "watch selezionato"
+            labelWatch?.text = "Watch selected"
             labelCamera?.text = "Camera Tracking"
         }
-        else if(!cameraIsSelected && !watchIsSelected){
+        else if(!settings.cameraIsSelected && !settings.watchIsSelected){
             bgWatch?.colorBlendFactor = 0
             labelWatch?.text = "Apple Watch"
             if #available(iOS 14.0, *) {
