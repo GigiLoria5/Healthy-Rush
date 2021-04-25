@@ -20,97 +20,96 @@
 
 #if !TARGET_OS_TV
 
- #import "FBSDKGraphErrorRecoveryProcessor.h"
+#import "FBSDKGraphErrorRecoveryProcessor.h"
 
- #import "FBSDKCoreKit+Internal.h"
- #import "FBSDKErrorRecoveryAttempter.h"
+#import "FBSDKCoreKit+Internal.h"
+#import "FBSDKErrorRecoveryAttempter.h"
 
-@interface FBSDKGraphErrorRecoveryProcessor ()
+@interface FBSDKGraphErrorRecoveryProcessor()
 {
   FBSDKErrorRecoveryAttempter *_recoveryAttempter;
   NSError *_error;
 }
 
+@property (nonatomic, strong, nullable) id<FBSDKGraphErrorRecoveryProcessorDelegate>delegate;
+
 @end
 
 @implementation FBSDKGraphErrorRecoveryProcessor
 
-- (BOOL)processError:(NSError *)error request:(id<FBSDKGraphRequest>)request delegate:(id<FBSDKGraphErrorRecoveryProcessorDelegate>)delegate
+- (BOOL)processError:(NSError *)error request:(FBSDKGraphRequest *)request delegate:(id<FBSDKGraphErrorRecoveryProcessorDelegate>)delegate
 {
-  if ([delegate respondsToSelector:@selector(processorWillProcessError:error:)]) {
-    if (![delegate processorWillProcessError:self error:error]) {
+  self.delegate = delegate;
+  if ([self.delegate respondsToSelector:@selector(processorWillProcessError:error:)]) {
+    if (![self.delegate processorWillProcessError:self error:error]) {
       return NO;
     }
   }
 
   FBSDKGraphRequestError errorCategory = [error.userInfo[FBSDKGraphRequestErrorKey] unsignedIntegerValue];
   switch (errorCategory) {
-    case FBSDKGraphRequestErrorTransient:
-      [delegate processorDidAttemptRecovery:self didRecover:YES error:nil];
+    case FBSDKGraphRequestErrorTransient :
+      [self.delegate processorDidAttemptRecovery:self didRecover:YES error:nil];
+      self.delegate = nil;
       return YES;
-    case FBSDKGraphRequestErrorRecoverable:
-      if (request.tokenString && [request.tokenString isEqualToString:[FBSDKAccessToken currentAccessToken].tokenString]) {
+    case FBSDKGraphRequestErrorRecoverable :
+      if ([request.tokenString isEqualToString:[FBSDKAccessToken currentAccessToken].tokenString]) {
         _recoveryAttempter = error.recoveryAttempter;
 
-        // return YES if recovery UI is started (meaning we wait for the alertviewdelegate to resume control flow).
-        NSArray *recoveryOptionsTitles = error.userInfo[NSLocalizedRecoveryOptionsErrorKey];
-        if (recoveryOptionsTitles.count > 0 && self->_recoveryAttempter) {
-          NSString *recoverySuggestion = error.userInfo[NSLocalizedRecoverySuggestionErrorKey];
-          self->_error = error;
-          self->_delegate = delegate;
-          dispatch_async(dispatch_get_main_queue(), ^{
-            [self displayAlertWithRecoverySuggestion:recoverySuggestion recoveryOptionsTitles:recoveryOptionsTitles delegate:delegate];
-          });
-          return YES;
-        }
+        // Set up a block to do the typical recovery work so that we can chain it for ios auth special cases.
+        // the block returns YES if recovery UI is started (meaning we wait for the alertviewdelegate to resume control flow).
+        BOOL (^standardRecoveryWork)(void) = ^BOOL{
+          NSArray *recoveryOptionsTitles = error.userInfo[NSLocalizedRecoveryOptionsErrorKey];
+          if (recoveryOptionsTitles.count > 0 && self->_recoveryAttempter) {
+            NSString *recoverySuggestion = error.userInfo[NSLocalizedRecoverySuggestionErrorKey];
+            self->_error = error;
+            dispatch_async(dispatch_get_main_queue(), ^{
+              [self displayAlertWithRecoverySuggestion:recoverySuggestion recoveryOptionsTitles:recoveryOptionsTitles];
+            });
+            return YES;
+          }
+          return NO;
+        };
+
+        return standardRecoveryWork();
       }
-      break;
-    case FBSDKGraphRequestErrorOther:
-      if (request.tokenString && [request.tokenString isEqualToString:[FBSDKAccessToken currentAccessToken].tokenString]) {
+      return NO;
+    case FBSDKGraphRequestErrorOther :
+      if ([request.tokenString isEqualToString:[FBSDKAccessToken currentAccessToken].tokenString]) {
         NSString *message = error.userInfo[FBSDKErrorLocalizedDescriptionKey];
         NSString *title = error.userInfo[FBSDKErrorLocalizedTitleKey];
         if (message) {
-          self->_error = error;
-          self->_delegate = delegate;
           dispatch_async(dispatch_get_main_queue(), ^{
             NSString *localizedOK =
-            NSLocalizedStringWithDefaultValue(
-              @"ErrorRecovery.Alert.OK",
-              @"FacebookSDK",
-              [FBSDKInternalUtility bundleForStrings],
-              @"OK",
-              @"The title of the label to dismiss the alert when presenting user facing error messages"
-            );
-            [self displayAlertWithTitle:title message:message cancelButtonTitle:localizedOK delegate:delegate];
+            NSLocalizedStringWithDefaultValue(@"ErrorRecovery.Alert.OK", @"FacebookSDK", [FBSDKInternalUtility bundleForStrings],
+                                              @"OK",
+                                              @"The title of the label to dismiss the alert when presenting user facing error messages");
+            [self displayAlertWithTitle:title message:message cancelButtonTitle:localizedOK];
           });
-          return YES;
         }
       }
-      break;
+      return NO;
   }
   return NO;
 }
 
- #pragma mark - UIAlertController support
+#pragma mark - UIAlertController support
 
-- (void)displayAlertWithRecoverySuggestion:(NSString *)recoverySuggestion
-                     recoveryOptionsTitles:(NSArray<NSString *> *)recoveryOptionsTitles
-                                  delegate:(id<FBSDKGraphErrorRecoveryProcessorDelegate>)delegate
+- (void)displayAlertWithRecoverySuggestion:(NSString *)recoverySuggestion recoveryOptionsTitles:(NSArray<NSString *> *)recoveryOptionsTitles
 {
   UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
                                                                            message:recoverySuggestion
                                                                     preferredStyle:UIAlertControllerStyleAlert];
   for (NSUInteger i = 0; i < recoveryOptionsTitles.count; i++) {
-    NSString *title = [FBSDKTypeUtility array:recoveryOptionsTitles objectAtIndex:i];
+    NSString *title = recoveryOptionsTitles[i];
     UIAlertAction *option = [UIAlertAction actionWithTitle:title
                                                      style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction *_Nonnull action) {
+                                                   handler:^(UIAlertAction * _Nonnull action) {
                                                      [self->_recoveryAttempter attemptRecoveryFromError:self->_error
                                                                                             optionIndex:i
-                                                                                      completionHandler:^(BOOL didRecover) {
-                                                                  [delegate processorDidAttemptRecovery:self didRecover:didRecover error:self->_error];
-                                                                  self->_delegate = nil;
-                                                                }];
+                                                                                               delegate:self
+                                                                                     didRecoverSelector:@selector(didPresentErrorWithRecovery:contextInfo:)
+                                                                                            contextInfo:nil];
                                                    }];
     [alertController addAction:option];
   }
@@ -120,23 +119,19 @@
                                     completion:nil];
 }
 
-- (void)displayAlertWithTitle:(NSString *)title
-                      message:(NSString *)message
-            cancelButtonTitle:(NSString *)localizedOK
-                     delegate:(id<FBSDKGraphErrorRecoveryProcessorDelegate>)delegate
+- (void)displayAlertWithTitle:(NSString *)title message:(NSString *)message cancelButtonTitle:(NSString *)localizedOK
 {
   UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
                                                                            message:message
                                                                     preferredStyle:UIAlertControllerStyleAlert];
   UIAlertAction *OKAction = [UIAlertAction actionWithTitle:localizedOK
                                                      style:UIAlertActionStyleCancel
-                                                   handler:^(UIAlertAction *_Nonnull action) {
+                                                   handler:^(UIAlertAction * _Nonnull action) {
                                                      [self->_recoveryAttempter attemptRecoveryFromError:self->_error
                                                                                             optionIndex:0
-                                                                                      completionHandler:^(BOOL didRecover) {
-                                                                  [delegate processorDidAttemptRecovery:self didRecover:didRecover error:self->_error];
-                                                                  self->_delegate = nil;
-                                                                }];
+                                                                                               delegate:self
+                                                                                     didRecoverSelector:@selector(didPresentErrorWithRecovery:contextInfo:)
+                                                                                            contextInfo:nil];
                                                    }];
   [alertController addAction:OKAction];
   UIViewController *topMostViewController = [FBSDKInternalUtility topMostViewController];
@@ -145,13 +140,12 @@
                                     completion:nil];
 }
 
- #pragma mark - FBSDKErrorRecoveryAttempting "delegate"
+#pragma mark - FBSDKErrorRecoveryAttempting "delegate"
 
 - (void)didPresentErrorWithRecovery:(BOOL)didRecover contextInfo:(void *)contextInfo
 {
-  // Deprecated method (no longer used by FBSDK)
-  [_delegate processorDidAttemptRecovery:self didRecover:didRecover error:_error];
-  _delegate = nil;
+  [self.delegate processorDidAttemptRecovery:self didRecover:didRecover error:_error];
+  self.delegate = nil;
 }
 
 @end

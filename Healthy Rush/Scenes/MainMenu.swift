@@ -6,9 +6,7 @@
 //
 
 import SpriteKit
-import FirebaseAuth
-import FBSDKCoreKit
-import FBSDKLoginKit
+import JGProgressHUD
 
 class MainMenu: SKScene {
     
@@ -32,14 +30,26 @@ class MainMenu: SKScene {
     var pageInfoNum : Int = 3
     var istanceInfoActive : Bool = false
     
+<<<<<<< Updated upstream
     //for the controller choice panel
     var istanceControllerActive : Bool = false
     var cameraIsSelected : Bool = false
     var watchIsSelected : Bool = false
+=======
+    // Firebase utilis
+>>>>>>> Stashed changes
     
-    // Facebook var
-    var fbUserLogged = false
+    // Facebook utilis
+    var fbUserLogged : Bool!
     let facebookLoginLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold") // login in with facebook label
+    let beforeLoginTxt = "To save your progress, login with Facebook"
+    let duringLoginTxt = "Signing in with Facebook..."
+    let afterLoginTxt  = "You are login as "
+    let hud: JGProgressHUD = { // Pop up loading type
+        let hud = JGProgressHUD(style: .light)
+        hud.interactionType = .blockAllTouches
+        return hud
+    } ()
     
     //MARK: - Systems
     override func didMove(to view: SKView) {
@@ -52,7 +62,6 @@ class MainMenu: SKScene {
         }
         setupSelectionLabel()
         updatePlayerSelection()
-        currentUserName() // check if the user is already logged in via facebook and if so it updates the user's infos
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -84,13 +93,11 @@ class MainMenu: SKScene {
             node.texture = SKTexture(imageNamed: effectEnabled ? "effectOn" : "effectOff")
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
         case "facebookBtn":
-            if !fbUserLogged{
-                fbActionSignIn()
-            } else {
-                fbActionSignOut()
-            }
+            run(SKAction.playSoundFileNamed("buttonSound.wav"))
+            fbUserLogged ? handleSignOutWithFacebookButtonTapped() : handleSignInWithFacebookButtonTapped()
             let node = node as! SKSpriteNode
             node.texture = SKTexture(imageNamed: fbUserLogged ? "facebookOn" : "facebookOff")
+<<<<<<< Updated upstream
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
         case "controllerSelect":
             if(!istanceControllerActive){
@@ -121,8 +128,11 @@ class MainMenu: SKScene {
             }
             cameraIsSelected = false
             updateControllerChoicePanel()
+=======
+            print("Fb button action ended")
+>>>>>>> Stashed changes
         case "info":
-            if(!istanceInfoActive){
+            if(istanceInfoActive == false){
                 run(SKAction.playSoundFileNamed("buttonSound.wav"))
                 if(containerNode != nil) {
                     containerNode.removeFromParent() // Remove any other panel already active
@@ -145,7 +155,6 @@ class MainMenu: SKScene {
         case "container":
             currInfoPageNum = 1 //reset the page counter
             istanceInfoActive = false
-            istanceControllerActive = false
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
             containerNode.removeFromParent()
         case "theBoy":
@@ -202,19 +211,11 @@ extension MainMenu {
         addChild(setting)
         
         let info = SKSpriteNode(imageNamed: "info")
-        info.setScale(0.8)
+        info.setScale(0.625)
         info.zPosition = 50.0
         info.name = "info"
         info.position = CGPoint(x: info.frame.width/2 + 50, y: size.height/2 + play.frame.height + 120)
         addChild(info)
-        
-        let controllerSelect = SKSpriteNode(imageNamed: "selController")
-        controllerSelect.setScale(0.8)
-        controllerSelect.zPosition = 50.0
-        controllerSelect.name = "controllerSelect"
-        controllerSelect.position = CGPoint(x: size.width - controllerSelect.frame.width, y: info.position.y)
-        addChild(controllerSelect)
-        
     }
     
     func setupPlayer() {
@@ -361,7 +362,7 @@ extension MainMenu {
         music.name = "music"
         music.setScale(0.875)
         music.zPosition = 25.0
-        music.position = CGPoint(x: -music.frame.width - 50.0, y: 5.0)
+        music.position = CGPoint(x: -music.frame.width - 50.0, y: 0.0)
         panel.addChild(music)
         
         // Sound
@@ -369,7 +370,7 @@ extension MainMenu {
         effect.name = "effect"
         effect.setScale(0.875)
         effect.zPosition = 25.0
-        effect.position = CGPoint(x: music.frame.width + 50.0, y: 5.0)
+        effect.position = CGPoint(x: music.frame.width + 50.0, y: 0.0)
         panel.addChild(effect)
         
         // Facebook
@@ -381,7 +382,7 @@ extension MainMenu {
         panel.addChild(facebookBtn)
         
         // Log In with Facebook Label
-        facebookLoginLbl.text = "To save your progress, login with Facebook"
+        facebookLoginLbl.text = fbUserLogged ? afterLoginTxt + ("!!still under working!!") : beforeLoginTxt
         facebookLoginLbl.horizontalAlignmentMode = .center
         facebookLoginLbl.fontSize = 30.0
         facebookLoginLbl.fontColor = .black
@@ -390,46 +391,30 @@ extension MainMenu {
         panel.addChild(facebookLoginLbl)
     }
     
-    func fbActionSignIn() {
-        let loginManager = LoginManager()
-        loginManager.logIn(permissions: ["gaming_profile", "gaming_user_picture", "email", "user_friends"],
-                           from: viewController) { (result, error) in
-            if let error = error {
-                print("Failed to login: \(error.localizedDescription)")
+    func handleSignInWithFacebookButtonTapped() {
+        // Present the signing-in process message
+        hud.textLabel.text = duringLoginTxt
+        hud.show(in: view!)
+        // Sign-in with facebook
+        Spark.signInWithFacebook(in: viewController) { (message, err, sparkUser) in
+            if let err = err {
+                SparkService.dismissHud(self.hud, text: "Error", detailText: "\(message) \(err.localizedDescription)", delay: 3)
                 return
             }
-            
-            guard let accessToken = AccessToken.current else {
-                print("Failed to get access token")
+            guard let sparkUser = sparkUser else {
+                SparkService.dismissHud(self.hud, text: "Error", detailText: "Failed to fetch user", delay: 3)
                 return
             }
-            
-            let credential = FacebookAuthProvider.credential(withAccessToken: accessToken.tokenString)
-            
-            // Perform login by calling Firebase APIs
-            Auth.auth().signIn(with: credential, completion: { (user, error) in
-                if let error = error {
-                    print("Login error: \(error.localizedDescription)")
-                    let alertController = UIAlertController(title: "Login Error", message: error.localizedDescription, preferredStyle: .alert)
-                    let okayAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-                    alertController.addAction(okayAction)
-                    self.viewController.present(alertController, animated: true, completion: nil)
-                    return
-                } else {
-                    self.currentUserName()
-                }
-                
-            })
+            // We have the Spark user
+            print("Successfully signed in with Facebook with Spark User: \(sparkUser)")
+            SparkService.dismissHud(self.hud, text: "Success", detailText: "Successfully signed in with Facebook", delay: 3)
+            // Update login status
+            self.fbUserLogged = true
+            self.facebookLoginLbl.text = self.afterLoginTxt + ("!!still under working!!")
         }
     }
     
-    func currentUserName() {
-        if let currentUser = Auth.auth().currentUser {
-            fbUserLogged = true
-            facebookLoginLbl.text = "You are login as - " + (currentUser.displayName ?? "Display name not found")
-        }
-    }
-    
+<<<<<<< Updated upstream
     func fbActionSignOut() {
         let firebaseAuth = Auth.auth()
         do {
@@ -542,6 +527,14 @@ extension MainMenu {
         }
     }
     
+=======
+    func handleSignOutWithFacebookButtonTapped() {
+        
+        // To be changed...
+//        fbUserLogged = false
+//        facebookLoginLbl.text = beforeLoginTxt
+    }
+>>>>>>> Stashed changes
     
     func setupInfoPanel() {
         // Create a Container
@@ -560,9 +553,8 @@ extension MainMenu {
         rightArrow.name = "infoArrowRight"
         rightArrow.setScale(0.5)
         rightArrow.zPosition = 20.0
-        rightArrow.position = CGPoint(
-            x: panel.position.x + panel.size.width/2 - 60,
-            y: panel.position.y/2)
+        rightArrow.position = CGPoint(x: panel.position.x + panel.size.width/2 - 60, y: panel.position.y/2)
+        
         panel.addChild(rightArrow)
         
         // add left arrow
@@ -570,9 +562,7 @@ extension MainMenu {
         leftArrow.name = "infoArrowLeft"
         leftArrow.setScale(0) // invisible arrow (no dimension)
         leftArrow.zPosition = 20.0
-        leftArrow.position = CGPoint(
-            x: -(panel.position.x + panel.size.width/2 - 60),
-            y: panel.position.y/2)
+        leftArrow.position = CGPoint(x: -(panel.position.x + panel.size.width/2 - 60), y: panel.position.y/2)
         panel.addChild(leftArrow)
         
         // add info images to panel

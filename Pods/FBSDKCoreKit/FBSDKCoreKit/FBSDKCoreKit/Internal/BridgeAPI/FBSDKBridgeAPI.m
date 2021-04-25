@@ -20,25 +20,11 @@
 
 #if !TARGET_OS_TV
 
- #import "FBSDKBridgeAPI.h"
+#import "FBSDKBridgeAPI.h"
 
- #import "FBSDKCoreKit+Internal.h"
+#import "FBSDKCoreKit+Internal.h"
 
-/**
- Specifies state of FBSDKAuthenticationSession (SFAuthenticationSession (iOS 11) and ASWebAuthenticationSession (iOS 12+))
- */
-typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
-  /** There is no active authentication session*/
-  FBSDKAuthenticationSessionNone,
-  /** The authentication session has started*/
-  FBSDKAuthenticationSessionStarted,
-  /** System dialog ("app wants to use facebook.com  to sign in")  to access facebook.com was presented to the user*/
-  FBSDKAuthenticationSessionShowAlert,
-  /** Web browser with log in to authentication was presented to the user*/
-  FBSDKAuthenticationSessionShowWebBrowser,
-  /** Authentication session was canceled by system. It happens when app goes to background while alert requesting access to facebook.com is presented*/
-  FBSDKAuthenticationSessionCanceledBySystem,
-};
+typedef void (^FBSDKAuthenticationCompletionHandler)(NSURL *_Nullable callbackURL, NSError *_Nullable error);
 
 @protocol FBSDKAuthenticationSession <NSObject>
 
@@ -50,28 +36,27 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
 
 @end
 
- #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-  #import <AuthenticationServices/AuthenticationServices.h>
-@interface FBSDKBridgeAPI () <FBSDKApplicationObserving, FBSDKContainerViewControllerDelegate, ASWebAuthenticationPresentationContextProviding>
- #else
-@interface FBSDKBridgeAPI () <FBSDKApplicationObserving, FBSDKContainerViewControllerDelegate>
- #endif
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+#import <AuthenticationServices/AuthenticationServices.h>
+@interface FBSDKBridgeAPI() <FBSDKApplicationObserving, FBSDKContainerViewControllerDelegate, ASWebAuthenticationPresentationContextProviding>
+#else
+@interface FBSDKBridgeAPI() <FBSDKApplicationObserving, FBSDKContainerViewControllerDelegate>
+#endif
 
 @end
 
-@implementation FBSDKBridgeAPI
-{
-  NSObject<FBSDKBridgeAPIRequestProtocol> *_pendingRequest;
+@implementation FBSDKBridgeAPI {
+  FBSDKBridgeAPIRequest *_pendingRequest;
   FBSDKBridgeAPIResponseBlock _pendingRequestCompletionBlock;
   id<FBSDKURLOpening> _pendingURLOpen;
   id<FBSDKAuthenticationSession> _authenticationSession NS_AVAILABLE_IOS(11_0);
   FBSDKAuthenticationCompletionHandler _authenticationSessionCompletionHandler NS_AVAILABLE_IOS(11_0);
 
   BOOL _expectingBackground;
+  BOOL _isRequestingSFAuthenticationSession;
   UIViewController *_safariViewController;
   BOOL _isDismissingSafariViewController;
   BOOL _isAppLaunched;
-  FBSDKAuthenticationSession _authenticationSessionState;
 }
 
 + (void)load
@@ -89,37 +74,12 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
   return _sharedInstance;
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-  [self _updateAuthStateIfSystemAlertToUseWebAuthFlowPresented];
-}
-
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-  BOOL isRequestingWebAuthenticationSession = NO;
-  if (@available(iOS 11.0, *)) {
-    if (_authenticationSession && _authenticationSessionState == FBSDKAuthenticationSessionShowAlert) {
-      _authenticationSessionState = FBSDKAuthenticationSessionShowWebBrowser;
-    } else if (_authenticationSession && _authenticationSessionState == FBSDKAuthenticationSessionCanceledBySystem) {
-      [_authenticationSession cancel];
-      _authenticationSession = nil;
-      NSString *errorDomain;
-      if (@available(iOS 12.0, *)) {
-        errorDomain = @"com.apple.AuthenticationServices.WebAuthenticationSession";
-      } else {
-        errorDomain = @"com.apple.SafariServices.Authentication";
-      }
-      NSError *error = [FBSDKError errorWithDomain:errorDomain code:1 message:nil];
-      if (_authenticationSessionCompletionHandler) {
-        _authenticationSessionCompletionHandler(nil, error);
-      }
-      isRequestingWebAuthenticationSession = [self _isRequestingWebAuthenticationSession];
-    }
-  }
-  // _expectingBackground can be YES if the caller started doing work (like login)
+  //  _expectingBackground can be YES if the caller started doing work (like login)
   // within the app delegate's lifecycle like openURL, in which case there
   // might have been a "didBecomeActive" event pending that we want to ignore.
-  BOOL notExpectingBackground = !_expectingBackground && !_safariViewController && !_isDismissingSafariViewController && !isRequestingWebAuthenticationSession;
+  BOOL notExpectingBackground = !_expectingBackground && !_safariViewController && !_isDismissingSafariViewController && !_isRequestingSFAuthenticationSession;
   if (notExpectingBackground) {
     _active = YES;
 
@@ -132,9 +92,9 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
+  _isRequestingSFAuthenticationSession = NO;
   _active = NO;
   _expectingBackground = NO;
-  [self _updateAuthStateIfSystemCancelAuthSession];
 }
 
 - (BOOL)application:(UIApplication *)application
@@ -143,16 +103,10 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
          annotation:(id)annotation
 {
   id<FBSDKURLOpening> pendingURLOpen = _pendingURLOpen;
-
-  if ([pendingURLOpen respondsToSelector:@selector(shouldStopPropagationOfURL:)]
-      && [pendingURLOpen shouldStopPropagationOfURL:url]) {
-    return YES;
-  }
-
-  BOOL canOpenURL = [pendingURLOpen canOpenURL:url
-                                forApplication:application
-                             sourceApplication:sourceApplication
-                                    annotation:annotation];
+  BOOL canOpenURL =   [pendingURLOpen canOpenURL:url
+                                  forApplication:application
+                               sourceApplication:sourceApplication
+                                      annotation:annotation];
 
   void (^completePendingOpenURLBlock)(void) = ^{
     self->_pendingURLOpen = nil;
@@ -185,11 +139,9 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
           NSError *loginError = [[NSError alloc]
                                  initWithDomain:FBSDKErrorDomain
                                  code:FBSDKErrorBridgeAPIInterruption
-                                 userInfo:@{FBSDKErrorLocalizedDescriptionKey : errorMessage}];
-          if (_authenticationSessionCompletionHandler) {
-            _authenticationSessionCompletionHandler(url, loginError);
-            _authenticationSessionCompletionHandler = nil;
-          }
+                                 userInfo:@{FBSDKErrorLocalizedDescriptionKey: errorMessage}];
+          _authenticationSessionCompletionHandler(url, loginError);
+          _authenticationSessionCompletionHandler = nil;
         }
       }
     }
@@ -207,14 +159,14 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
   return NO;
 }
 
-- (BOOL)            application:(UIApplication *)application
-  didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions
+- (BOOL)application:(UIApplication *)application
+didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey, id> *)launchOptions
 {
   NSURL *launchedURL = launchOptions[UIApplicationLaunchOptionsURLKey];
   NSString *sourceApplication = launchOptions[UIApplicationLaunchOptionsSourceApplicationKey];
 
-  if (launchedURL
-      && sourceApplication) {
+  if (launchedURL &&
+      sourceApplication) {
     Class loginManagerClass = NSClassFromString(@"FBSDKLoginManager");
     if (loginManagerClass) {
       id annotation = launchOptions[UIApplicationLaunchOptionsAnnotationKey];
@@ -229,32 +181,8 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
   return NO;
 }
 
-- (void)_updateAuthStateIfSystemAlertToUseWebAuthFlowPresented
-{
-  if (@available(iOS 11.0, *)) {
-    if (_authenticationSession && _authenticationSessionState == FBSDKAuthenticationSessionStarted) {
-      _authenticationSessionState = FBSDKAuthenticationSessionShowAlert;
-    }
-  }
-}
+#pragma mark - Internal Methods
 
-- (void)_updateAuthStateIfSystemCancelAuthSession
-{
-  if (@available(iOS 11.0, *)) {
-    if (_authenticationSession && _authenticationSessionState == FBSDKAuthenticationSessionShowAlert) {
-      _authenticationSessionState = FBSDKAuthenticationSessionCanceledBySystem;
-    }
-  }
-}
-
-- (BOOL)_isRequestingWebAuthenticationSession
-{
-  return !(_authenticationSessionState == FBSDKAuthenticationSessionNone
-    || _authenticationSessionState == FBSDKAuthenticationSessionCanceledBySystem);
-}
-
- #pragma clang diagnostic push
- #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (void)openURL:(NSURL *)url sender:(id<FBSDKURLOpening>)sender handler:(FBSDKSuccessBlock)handler
 {
   _expectingBackground = YES;
@@ -262,22 +190,31 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
   dispatch_async(dispatch_get_main_queue(), ^{
     // Dispatch openURL calls to prevent hangs if we're inside the current app delegate's openURL flow already
     NSOperatingSystemVersion iOS10Version = { .majorVersion = 10, .minorVersion = 0, .patchVersion = 0 };
-    if ([NSProcessInfo.processInfo isOperatingSystemAtLeastVersion:iOS10Version]) {
+    if ([FBSDKInternalUtility isOSRunTimeVersionAtLeast:iOS10Version]) {
       if (@available(iOS 10.0, *)) {
         [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
           handler(success, nil);
         }];
       }
-    } else if (handler) {
-      BOOL opened = [UIApplication.sharedApplication openURL:url];
-      handler(opened, nil);
+    } else {
+      BOOL opened = [[UIApplication sharedApplication] openURL:url];
+
+      if ([url.scheme hasPrefix:@"http"] && !opened) {
+        NSOperatingSystemVersion iOS8Version = { .majorVersion = 8, .minorVersion = 0, .patchVersion = 0 };
+        if (![FBSDKInternalUtility isOSRunTimeVersionAtLeast:iOS8Version]) {
+          // Safari openURL calls can wrongly return NO on iOS 7 so manually overwrite that case to YES.
+          // Otherwise we would rather trust in the actual result of openURL
+          opened = YES;
+        }
+      }
+      if (handler) {
+        handler(opened, nil);
+      }
     }
   });
 }
 
- #pragma clang diagnostic pop
-
-- (void)openBridgeAPIRequest:(NSObject<FBSDKBridgeAPIRequestProtocol> *)request
+- (void)openBridgeAPIRequest:(FBSDKBridgeAPIRequest *)request
      useSafariViewController:(BOOL)useSafariViewController
           fromViewController:(UIViewController *)fromViewController
              completionBlock:(FBSDKBridgeAPIResponseBlock)completionBlock
@@ -294,19 +231,7 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
   }
   _pendingRequest = request;
   _pendingRequestCompletionBlock = [completionBlock copy];
-  FBSDKSuccessBlock handler = [self _bridgeAPIRequestCompletionBlockWithRequest:request
-                                                                     completion:completionBlock];
-  if (useSafariViewController) {
-    [self openURLWithSafariViewController:requestURL sender:nil fromViewController:fromViewController handler:handler];
-  } else {
-    [self openURL:requestURL sender:nil handler:handler];
-  }
-}
-
-- (FBSDKSuccessBlock)_bridgeAPIRequestCompletionBlockWithRequest:(NSObject<FBSDKBridgeAPIRequestProtocol> *)request
-                                                      completion:(FBSDKBridgeAPIResponseBlock)completionBlock
-{
-  return ^(BOOL openedURL, NSError *anError) {
+  void (^handler)(BOOL, NSError *) = ^(BOOL openedURL, NSError *anError) {
     if (!openedURL) {
       self->_pendingRequest = nil;
       self->_pendingRequestCompletionBlock = nil;
@@ -324,25 +249,17 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
       return;
     }
   };
+  if (useSafariViewController) {
+    [self openURLWithSafariViewController:requestURL sender:nil fromViewController:fromViewController handler:handler];
+  } else {
+    [self openURL:requestURL sender:nil handler:handler];
+  }
 }
 
 - (void)openURLWithSafariViewController:(NSURL *)url
                                  sender:(id<FBSDKURLOpening>)sender
                      fromViewController:(UIViewController *)fromViewController
                                 handler:(FBSDKSuccessBlock)handler
-{
-  [self _openURLWithSafariViewController:url
-                                  sender:sender
-                      fromViewController:fromViewController
-                                 handler:handler
-                           dylibResolver:FBSDKDynamicFrameworkLoader.shared];
-}
-
-- (void)_openURLWithSafariViewController:(NSURL *)url
-                                  sender:(id<FBSDKURLOpening>)sender
-                      fromViewController:(UIViewController *)fromViewController
-                                 handler:(FBSDKSuccessBlock)handler
-                           dylibResolver:(id<FBSDKDynamicFrameworkResolving>)dylibResolver
 {
   if (![url.scheme hasPrefix:@"http"]) {
     [self openURL:url sender:sender handler:handler];
@@ -354,8 +271,8 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
 
   if (@available(iOS 11.0, *)) {
     if ([sender isAuthenticationURL:url]) {
-      [self setSessionCompletionHandlerFromHandler:handler];
-      [self openURLWithAuthenticationSession:url];
+      [self _setSessionCompletionHandlerFromHandler:handler];
+      [self _openURLWithAuthenticationSession:url];
       return;
     }
   }
@@ -363,7 +280,7 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
   // trying to dynamically load SFSafariViewController class
   // so for the cases when it is available we can send users through Safari View Controller flow
   // in cases it is not available regular flow will be selected
-  Class SFSafariViewControllerClass = dylibResolver.safariViewControllerClass;
+  Class SFSafariViewControllerClass = fbsdkdfl_SFSafariViewControllerClass();
 
   if (SFSafariViewControllerClass) {
     UIViewController *parent = fromViewController ?: [FBSDKInternalUtility topMostViewController];
@@ -408,7 +325,7 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
   }
 }
 
-- (void)openURLWithAuthenticationSession:(NSURL *)url
+- (void)_openURLWithAuthenticationSession:(NSURL *)url
 {
   Class AuthenticationSessionClass = fbsdkdfl_ASWebAuthenticationSessionClass();
 
@@ -430,33 +347,27 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
         [_authenticationSession setPresentationContextProvider:self];
       }
     }
-    _authenticationSessionState = FBSDKAuthenticationSessionStarted;
+    _isRequestingSFAuthenticationSession = YES;
     [_authenticationSession start];
   }
 }
 
-- (void)setSessionCompletionHandlerFromHandler:(FBSDKSuccessBlock)handler
+- (void)_setSessionCompletionHandlerFromHandler:(void(^)(BOOL, NSError *))handler
 {
   __weak FBSDKBridgeAPI *weakSelf = self;
-  _authenticationSessionCompletionHandler = ^(NSURL *aURL, NSError *error) {
+  _authenticationSessionCompletionHandler = ^ (NSURL *aURL, NSError *error) {
     FBSDKBridgeAPI *strongSelf = weakSelf;
-    BOOL didSucceed = (error == nil && aURL != nil);
-    handler(didSucceed, error);
-    if (didSucceed) {
+    strongSelf->_isRequestingSFAuthenticationSession = NO;
+    handler(error == nil, error);
+    if (error == nil) {
       [strongSelf application:[UIApplication sharedApplication] openURL:aURL sourceApplication:@"com.apple" annotation:nil];
     }
     strongSelf->_authenticationSession = nil;
     strongSelf->_authenticationSessionCompletionHandler = nil;
-    strongSelf->_authenticationSessionState = FBSDKAuthenticationSessionNone;
   };
 }
 
-- (FBSDKAuthenticationCompletionHandler)sessionCompletionHandler
-{
-  return _authenticationSessionCompletionHandler;
-}
-
- #pragma mark -- SFSafariViewControllerDelegate
+#pragma mark -- SFSafariViewControllerDelegate
 
 // This means the user tapped "Done" which we should treat as a cancellation.
 - (void)safariViewControllerDidFinish:(UIViewController *)safariViewController
@@ -475,7 +386,7 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
   _safariViewController = nil;
 }
 
- #pragma mark -- FBSDKContainerViewControllerDelegate
+#pragma mark -- FBSDKContainerViewControllerDelegate
 
 - (void)viewControllerDidDisappear:(FBSDKContainerViewController *)viewController animated:(BOOL)animated
 {
@@ -488,11 +399,11 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
   }
 }
 
- #pragma mark - Helper Methods
+#pragma mark - Helper Methods
 
 - (BOOL)_handleBridgeAPIResponseURL:(NSURL *)responseURL sourceApplication:(NSString *)sourceApplication
 {
-  NSObject<FBSDKBridgeAPIRequestProtocol> *request = _pendingRequest;
+  FBSDKBridgeAPIRequest *request = _pendingRequest;
   FBSDKBridgeAPIResponseBlock completionBlock = _pendingRequestCompletionBlock;
   _pendingRequest = nil;
   _pendingRequestCompletionBlock = NULL;
@@ -533,119 +444,14 @@ typedef NS_ENUM(NSUInteger, FBSDKAuthenticationSession) {
   _pendingRequestCompletionBlock = NULL;
 }
 
- #pragma clang diagnostic push
- #pragma clang diagnostic ignored "-Wdeprecated-declarations"
- #pragma mark - ASWebAuthenticationPresentationContextProviding
- #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-- (ASPresentationAnchor)presentationAnchorForWebAuthenticationSession:(ASWebAuthenticationSession *)session API_AVAILABLE(ios(13.0))
-{
- #else
+#pragma mark - ASWebAuthenticationPresentationContextProviding
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+- (ASPresentationAnchor)presentationAnchorForWebAuthenticationSession:(ASWebAuthenticationSession *)session API_AVAILABLE(ios(13.0)){
+#else
 - (UIWindow *)presentationAnchorForWebAuthenticationSession:(id<FBSDKAuthenticationSession>)session API_AVAILABLE(ios(11.0)) {
 #endif
   return UIApplication.sharedApplication.keyWindow;
 }
- #pragma clang diagnostic pop
-
- #pragma mark - Testability
-
- #if DEBUG
-
-- (id<FBSDKAuthenticationSession>)authenticationSession
-{
-  return _authenticationSession;
-}
-
-- (void)setAuthenticationSession:(id<FBSDKAuthenticationSession>)session
-{
-  _authenticationSession = session;
-}
-
-- (FBSDKAuthenticationSession)authenticationSessionState
-{
-  return _authenticationSessionState;
-}
-
-- (void)setAuthenticationSessionState:(FBSDKAuthenticationSession)state
-{
-  _authenticationSessionState = state;
-}
-
-- (FBSDKAuthenticationCompletionHandler)authenticationSessionCompletionHandler
-{
-  return _authenticationSessionCompletionHandler;
-}
-
-- (void)setAuthenticationSessionCompletionHandler:(FBSDKAuthenticationCompletionHandler)handler
-{
-  _authenticationSessionCompletionHandler = handler;
-}
-
-- (void)setActive:(BOOL)isActive
-{
-  _active = isActive;
-}
-
-- (BOOL)expectingBackground
-{
-  return _expectingBackground;
-}
-
-- (void)setExpectingBackground:(BOOL)isExpectingBackground
-{
-  _expectingBackground = isExpectingBackground;
-}
-
-- (id<FBSDKURLOpening>)pendingUrlOpen
-{
-  return _pendingURLOpen;
-}
-
-- (void)setPendingUrlOpen:(id<FBSDKURLOpening>)opening
-{
-  _pendingURLOpen = opening;
-}
-
-- (UIViewController *)safariViewController
-{
-  return _safariViewController;
-}
-
-- (void)setSafariViewController:(nullable UIViewController *)controller
-{
-  _safariViewController = controller;
-}
-
-- (BOOL)isDismissingSafariViewController
-{
-  return _isDismissingSafariViewController;
-}
-
-- (void)setIsDismissingSafariViewController:(BOOL)isDismissing
-{
-  _isDismissingSafariViewController = isDismissing;
-}
-
-- (NSObject<FBSDKBridgeAPIRequestProtocol> *)pendingRequest
-{
-  return _pendingRequest;
-}
-
-- (void)setPendingRequest:(NSObject<FBSDKBridgeAPIRequestProtocol> *)newValue
-{
-  _pendingRequest = newValue;
-}
-
-- (FBSDKBridgeAPIResponseBlock)pendingRequestCompletionBlock
-{
-  return _pendingRequestCompletionBlock;
-}
-
-- (void)setPendingRequestCompletionBlock:(FBSDKBridgeAPIResponseBlock)newValue
-{
-  _pendingRequestCompletionBlock = newValue;
-}
-
- #endif
 
 @end
 

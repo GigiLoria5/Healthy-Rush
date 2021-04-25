@@ -40,8 +40,6 @@ static BOOL g_canSkipDiskCheck = NO;
   g_canSkipDiskCheck = YES;
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 + (void)persistAppEventsData:(FBSDKAppEventsState *)appEventsState
 {
   [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorAppEvents
@@ -51,7 +49,7 @@ static BOOL g_canSkipDiskCheck = NO;
     return;
   }
   NSMutableArray *existingEvents = [NSMutableArray arrayWithArray:[[self class] retrievePersistedAppEventsStates]];
-  [FBSDKTypeUtility array:existingEvents addObject:appEventsState];
+  [existingEvents addObject:appEventsState];
 
   [NSKeyedArchiver archiveRootObject:existingEvents toFile:[[self class] filePath]];
   g_canSkipDiskCheck = NO;
@@ -66,13 +64,11 @@ static BOOL g_canSkipDiskCheck = NO;
     [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorAppEvents
                        formatString:@"FBSDKAppEvents Persist: Read %lu event states. First state has %lu events",
      (unsigned long)eventsStates.count,
-     (unsigned long)(eventsStates.count > 0 ? ((FBSDKAppEventsState *)[FBSDKTypeUtility array:eventsStates objectAtIndex:0]).events.count : 0)];
+     (unsigned long)(eventsStates.count > 0 ? ((FBSDKAppEventsState *)eventsStates[0]).events.count : 0)];
     [[self class] clearPersistedAppEventsStates];
   }
   return eventsStates;
 }
-
-#pragma clang diagnostic pop
 
 #pragma mark - Private Helpers
 
@@ -80,5 +76,4 @@ static BOOL g_canSkipDiskCheck = NO;
 {
   return [FBSDKBasicUtility persistenceFilePath:@"com-facebook-sdk-AppEventsPersistedEvents.json"];
 }
-
 @end

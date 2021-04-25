@@ -20,13 +20,9 @@
 
 #if !TARGET_OS_TV
 
- #import <Foundation/Foundation.h>
+#import <Foundation/Foundation.h>
 
- #if SWIFT_PACKAGE
-  #import "FBSDKLoginConstants.h"
- #else
-  #import <FBSDKLoginKit/FBSDKLoginConstants.h>
- #endif
+#import "FBSDKLoginConstants.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

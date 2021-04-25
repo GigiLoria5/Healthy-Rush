@@ -19,12 +19,12 @@
 #import <Foundation/Foundation.h>
 
 #if SWIFT_PACKAGE
- #import "FBSDKApplicationDelegate.h"
+#import "FBSDKApplicationDelegate.h"
 #else
- #import <FBSDKCoreKit/FBSDKApplicationDelegate.h>
+#import <FBSDKCoreKit/FBSDKApplicationDelegate.h>
 #endif
 
-#import "FBSDKApplicationObserving.h"
+#import "FBSDKCoreKit+Internal.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

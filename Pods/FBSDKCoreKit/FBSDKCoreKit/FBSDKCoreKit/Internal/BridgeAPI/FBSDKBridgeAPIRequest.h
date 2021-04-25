@@ -28,23 +28,10 @@
 #import <FBSDKCoreKit/FBSDKCopying.h>
 #endif
 
-#import "FBSDKBridgeAPIProtocol.h"
 #import "FBSDKBridgeAPIProtocolType.h"
 
-@protocol FBSDKBridgeAPIRequestProtocol <NSObject, NSCopying>
-
-@property (nonatomic, copy, readonly) NSString *scheme;
-@property (nonatomic, copy, readonly) NSString *actionID;
-@property (nonatomic, copy, readonly) NSString *methodName;
-@property (nonatomic, assign, readonly) FBSDKBridgeAPIProtocolType protocolType;
-@property (nonatomic, readonly, strong) id<FBSDKBridgeAPIProtocol> protocol;
-
-- (NSURL *)requestURL:(NSError *__autoreleasing *)errorRef;
-
-@end
-
 NS_SWIFT_NAME(BridgeAPIRequest)
-@interface FBSDKBridgeAPIRequest : NSObject <FBSDKCopying, FBSDKBridgeAPIRequestProtocol>
+@interface FBSDKBridgeAPIRequest : NSObject <FBSDKCopying>
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;

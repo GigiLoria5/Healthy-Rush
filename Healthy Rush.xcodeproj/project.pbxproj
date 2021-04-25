@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3DCDF05FDD3C17DFF6E32495 /* Pods_Healthy_Rush_WatchApp_Extension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50EFC91B7053AC55295ABC2 /* Pods_Healthy_Rush_WatchApp_Extension.framework */; };
+		07DF85FFEC31CF4C317988AB /* Pods_Healthy_Rush.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AEA75BB2076C5AF43F3FE736 /* Pods_Healthy_Rush.framework */; };
+		16FAF3708DAD86CD40A93726 /* Pods_Healthy_Rush_WatchApp_Extension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0DD4AACA36892C1D391C9110 /* Pods_Healthy_Rush_WatchApp_Extension.framework */; };
 		62B125C425DEE04500B7471E /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 62B125C225DEE04500B7471E /* Interface.storyboard */; };
 		62B125C625DEE04500B7471E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62B125C525DEE04500B7471E /* Assets.xcassets */; };
 		62B125CD25DEE04500B7471E /* Healthy Rush WatchApp Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 62B125CC25DEE04500B7471E /* Healthy Rush WatchApp Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -18,6 +19,7 @@
 		62B125DA25DEE04500B7471E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62B125D925DEE04500B7471E /* Assets.xcassets */; };
 		62B125DF25DEE04500B7471E /* Healthy Rush WatchApp.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 62B125C025DEE04500B7471E /* Healthy Rush WatchApp.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		62EA6C0D25E17371006DF000 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62EA6C0C25E17371006DF000 /* Types.swift */; };
+<<<<<<< Updated upstream
 		991C5D7E1700CEF7198C4E12 /* Pods_Healthy_Rush_WatchApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F9452D9B124306CEE0290C4 /* Pods_Healthy_Rush_WatchApp.framework */; };
 		A446204584EA22101A9E37A9 /* Pods_Healthy_Rush.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8993CCA99A755AD43ED3F66 /* Pods_Healthy_Rush.framework */; };
 		ACD66BD02622FBBF00B675A2 /* BodyPoseProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD66BCF2622FBBF00B675A2 /* BodyPoseProcessor.swift */; };
@@ -26,12 +28,14 @@
 		ACD66BE42622FC0F00B675A2 /* CGImage+DrawPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD66BE32622FC0F00B675A2 /* CGImage+DrawPoint.swift */; };
 		ACD66BE92622FC1D00B675A2 /* AVCaptureVideoOrientation+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD66BE82622FC1D00B675A2 /* AVCaptureVideoOrientation+Extension.swift */; };
 		ACD66BF62622FC5D00B675A2 /* VisioPoseController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD66BF52622FC5D00B675A2 /* VisioPoseController.swift */; };
+=======
+		C1D505AA76AA8AFF7A071332 /* Pods_Healthy_Rush_WatchApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D9C03F02F59CB12B6A24970 /* Pods_Healthy_Rush_WatchApp.framework */; };
+>>>>>>> Stashed changes
 		CC15AEF425D91B010014EB61 /* GameOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC15AEF325D91B010014EB61 /* GameOver.swift */; };
 		CC15AEF725D9242D0014EB61 /* SKTAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC15AEF625D9242D0014EB61 /* SKTAudio.swift */; };
 		CC15AEFA25D9281B0014EB61 /* SKAction+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC15AEF925D9281B0014EB61 /* SKAction+Ext.swift */; };
 		CC37F64225D88D71003BA290 /* ScoreGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC37F64125D88D71003BA290 /* ScoreGenerator.swift */; };
 		CC37F64525D89006003BA290 /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC37F64425D89006003BA290 /* MainMenu.swift */; };
-		CC42372B261F02530016EAD4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CC42372A261F02530016EAD4 /* GoogleService-Info.plist */; };
 		CC51944325E2DECB002E2DEA /* buttonSound.wav in Resources */ = {isa = PBXBuildFile; fileRef = CC51944225E2DECB002E2DEA /* buttonSound.wav */; };
 		CC51944825E2DED7002E2DEA /* diamondLost.wav in Resources */ = {isa = PBXBuildFile; fileRef = CC51944725E2DED7002E2DEA /* diamondLost.wav */; };
 		CC51944D25E2DEDF002E2DEA /* playerSelect.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CC51944C25E2DEDF002E2DEA /* playerSelect.mp3 */; };
@@ -41,6 +45,8 @@
 		CC52E55825D9E337001F3A8C /* jump.wav in Resources */ = {isa = PBXBuildFile; fileRef = CC52E55325D9E337001F3A8C /* jump.wav */; };
 		CC52E55925D9E337001F3A8C /* backgroundMusic.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CC52E55425D9E337001F3A8C /* backgroundMusic.mp3 */; };
 		CC59DEC325D486DB0089C664 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC59DEC225D486DB0089C664 /* AppDelegate.swift */; };
+		CC59DEC525D486DB0089C664 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = CC59DEC425D486DB0089C664 /* GameScene.sks */; };
+		CC59DEC725D486DB0089C664 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = CC59DEC625D486DB0089C664 /* Actions.sks */; };
 		CC59DEC925D486DB0089C664 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC59DEC825D486DB0089C664 /* GameScene.swift */; };
 		CC59DECB25D486DB0089C664 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC59DECA25D486DB0089C664 /* GameViewController.swift */; };
 		CC59DECE25D486DB0089C664 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CC59DECC25D486DB0089C664 /* Main.storyboard */; };
@@ -48,6 +54,12 @@
 		CC59DEF525D48F000089C664 /* CGPoint+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC59DEF425D48F000089C664 /* CGPoint+Ext.swift */; };
 		CC59DEF925D4989A0089C664 /* CGFloat+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC59DEF825D4989A0089C664 /* CGFloat+Ext.swift */; };
 		CC5BFE35261CE71B001030FB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CC5BFE34261CE71B001030FB /* LaunchScreen.storyboard */; };
+		CC7AF7772626104500A2F512 /* Spark.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC7AF7762626104500A2F512 /* Spark.swift */; };
+		CC7AF77C2626113F00A2F512 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CC7AF77B2626113F00A2F512 /* GoogleService-Info.plist */; };
+		CC7AF78126262C5700A2F512 /* SparkKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC7AF78026262C5700A2F512 /* SparkKeys.swift */; };
+		CC7AF78626262CFB00A2F512 /* SparkModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC7AF78526262CFB00A2F512 /* SparkModels.swift */; };
+		CC7AF78B2626397700A2F512 /* SparkSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC7AF78A2626397700A2F512 /* SparkSetup.swift */; };
+		CC7AF79026263C0E00A2F512 /* SparkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC7AF78F26263C0E00A2F512 /* SparkService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,34 +82,34 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		62B125E025DEE04500B7471E /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 8;
+			buildActionMask = 2147483647;
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
 				62B125DF25DEE04500B7471E /* Healthy Rush WatchApp.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		62B125E325DEE04500B7471E /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 8;
+			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
 				62B125CD25DEE04500B7471E /* Healthy Rush WatchApp Extension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2F9452D9B124306CEE0290C4 /* Pods_Healthy_Rush_WatchApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Healthy_Rush_WatchApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		392C8CB87BC5FE912D62FB54 /* Pods-Healthy Rush.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush.debug.xcconfig"; path = "Target Support Files/Pods-Healthy Rush/Pods-Healthy Rush.debug.xcconfig"; sourceTree = "<group>"; };
-		414B59109E9710DC57EB29E2 /* Pods-Healthy Rush WatchApp Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush WatchApp Extension.release.xcconfig"; path = "Target Support Files/Pods-Healthy Rush WatchApp Extension/Pods-Healthy Rush WatchApp Extension.release.xcconfig"; sourceTree = "<group>"; };
-		574500EFC22DD2FD3E87EDB1 /* Pods-Healthy Rush WatchApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush WatchApp.debug.xcconfig"; path = "Target Support Files/Pods-Healthy Rush WatchApp/Pods-Healthy Rush WatchApp.debug.xcconfig"; sourceTree = "<group>"; };
-		59A5446CC017CF9816BB96B7 /* Pods-Healthy Rush WatchApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush WatchApp.release.xcconfig"; path = "Target Support Files/Pods-Healthy Rush WatchApp/Pods-Healthy Rush WatchApp.release.xcconfig"; sourceTree = "<group>"; };
+		0DD4AACA36892C1D391C9110 /* Pods_Healthy_Rush_WatchApp_Extension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Healthy_Rush_WatchApp_Extension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1EA4237DB5972A537BDA629E /* Pods-Healthy Rush WatchApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush WatchApp.release.xcconfig"; path = "Target Support Files/Pods-Healthy Rush WatchApp/Pods-Healthy Rush WatchApp.release.xcconfig"; sourceTree = "<group>"; };
+		29D724AC17BC4AB19EB53594 /* Pods-Healthy Rush WatchApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush WatchApp.debug.xcconfig"; path = "Target Support Files/Pods-Healthy Rush WatchApp/Pods-Healthy Rush WatchApp.debug.xcconfig"; sourceTree = "<group>"; };
+		33B7B7AB39A708B219D0A5EB /* Pods-Healthy Rush WatchApp Extension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush WatchApp Extension.debug.xcconfig"; path = "Target Support Files/Pods-Healthy Rush WatchApp Extension/Pods-Healthy Rush WatchApp Extension.debug.xcconfig"; sourceTree = "<group>"; };
+		54687C9068215E0E08B8375C /* Pods-Healthy Rush.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush.debug.xcconfig"; path = "Target Support Files/Pods-Healthy Rush/Pods-Healthy Rush.debug.xcconfig"; sourceTree = "<group>"; };
 		62B125C025DEE04500B7471E /* Healthy Rush WatchApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Healthy Rush WatchApp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		62B125C325DEE04500B7471E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
 		62B125C525DEE04500B7471E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -111,6 +123,7 @@
 		62B125DB25DEE04500B7471E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		62B125DC25DEE04500B7471E /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
 		62EA6C0C25E17371006DF000 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
+<<<<<<< Updated upstream
 		8CD81F097F00EB3282CF438F /* Pods-Healthy Rush.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush.release.xcconfig"; path = "Target Support Files/Pods-Healthy Rush/Pods-Healthy Rush.release.xcconfig"; sourceTree = "<group>"; };
 		ACD66BCF2622FBBF00B675A2 /* BodyPoseProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BodyPoseProcessor.swift; sourceTree = "<group>"; };
 		ACD66BD92622FC0100B675A2 /* VideoCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoCapture.swift; sourceTree = "<group>"; };
@@ -120,12 +133,15 @@
 		ACD66BF52622FC5D00B675A2 /* VisioPoseController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisioPoseController.swift; sourceTree = "<group>"; };
 		C8993CCA99A755AD43ED3F66 /* Pods_Healthy_Rush.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Healthy_Rush.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB5AA288E88E39098B79A60D /* Pods-Healthy Rush WatchApp Extension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush WatchApp Extension.debug.xcconfig"; path = "Target Support Files/Pods-Healthy Rush WatchApp Extension/Pods-Healthy Rush WatchApp Extension.debug.xcconfig"; sourceTree = "<group>"; };
+=======
+		7D9C03F02F59CB12B6A24970 /* Pods_Healthy_Rush_WatchApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Healthy_Rush_WatchApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AEA75BB2076C5AF43F3FE736 /* Pods_Healthy_Rush.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Healthy_Rush.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+>>>>>>> Stashed changes
 		CC15AEF325D91B010014EB61 /* GameOver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOver.swift; sourceTree = "<group>"; };
 		CC15AEF625D9242D0014EB61 /* SKTAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SKTAudio.swift; sourceTree = "<group>"; };
 		CC15AEF925D9281B0014EB61 /* SKAction+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SKAction+Ext.swift"; sourceTree = "<group>"; };
 		CC37F64125D88D71003BA290 /* ScoreGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreGenerator.swift; sourceTree = "<group>"; };
 		CC37F64425D89006003BA290 /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
-		CC42372A261F02530016EAD4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CC51944225E2DECB002E2DEA /* buttonSound.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = buttonSound.wav; sourceTree = "<group>"; };
 		CC51944725E2DED7002E2DEA /* diamondLost.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = diamondLost.wav; sourceTree = "<group>"; };
 		CC51944C25E2DEDF002E2DEA /* playerSelect.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = playerSelect.mp3; sourceTree = "<group>"; };
@@ -136,6 +152,8 @@
 		CC52E55425D9E337001F3A8C /* backgroundMusic.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = backgroundMusic.mp3; sourceTree = "<group>"; };
 		CC59DEBF25D486DB0089C664 /* Healthy Rush.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Healthy Rush.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC59DEC225D486DB0089C664 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		CC59DEC425D486DB0089C664 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
+		CC59DEC625D486DB0089C664 /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
 		CC59DEC825D486DB0089C664 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		CC59DECA25D486DB0089C664 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		CC59DECD25D486DB0089C664 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -144,24 +162,31 @@
 		CC59DEF425D48F000089C664 /* CGPoint+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Ext.swift"; sourceTree = "<group>"; };
 		CC59DEF825D4989A0089C664 /* CGFloat+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Ext.swift"; sourceTree = "<group>"; };
 		CC5BFE34261CE71B001030FB /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		CC7AF7762626104500A2F512 /* Spark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spark.swift; sourceTree = "<group>"; };
+		CC7AF77B2626113F00A2F512 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		CC7AF78026262C5700A2F512 /* SparkKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparkKeys.swift; sourceTree = "<group>"; };
+		CC7AF78526262CFB00A2F512 /* SparkModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparkModels.swift; sourceTree = "<group>"; };
+		CC7AF78A2626397700A2F512 /* SparkSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparkSetup.swift; sourceTree = "<group>"; };
+		CC7AF78F26263C0E00A2F512 /* SparkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SparkService.swift; sourceTree = "<group>"; };
 		CCBD64CC261A37E400FD5995 /* Healthy Rush.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Healthy Rush.entitlements"; sourceTree = "<group>"; };
-		F50EFC91B7053AC55295ABC2 /* Pods_Healthy_Rush_WatchApp_Extension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Healthy_Rush_WatchApp_Extension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5B3573A8A87ED176D286262 /* Pods-Healthy Rush.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush.release.xcconfig"; path = "Target Support Files/Pods-Healthy Rush/Pods-Healthy Rush.release.xcconfig"; sourceTree = "<group>"; };
+		DF0F71CEC25F71E73C197E4F /* Pods-Healthy Rush WatchApp Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush WatchApp Extension.release.xcconfig"; path = "Target Support Files/Pods-Healthy Rush WatchApp Extension/Pods-Healthy Rush WatchApp Extension.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1FD56EDC3E0196851F0FAFC7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C1D505AA76AA8AFF7A071332 /* Pods_Healthy_Rush_WatchApp.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		62B125C925DEE04500B7471E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3DCDF05FDD3C17DFF6E32495 /* Pods_Healthy_Rush_WatchApp_Extension.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		6413847C19F5DF31C8FA6702 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				991C5D7E1700CEF7198C4E12 /* Pods_Healthy_Rush_WatchApp.framework in Frameworks */,
+				16FAF3708DAD86CD40A93726 /* Pods_Healthy_Rush_WatchApp_Extension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,13 +194,23 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A446204584EA22101A9E37A9 /* Pods_Healthy_Rush.framework in Frameworks */,
+				07DF85FFEC31CF4C317988AB /* Pods_Healthy_Rush.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		33372384452366211DB8CA22 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AEA75BB2076C5AF43F3FE736 /* Pods_Healthy_Rush.framework */,
+				7D9C03F02F59CB12B6A24970 /* Pods_Healthy_Rush_WatchApp.framework */,
+				0DD4AACA36892C1D391C9110 /* Pods_Healthy_Rush_WatchApp_Extension.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		62B125C125DEE04500B7471E /* Healthy Rush WatchApp */ = {
 			isa = PBXGroup;
 			children = (
@@ -200,19 +235,20 @@
 			path = "Healthy Rush WatchApp Extension";
 			sourceTree = "<group>";
 		};
-		93B6514043CF177ADE430425 /* Pods */ = {
+		9FEA532EB0E798CD60313C2E /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				392C8CB87BC5FE912D62FB54 /* Pods-Healthy Rush.debug.xcconfig */,
-				8CD81F097F00EB3282CF438F /* Pods-Healthy Rush.release.xcconfig */,
-				574500EFC22DD2FD3E87EDB1 /* Pods-Healthy Rush WatchApp.debug.xcconfig */,
-				59A5446CC017CF9816BB96B7 /* Pods-Healthy Rush WatchApp.release.xcconfig */,
-				CB5AA288E88E39098B79A60D /* Pods-Healthy Rush WatchApp Extension.debug.xcconfig */,
-				414B59109E9710DC57EB29E2 /* Pods-Healthy Rush WatchApp Extension.release.xcconfig */,
+				54687C9068215E0E08B8375C /* Pods-Healthy Rush.debug.xcconfig */,
+				D5B3573A8A87ED176D286262 /* Pods-Healthy Rush.release.xcconfig */,
+				29D724AC17BC4AB19EB53594 /* Pods-Healthy Rush WatchApp.debug.xcconfig */,
+				1EA4237DB5972A537BDA629E /* Pods-Healthy Rush WatchApp.release.xcconfig */,
+				33B7B7AB39A708B219D0A5EB /* Pods-Healthy Rush WatchApp Extension.debug.xcconfig */,
+				DF0F71CEC25F71E73C197E4F /* Pods-Healthy Rush WatchApp Extension.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
 		};
+<<<<<<< Updated upstream
 		AC85ACC526243CF100AAA8E8 /* VisioPoseController */ = {
 			isa = PBXGroup;
 			children = (
@@ -236,16 +272,17 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+=======
+>>>>>>> Stashed changes
 		CC59DEB625D486DB0089C664 = {
 			isa = PBXGroup;
 			children = (
-				CC42372A261F02530016EAD4 /* GoogleService-Info.plist */,
 				CC59DEC125D486DB0089C664 /* Healthy Rush */,
 				62B125C125DEE04500B7471E /* Healthy Rush WatchApp */,
 				62B125D025DEE04500B7471E /* Healthy Rush WatchApp Extension */,
 				CC59DEC025D486DB0089C664 /* Products */,
-				93B6514043CF177ADE430425 /* Pods */,
-				AEF4987C9E8870C84CBB16E4 /* Frameworks */,
+				9FEA532EB0E798CD60313C2E /* Pods */,
+				33372384452366211DB8CA22 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -264,6 +301,10 @@
 			children = (
 				CCBD64CC261A37E400FD5995 /* Healthy Rush.entitlements */,
 				CC59DEC225D486DB0089C664 /* AppDelegate.swift */,
+				CC7AF77B2626113F00A2F512 /* GoogleService-Info.plist */,
+				CC59DEC425D486DB0089C664 /* GameScene.sks */,
+				CC59DEC625D486DB0089C664 /* Actions.sks */,
+				CC7AF76D2626100800A2F512 /* Spark */,
 				CC74199325D73A00007EC6B8 /* Types */,
 				CC59DEF325D48ED70089C664 /* MyUtilis */,
 				CC59DEDB25D487270089C664 /* Scenes */,
@@ -288,7 +329,10 @@
 		CC59DED925D4871C0089C664 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+<<<<<<< Updated upstream
 				AC85ACC526243CF100AAA8E8 /* VisioPoseController */,
+=======
+>>>>>>> Stashed changes
 				CC59DECA25D486DB0089C664 /* GameViewController.swift */,
 			);
 			path = Controllers;
@@ -339,6 +383,18 @@
 			path = Types;
 			sourceTree = "<group>";
 		};
+		CC7AF76D2626100800A2F512 /* Spark */ = {
+			isa = PBXGroup;
+			children = (
+				CC7AF7762626104500A2F512 /* Spark.swift */,
+				CC7AF78026262C5700A2F512 /* SparkKeys.swift */,
+				CC7AF78526262CFB00A2F512 /* SparkModels.swift */,
+				CC7AF78A2626397700A2F512 /* SparkSetup.swift */,
+				CC7AF78F26263C0E00A2F512 /* SparkService.swift */,
+			);
+			path = Spark;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -346,10 +402,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 62B125E725DEE04500B7471E /* Build configuration list for PBXNativeTarget "Healthy Rush WatchApp" */;
 			buildPhases = (
-				2A151D1FA08EE210FD49E656 /* [CP] Check Pods Manifest.lock */,
+				2B966AF5B6CEE9C1193FE480 /* [CP] Check Pods Manifest.lock */,
 				62B125BE25DEE04500B7471E /* Resources */,
 				62B125E325DEE04500B7471E /* Embed App Extensions */,
-				6413847C19F5DF31C8FA6702 /* Frameworks */,
+				1FD56EDC3E0196851F0FAFC7 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -365,7 +421,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 62B125E625DEE04500B7471E /* Build configuration list for PBXNativeTarget "Healthy Rush WatchApp Extension" */;
 			buildPhases = (
-				C6FF4D08B5E5212F4FA9B1DE /* [CP] Check Pods Manifest.lock */,
+				73BC4C9F3EE74D23257A8B25 /* [CP] Check Pods Manifest.lock */,
 				62B125C825DEE04500B7471E /* Sources */,
 				62B125C925DEE04500B7471E /* Frameworks */,
 				62B125CA25DEE04500B7471E /* Resources */,
@@ -383,12 +439,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CC59DED425D486DC0089C664 /* Build configuration list for PBXNativeTarget "Healthy Rush" */;
 			buildPhases = (
-				26EB49351F7C5DC6868DE4E2 /* [CP] Check Pods Manifest.lock */,
+				D6DADFEF6D82B5EFFADB388A /* [CP] Check Pods Manifest.lock */,
 				CC59DEBB25D486DB0089C664 /* Sources */,
 				CC59DEBC25D486DB0089C664 /* Frameworks */,
 				CC59DEBD25D486DB0089C664 /* Resources */,
 				62B125E025DEE04500B7471E /* Embed Watch Content */,
-				7D6FCACA2C02A2B376F6B995 /* [CP] Embed Pods Frameworks */,
+				529EB0690A4E41107CB3967C /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -463,6 +519,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC59DECE25D486DB0089C664 /* Main.storyboard in Resources */,
+				CC59DEC525D486DB0089C664 /* GameScene.sks in Resources */,
 				CC59DED025D486DC0089C664 /* Assets.xcassets in Resources */,
 				CC52E55625D9E337001F3A8C /* gameOver.wav in Resources */,
 				CC51944325E2DECB002E2DEA /* buttonSound.wav in Resources */,
@@ -471,38 +528,17 @@
 				CC5BFE35261CE71B001030FB /* LaunchScreen.storyboard in Resources */,
 				CC51944D25E2DEDF002E2DEA /* playerSelect.mp3 in Resources */,
 				CC52E55825D9E337001F3A8C /* jump.wav in Resources */,
+				CC59DEC725D486DB0089C664 /* Actions.sks in Resources */,
 				CC52E55925D9E337001F3A8C /* backgroundMusic.mp3 in Resources */,
 				CC52E55725D9E337001F3A8C /* collision.wav in Resources */,
-				CC42372B261F02530016EAD4 /* GoogleService-Info.plist in Resources */,
+				CC7AF77C2626113F00A2F512 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		26EB49351F7C5DC6868DE4E2 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Healthy Rush-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		2A151D1FA08EE210FD49E656 /* [CP] Check Pods Manifest.lock */ = {
+		2B966AF5B6CEE9C1193FE480 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -524,7 +560,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		7D6FCACA2C02A2B376F6B995 /* [CP] Embed Pods Frameworks */ = {
+		529EB0690A4E41107CB3967C /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -541,7 +577,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Healthy Rush/Pods-Healthy Rush-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C6FF4D08B5E5212F4FA9B1DE /* [CP] Check Pods Manifest.lock */ = {
+		73BC4C9F3EE74D23257A8B25 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -557,6 +593,28 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-Healthy Rush WatchApp Extension-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D6DADFEF6D82B5EFFADB388A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Healthy Rush-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -584,20 +642,32 @@
 				CC59DEF525D48F000089C664 /* CGPoint+Ext.swift in Sources */,
 				CC15AEF725D9242D0014EB61 /* SKTAudio.swift in Sources */,
 				CC59DEC925D486DB0089C664 /* GameScene.swift in Sources */,
+<<<<<<< Updated upstream
 				ACD66BD02622FBBF00B675A2 /* BodyPoseProcessor.swift in Sources */,
 				ACD66BDA2622FC0100B675A2 /* VideoCapture.swift in Sources */,
 				CC37F64225D88D71003BA290 /* ScoreGenerator.swift in Sources */,
 				ACD66BDF2622FC0900B675A2 /* Common.swift in Sources */,
 				ACD66BE42622FC0F00B675A2 /* CGImage+DrawPoint.swift in Sources */,
+=======
+				CC7AF7772626104500A2F512 /* Spark.swift in Sources */,
+				CC7AF78126262C5700A2F512 /* SparkKeys.swift in Sources */,
+				CC37F64225D88D71003BA290 /* ScoreGenerator.swift in Sources */,
+>>>>>>> Stashed changes
 				CC15AEFA25D9281B0014EB61 /* SKAction+Ext.swift in Sources */,
 				ACD66BF62622FC5D00B675A2 /* VisioPoseController.swift in Sources */,
 				CC15AEF425D91B010014EB61 /* GameOver.swift in Sources */,
+<<<<<<< Updated upstream
 				ACD66BE92622FC1D00B675A2 /* AVCaptureVideoOrientation+Extension.swift in Sources */,
+=======
+>>>>>>> Stashed changes
 				CC37F64525D89006003BA290 /* MainMenu.swift in Sources */,
+				CC7AF78626262CFB00A2F512 /* SparkModels.swift in Sources */,
 				CC59DECB25D486DB0089C664 /* GameViewController.swift in Sources */,
+				CC7AF78B2626397700A2F512 /* SparkSetup.swift in Sources */,
 				CC59DEF925D4989A0089C664 /* CGFloat+Ext.swift in Sources */,
 				62EA6C0D25E17371006DF000 /* Types.swift in Sources */,
 				CC59DEC325D486DB0089C664 /* AppDelegate.swift in Sources */,
+				CC7AF79026263C0E00A2F512 /* SparkService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -638,13 +708,13 @@
 /* Begin XCBuildConfiguration section */
 		62B125E125DEE04500B7471E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 574500EFC22DD2FD3E87EDB1 /* Pods-Healthy Rush WatchApp.debug.xcconfig */;
+			baseConfigurationReference = 29D724AC17BC4AB19EB53594 /* Pods-Healthy Rush WatchApp.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K8WJKQA676;
+				DEVELOPMENT_TEAM = K45S4G34QN;
 				IBSC_MODULE = Healthy_Rush_WatchApp_Extension;
 				INFOPLIST_FILE = "Healthy Rush WatchApp/Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.unisa.applefoundationprogram.Healthy-Rush.watchkitapp";
@@ -659,13 +729,13 @@
 		};
 		62B125E225DEE04500B7471E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 59A5446CC017CF9816BB96B7 /* Pods-Healthy Rush WatchApp.release.xcconfig */;
+			baseConfigurationReference = 1EA4237DB5972A537BDA629E /* Pods-Healthy Rush WatchApp.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K8WJKQA676;
+				DEVELOPMENT_TEAM = K45S4G34QN;
 				IBSC_MODULE = Healthy_Rush_WatchApp_Extension;
 				INFOPLIST_FILE = "Healthy Rush WatchApp/Info.plist";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.unisa.applefoundationprogram.Healthy-Rush.watchkitapp";
@@ -680,11 +750,11 @@
 		};
 		62B125E425DEE04500B7471E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CB5AA288E88E39098B79A60D /* Pods-Healthy Rush WatchApp Extension.debug.xcconfig */;
+			baseConfigurationReference = 33B7B7AB39A708B219D0A5EB /* Pods-Healthy Rush WatchApp Extension.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K8WJKQA676;
+				DEVELOPMENT_TEAM = K45S4G34QN;
 				INFOPLIST_FILE = "Healthy Rush WatchApp Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -703,11 +773,11 @@
 		};
 		62B125E525DEE04500B7471E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 414B59109E9710DC57EB29E2 /* Pods-Healthy Rush WatchApp Extension.release.xcconfig */;
+			baseConfigurationReference = DF0F71CEC25F71E73C197E4F /* Pods-Healthy Rush WatchApp Extension.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K8WJKQA676;
+				DEVELOPMENT_TEAM = K45S4G34QN;
 				INFOPLIST_FILE = "Healthy Rush WatchApp Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -775,7 +845,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -830,7 +900,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -842,14 +912,13 @@
 		};
 		CC59DED525D486DC0089C664 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 392C8CB87BC5FE912D62FB54 /* Pods-Healthy Rush.debug.xcconfig */;
+			baseConfigurationReference = 54687C9068215E0E08B8375C /* Pods-Healthy Rush.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Healthy Rush/Healthy Rush.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K8WJKQA676;
+				DEVELOPMENT_TEAM = K45S4G34QN;
 				INFOPLIST_FILE = "Healthy Rush/Resources/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -858,7 +927,6 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "it.unisa.applefoundationprogram.Healthy-Rush";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -866,14 +934,13 @@
 		};
 		CC59DED625D486DC0089C664 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8CD81F097F00EB3282CF438F /* Pods-Healthy Rush.release.xcconfig */;
+			baseConfigurationReference = D5B3573A8A87ED176D286262 /* Pods-Healthy Rush.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Healthy Rush/Healthy Rush.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = K8WJKQA676;
+				DEVELOPMENT_TEAM = K45S4G34QN;
 				INFOPLIST_FILE = "Healthy Rush/Resources/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -882,7 +949,6 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "it.unisa.applefoundationprogram.Healthy-Rush";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
