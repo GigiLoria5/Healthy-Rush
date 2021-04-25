@@ -25,6 +25,7 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate, WKExtendedR
     
     
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        //
     }
     
     var extendedSession : WKExtendedRuntimeSession!

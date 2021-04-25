@@ -7,7 +7,7 @@
 
 import UIKit
 import WatchConnectivity
-import FacebookCore
+import Firebase
 import FBSDKCoreKit
 
 @main
@@ -37,16 +37,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
-        // Facebook setup
-        ApplicationDelegate.shared.application(
-                    application,
-                    didFinishLaunchingWithOptions: launchOptions
-                )
-        
-        // Firebase setup
-        Spark.start()
-        
         // Detecting screen types (iphoneX, iphone11, ...)
         switch UIScreen.main.nativeBounds.height {
         case 2688, 1792, 2436:
@@ -54,25 +44,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         default:
             isX = false
         }
-        
-        // Override point for customization after application launch.
+        // To activate the Watch Connettivity
         if WCSession.isSupported() {
             session = WCSession.default
             session.delegate = self
             session.activate()
         }
+        // Firebase configuration
+        FirebaseApp.configure()
+        // Facebook configuration
+        ApplicationDelegate.shared.application(
+            application,
+            didFinishLaunchingWithOptions: launchOptions
+        )
+        
         return true
     }
     
-    // Facebook Setup
+    // Facebook configuration
     func application(
-           _ application: UIApplication,
-           open url: URL,
-           sourceApplication: String?,
-           annotation: Any
-       ) -> Bool {
-        return ApplicationDelegate.shared.application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
-       }
+            _ app: UIApplication,
+            open url: URL,
+            options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+        ) -> Bool {
+
+            ApplicationDelegate.shared.application(
+                app,
+                open: url,
+                sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
+                annotation: options[UIApplication.OpenURLOptionsKey.annotation]
+            )
+
+        }
+
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -89,10 +93,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        // Add Facebook Analytics
-        // This step is unnecessary but it could be useful
-        // From 30th June 2021 it won't work more (but we don't care atm)
-        AppEvents.activateApp()
     }
 
 
