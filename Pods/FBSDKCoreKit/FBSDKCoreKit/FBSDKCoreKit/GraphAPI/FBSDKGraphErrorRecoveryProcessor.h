@@ -31,7 +31,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class FBSDKGraphErrorRecoveryProcessor;
-@protocol FBSDKGraphRequest;
+@class FBSDKGraphRequest;
 
 /**
   Defines a delegate for `FBSDKGraphErrorRecoveryProcessor`.
@@ -96,10 +96,9 @@ NS_SWIFT_UNAVAILABLE("")
 @interface FBSDKGraphErrorRecoveryProcessor : NSObject
 
 /**
-  Gets the delegate for the current error being processed.
+  Gets the delegate. Note this is a strong reference, and is nil'ed out after recovery is complete.
  */
-@property (nonatomic, weak, readonly, nullable) id<FBSDKGraphErrorRecoveryProcessorDelegate>delegate
-DEPRECATED_MSG_ATTRIBUTE("FBSDKGraphErrorRecoveryProcessor's delegate will be removed in the next major version release.");
+@property (nonatomic, strong, readonly, nullable) id<FBSDKGraphErrorRecoveryProcessorDelegate>delegate;
 
 /**
   Attempts to process the error, return YES if the error can be processed.
@@ -108,7 +107,7 @@ DEPRECATED_MSG_ATTRIBUTE("FBSDKGraphErrorRecoveryProcessor's delegate will be re
  @param delegate the delegate that will be retained until recovery is complete.
  */
 - (BOOL)processError:(NSError *)error
-             request:(id<FBSDKGraphRequest>)request
+             request:(FBSDKGraphRequest *)request
             delegate:(nullable id<FBSDKGraphErrorRecoveryProcessorDelegate>)delegate;
 
 /**
@@ -116,8 +115,7 @@ DEPRECATED_MSG_ATTRIBUTE("FBSDKGraphErrorRecoveryProcessor's delegate will be re
  @param didRecover if the recovery succeeded
  @param contextInfo unused
  */
-- (void)didPresentErrorWithRecovery:(BOOL)didRecover contextInfo:(nullable void *)contextInfo
-DEPRECATED_MSG_ATTRIBUTE("didPresentErrorWithRecovery:contextInfo: will be removed in the next major version release.");
+- (void)didPresentErrorWithRecovery:(BOOL)didRecover contextInfo:(nullable void *)contextInfo;
 
 @end
 

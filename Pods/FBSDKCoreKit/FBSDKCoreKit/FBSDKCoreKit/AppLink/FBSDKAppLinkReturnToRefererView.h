@@ -26,7 +26,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-DEPRECATED_MSG_ATTRIBUTE("FBSDKIncludeStatusBarInSize is deprecated and will be removed in the next major release")
 typedef NS_ENUM(NSUInteger, FBSDKIncludeStatusBarInSize) {
     FBSDKIncludeStatusBarInSizeNever,
     FBSDKIncludeStatusBarInSizeAlways,
@@ -39,7 +38,6 @@ typedef NS_ENUM(NSUInteger, FBSDKIncludeStatusBarInSize) {
  Protocol that a class can implement in order to be notified when the user has navigated back
  to the referer of an App Link.
  */
-DEPRECATED_MSG_ATTRIBUTE("AppLinkReturnToRefererViewDelegate is deprecated and will be removed in the next major release")
 NS_SWIFT_NAME(AppLinkReturnToRefererViewDelegate)
 @protocol FBSDKAppLinkReturnToRefererViewDelegate <NSObject>
 
@@ -65,7 +63,6 @@ NS_SWIFT_NAME(returnToRefererView(_:didTapInside:));
  rather than navigating away. If the view is provided an App Link that does not contain
  referer data, it will have zero size and no UI will be displayed.
  */
-DEPRECATED_MSG_ATTRIBUTE("FBAppLinkReturnToRefererView is deprecated and will be removed in the next major release")
 NS_EXTENSION_UNAVAILABLE_IOS("Not available in app extension")
 NS_SWIFT_NAME(FBAppLinkReturnToRefererView)
 @interface FBSDKAppLinkReturnToRefererView : UIView

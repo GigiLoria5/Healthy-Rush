@@ -31,7 +31,6 @@ NS_SWIFT_NAME(CodelessParameterComponent)
 @property (nonatomic, copy, readonly) NSString *pathType;
 
 - (instancetype)initWithJSON:(NSDictionary *)dict;
-- (BOOL)isEqualToParameter:(FBSDKCodelessParameterComponent *)parameter;
 
 @end
 

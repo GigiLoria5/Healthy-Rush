@@ -20,16 +20,12 @@
 
 #if !TARGET_OS_TV
 
- #import "FBSDKLoginCompletion.h"
+#import "FBSDKLoginCompletion.h"
 
 @interface FBSDKLoginCompletionParameters ()
 
-@property (nonatomic) FBSDKAuthenticationToken *authenticationToken;
-@property (nonatomic) FBSDKProfile *profile;
-
 @property (nonatomic, copy) NSString *accessTokenString;
 @property (nonatomic, copy) NSString *nonceString;
-@property (nonatomic, copy) NSString *authenticationTokenString;
 
 @property (nonatomic, copy) NSSet *permissions;
 @property (nonatomic, copy) NSSet *declinedPermissions;
@@ -46,14 +42,6 @@
 @property (nonatomic, copy) NSString *challenge;
 
 @property (nonatomic, copy) NSString *graphDomain;
-
-@end
-
-@interface FBSDKLoginURLCompleter ()
-
-@property (nonatomic, strong) FBSDKLoginCompletionParameters *parameters;
-
-- (void)exchangeNonceForTokenWithHandler:(FBSDKLoginCompletionParametersBlock)handler;
 
 @end
 
