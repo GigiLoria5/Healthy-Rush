@@ -60,6 +60,9 @@ class GameScene: SKScene {
     
     var cameraModality : Bool = false
     var watchModality : Bool = false
+    
+    var playerDetected : Bool = false
+    var firstEntered : Bool = true
 
     // Don't touch
     var onGround = true
@@ -145,6 +148,9 @@ class GameScene: SKScene {
         
         // Setup all nodes
         setupNodes()
+        if(!cameraModality){
+            startSpawning(dispatch: .now() + 1.5)
+        }
         // Save this for the gameover
         UserDefaults.standard.setValue(groundSelected, forKey: "groundSelectedKey")
     }
@@ -276,8 +282,18 @@ class GameScene: SKScene {
                     executeJump()
                 }
             if #available(iOS 14.0, *) {
-                if (cameraModality && visioPoseController.getCurrentPose() == .jumping){
-                    executeJump()
+                if (cameraModality){
+                    if(visioPoseController.getCurrentPose() == .jumping){
+                        executeJump()
+                    }
+                    else if(playerDetected == false && visioPoseController.getCurrentPose() == .steady){
+                            playerDetected = true
+                        if(firstEntered){
+                            print("start setup nodes")
+                            startSpawning(dispatch: .now())
+                            firstEntered = false
+                        }
+                    }
                 }
             } 
         }
@@ -338,7 +354,10 @@ extension GameScene {
         setupScore()
         setupPause()
         setupCamera()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+    }
+    
+    func startSpawning(dispatch: DispatchTime){
+        DispatchQueue.main.asyncAfter(deadline: dispatch) {
             self.setupObstacles()
             self.spawnObstacles()
             self.setupJewel()
