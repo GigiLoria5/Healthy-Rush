@@ -95,15 +95,8 @@ class VideoCapture: NSObject {
         }
 
         captureSession.beginConfiguration()
-
-        // A 1080p video capture is preferred but if camera cannot provide it then
-        //fall back to maximum possible quality
-        if(captureSession.canSetSessionPreset(.hd1920x1080)){
-            captureSession.sessionPreset = .hd1920x1080
-        }
-        else{
-            captureSession.sessionPreset = .high
-        }
+        
+        captureSession.sessionPreset = preferredQuality
         
 
         try setCaptureSessionInput()

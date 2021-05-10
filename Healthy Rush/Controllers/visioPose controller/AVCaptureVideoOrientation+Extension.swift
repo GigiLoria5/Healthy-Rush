@@ -18,12 +18,8 @@ extension AVCaptureVideoOrientation {
             self = .landscapeLeft
         case .landscapeRight:
             self = .landscapeRight
-        case .portrait:
-            self = .portrait
-        case .portraitUpsideDown:
-            self = .portraitUpsideDown
         default:
-            self = .portrait
+            self = .landscapeRight
         }
     }
 }

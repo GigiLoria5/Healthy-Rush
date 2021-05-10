@@ -22,6 +22,7 @@ class GameScene: SKScene {
     
     //for camera controller
     var visioPoseController : VisioController!
+
     
     // For the scene movement
     var cameraMovePointPerSecond: CGFloat = 400.0 // Scene Speed
@@ -57,8 +58,8 @@ class GameScene: SKScene {
     var maxIndexBlocks = 3 // block-index for setupObstacle
     var groundSelected = Int.random(in: 1...4) // ground selected randomly
     
-    var cameraMode : Bool = false
-    var watchMode : Bool = false
+    var cameraModality : Bool = false
+    var watchModality : Bool = false
 
     // Don't touch
     var onGround = true
@@ -89,8 +90,8 @@ class GameScene: SKScene {
         super.init(size: size)
         
 //      the controller mode is set according to the game settings
-        self.cameraMode = settings.cameraIsSelected
-        self.watchMode = settings.watchIsSelected
+        self.cameraModality = settings.cameraIsSelected
+        self.watchModality = settings.watchIsSelected
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -110,7 +111,8 @@ class GameScene: SKScene {
         let playableHeight = size.width / ratio
         let playableMargin = (size.height - playableHeight) / 2.0
         
-        return CGRect(x: frame.width/3, y: playableMargin, width: size.width, height: playableHeight)
+        
+        return CGRect(x: 0.0, y: playableMargin, width: size.width, height: playableHeight)
     }
     
     var cameraRect: CGRect {
@@ -135,10 +137,10 @@ class GameScene: SKScene {
             playerSelectedJumpIndex = 30
         }
         
-        if(cameraMode){
-            setupCameraMode()
-        }else if(watchMode){
-            setupWatchMode()
+        if(cameraModality){
+            setupCameraModality()
+        }else if(watchModality){
+            setupWatchModality()
         }
         
         // Setup all nodes
@@ -172,7 +174,7 @@ class GameScene: SKScene {
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
         } else if node.name == "quit" {
             
-            if(cameraMode){
+            if(cameraModality){
                 visioPoseController.stopCapture()
             }
             
@@ -187,14 +189,8 @@ class GameScene: SKScene {
             view!.presentScene(scene, transition: .doorsCloseVertical(withDuration: 0.8))
         } else {
             // Jump Touch
-            if !isPaused {
-                if onGround {
-                    playerRunAnimationStop()
-                    playerJumpAnimationStart()
-                    onGround = false
-                    velocityY = -25.0 // player jump to height of 25pt
-                    run(soundJump) // jump sound
-                }
+            if onGround && !isPaused {
+                executeJump()
             }
         }
     }
@@ -274,12 +270,16 @@ class GameScene: SKScene {
         moveCamera()
         movePlayer()
         
-        if onGround && !isPaused && appDI.jump {
-                 playerRunAnimationStop()
-                 playerJumpAnimationStart()
-                 onGround = false
-                 velocityY = -25.0 // player jump to height of 25pt
-                 run(soundJump) // jump sound
+        if onGround && !isPaused{
+            
+                if (appDI.jump){
+                    executeJump()
+                }
+            if #available(iOS 14.0, *) {
+                if (cameraModality && visioPoseController.getCurrentPose() == .jumping){
+                    executeJump()
+                }
+            } 
         }
         
         if !onGround { // The gravity will let the player fall
@@ -320,11 +320,11 @@ class GameScene: SKScene {
 extension GameScene {
     
     
-    func setupCameraMode(){
+    func setupCameraModality(){
         visioPoseController = VisioController()
         visioPoseController.startCapture()
     }
-    func setupWatchMode(){
+    func setupWatchModality(){
         print("DA IMPLEMENTARE")
     }
     
@@ -387,7 +387,10 @@ extension GameScene {
         }
         player.zPosition = 5.0
         player.setScale(0.4)
-        player.position = CGPoint(x: 2*frame.width/3.0, y: ground.frame.maxY + player.frame.height/2.0)
+        
+        let x = frame.width/2.0
+        
+        player.position = CGPoint(x: x, y: ground.frame.maxY + player.frame.height/2.0)
         player.physicsBody = SKPhysicsBody(rectangleOf: player.size)
         player.physicsBody!.affectedByGravity = false
         player.physicsBody!.restitution = 0.0
@@ -588,11 +591,14 @@ extension GameScene {
     }
     
     func setupLifePos(_ node: SKSpriteNode, i: CGFloat, j: CGFloat) {
-//        let width = playableRect.width
+        let width = playableRect.width
         let height = playableRect.height
         node.setScale(0.5)
         node.zPosition = 50.0
-        node.position = CGPoint(x: node.frame.width * i + j - 15.0,
+        
+        let x = node.frame.width * i + j - 15.0 - width/2.0
+        
+        node.position = CGPoint(x: x,
                                 y: height/2.0 - node.frame.height/2.0)
         cameraNode.addChild(node)
     }
@@ -602,7 +608,10 @@ extension GameScene {
         jewelIcon = SKSpriteNode(imageNamed: "jewel/0")
         jewelIcon.setScale(0.6)
         jewelIcon.zPosition = 50.0
-        jewelIcon.position = CGPoint(x: jewelIcon.frame.width, y: playableRect.height/2.0 - lifeNodes[0].frame.height - jewelIcon.frame.height/2.0)
+        
+        var x = -playableRect.width/2.0 + jewelIcon.frame.width
+        
+        jewelIcon.position = CGPoint(x: x, y: playableRect.height/2.0 - lifeNodes[0].frame.height - jewelIcon.frame.height/2.0)
         cameraNode.addChild(jewelIcon)
         
         // Score Label
@@ -611,7 +620,10 @@ extension GameScene {
         scoreLbl.horizontalAlignmentMode = .left
         scoreLbl.verticalAlignmentMode = .top
         scoreLbl.zPosition = 50.0
-        scoreLbl.position = CGPoint(x: jewelIcon.frame.width * 2.0 - 10.0,
+        
+        x = -playableRect.width/2.0 + jewelIcon.frame.width * 2.0 - 10.0
+            
+        scoreLbl.position = CGPoint(x: x,
                                     y: jewelIcon.position.y + jewelIcon.frame.height/2.0 - 8.0)
         cameraNode.addChild(scoreLbl)
     }
@@ -653,7 +665,10 @@ extension GameScene {
     
     func boundCheckPlayer() {
         // Check that the player touches the screen border
-        let bottomLeft = CGPoint(x: cameraRect.minX + frame.width/2, y: cameraRect.minY)
+        
+        let x = cameraRect.minX
+        
+        let bottomLeft = CGPoint(x: x, y: cameraRect.minY)
         if player.position.x <= bottomLeft.x {
             player.position.x = bottomLeft.x
             lifeNodes.forEach({ $0.texture = SKTexture(imageNamed: "life-off") })
@@ -669,7 +684,7 @@ extension GameScene {
             gameOver = true //game over state
             
             //stop the capture if in cameraMode
-            if(cameraMode){
+            if(cameraModality){
                 visioPoseController.stopCapture()
             }
             
@@ -681,6 +696,14 @@ extension GameScene {
         let decolorize = SKAction.colorize(with: .red, colorBlendFactor: -0.6, duration: 0.6)
         player.run(colorize)
         player.run(decolorize)
+    }
+    
+    func executeJump(){
+        playerRunAnimationStop()
+        playerJumpAnimationStart()
+        onGround = false
+        velocityY = -25.0 // player jump to height of 25pt
+        run(soundJump) // jump sound
     }
     
 }

@@ -8,6 +8,7 @@
 import UIKit
 import Vision
 
+
 class VisioController{
     
     //Initial image dimension (set to zero)
@@ -17,7 +18,14 @@ class VisioController{
     private var scaleFactor: CGFloat!
     private var bodyProcessor : BodyPoseProcessor! = nil
     private var minConfidenceAllowed: Float = 0.3
-    var bodyState : BodyPoseProcessor.BodyState!
+    private var bodyState : BodyPoseProcessor.BodyState!
+    
+    private var steadyEvidence : UInt8 = 0
+    private var crouchedEvidence : UInt8 = 0
+    private var jumpingEvidence : UInt8 = 0
+    
+
+    private var currentBodyPose : BodyPoseProcessor.BodyState = .unknown
     
     
     func startCapture() {
@@ -109,14 +117,65 @@ class VisioController{
             
 //              process the current body pose
                 bodyProcessor.processPose(joints)
-                print(bodyProcessor.printBodyState())
+                //print(bodyProcessor.printBodyState())
                 bodyState = bodyProcessor.returnBodyState()
+                
+                bodyStateInterpreter(bodystate : bodyState)
                 
                 return ps ?? []
             }
         }
         
     }
+    
+    
+    @available(iOS 14.0, *)
+    func bodyStateInterpreter(bodystate : BodyPoseProcessor.BodyState){
+        
+        switch bodystate {
+        case .steady:
+            if(steadyEvidence < 16){
+                steadyEvidence += 1
+                crouchedEvidence = 0
+                jumpingEvidence = 0
+            }
+        case .crouched:
+            if(crouchedEvidence < 16){
+                steadyEvidence = 0
+                crouchedEvidence += 1
+                jumpingEvidence = 0
+            }
+        case .jumping:
+            if(jumpingEvidence < 16){
+                crouchedEvidence = 0
+                steadyEvidence = 0
+                jumpingEvidence += 1
+            }
+        default:
+            crouchedEvidence = 0
+            steadyEvidence = 0
+            jumpingEvidence = 0
+        }
+         
+        if(steadyEvidence > 5){
+            currentBodyPose = .steady
+        }
+        else if(crouchedEvidence > 2){
+            currentBodyPose = .crouched
+        }
+        else if(jumpingEvidence > 0){
+            currentBodyPose = .jumping
+        }
+        else{
+            currentBodyPose = .unknown
+        }
+    }
+    @available(iOS 14.0, *)
+    func getCurrentPose() -> BodyPoseProcessor.BodyState{
+        return self.currentBodyPose
+    }
+    
+    
     
     /**
      Execute the retrieval of all points from the Vision Body observation.
