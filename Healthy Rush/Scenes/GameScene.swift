@@ -88,6 +88,10 @@ class GameScene: SKScene {
     var soundJump = SKAction.playSoundFileNamed("jump.wav")
     var soundCollision = SKAction.playSoundFileNamed("collision.wav")
     
+    var readyNode : SKSpriteNode!
+    var goNode: SKSpriteNode!
+    var readyGoExecuted : Bool = false
+    
     
     override init(size: CGSize) {
         super.init(size: size)
@@ -289,11 +293,13 @@ class GameScene: SKScene {
                     else if(playerDetected == false && visioPoseController.getCurrentPose() == .steady){
                             playerDetected = true
                         if(firstEntered){
-                            print("start setup nodes")
-                            startSpawning(dispatch: .now())
+                            readyGoExecute()
                             firstEntered = false
                         }
                     }
+                }
+                if(!readyGoExecuted){
+                    readyGoUpdate()
                 }
             } 
         }
@@ -354,6 +360,8 @@ extension GameScene {
         setupScore()
         setupPause()
         setupCamera()
+        
+        setupReadyGo()
     }
     
     func startSpawning(dispatch: DispatchTime){
@@ -725,6 +733,46 @@ extension GameScene {
         run(soundJump) // jump sound
     }
     
+    
+    func setupReadyGo(){
+        readyNode = SKSpriteNode(imageNamed: "ready")
+        goNode = SKSpriteNode(imageNamed: "go")
+        readyNode.zPosition = 100.0
+        readyNode.position = CGPoint(x: size.width/2.0,
+                                y: size.height/2.0 + readyNode.frame.height/2.0)
+        goNode.zPosition = 100.0
+        goNode.position = CGPoint(x: size.width/2.0,
+                                y: size.height/2.0 + goNode.frame.height/2.0)
+        
+    }
+    func readyGoExecute(){
+        
+        let scaleUp = SKAction.scale(to:3.0, duration: 1)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 1)
+        let animation = SKAction.sequence([scaleUp,scaleDown])
+        
+        addChild(readyNode)
+        
+        readyNode.run(animation, completion: {
+            
+            self.readyNode.removeFromParent()
+            self.addChild(self.goNode)
+            
+            self.goNode.run(animation, completion: {
+                self.goNode.removeFromParent()
+                self.readyGoExecuted = true
+                self.startSpawning(dispatch: .now() + 1.0)
+            })
+        })
+    
+        
+    }
+    func readyGoUpdate(){
+        
+        readyNode.position = CGPoint(x:player.position.x,y: size.height/2.0 + readyNode.frame.height/2.0)
+        goNode.position = CGPoint(x:player.position.x,y: size.height/2.0 + goNode.frame.height/2.0)
+        
+    }
 }
 
 //MARK: - SKPhysicsContactDelegate
