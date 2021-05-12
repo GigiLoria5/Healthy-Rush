@@ -120,7 +120,7 @@ class BodyPoseProcessor{
             self.crouchedThresh = 150 * self.scaleFactor
         }
        
-        self.maxEvaluations = 5
+        self.maxEvaluations = 15
         self.heightEvalCounter = 0
         
         self.shouldersWidthEvaluated  = false

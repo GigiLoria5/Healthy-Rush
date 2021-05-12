@@ -117,7 +117,7 @@ class VisioController{
             
 //              process the current body pose
                 bodyProcessor.processPose(joints)
-                //print(bodyProcessor.printBodyState())
+                print(bodyProcessor.printBodyState())
                 bodyState = bodyProcessor.returnBodyState()
                 
                 bodyStateInterpreter(bodystate : bodyState)
@@ -134,7 +134,7 @@ class VisioController{
         
         switch bodystate {
         case .steady:
-            if(steadyEvidence < 16){
+            if(steadyEvidence < 20){
                 steadyEvidence += 1
                 crouchedEvidence = 0
                 jumpingEvidence = 0
@@ -157,7 +157,7 @@ class VisioController{
             jumpingEvidence = 0
         }
          
-        if(steadyEvidence > 5){
+        if(steadyEvidence > 15){
             currentBodyPose = .steady
         }
         else if(crouchedEvidence > 2){

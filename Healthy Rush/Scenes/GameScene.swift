@@ -58,9 +58,6 @@ class GameScene: SKScene {
     var maxIndexBlocks = 3 // block-index for setupObstacle
     var groundSelected = Int.random(in: 1...4) // ground selected randomly
     
-    var cameraModality : Bool = false
-    var watchModality : Bool = false
-    
     var playerDetected : Bool = false
     var firstEntered : Bool = true
 
@@ -91,19 +88,6 @@ class GameScene: SKScene {
     var readyNode : SKSpriteNode!
     var goNode: SKSpriteNode!
     var readyGoExecuted : Bool = false
-    
-    
-    override init(size: CGSize) {
-        super.init(size: size)
-        
-//      the controller mode is set according to the game settings
-        self.cameraModality = settings.cameraIsSelected
-        self.watchModality = settings.watchIsSelected
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
     
     
     
@@ -144,15 +128,20 @@ class GameScene: SKScene {
             playerSelectedJumpIndex = 30
         }
         
-        if(cameraModality){
+        let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
+        let watchMode = UserDefaults.standard.bool(forKey: "watchMode")
+        
+        if(cameraMode){
             setupCameraModality()
-        }else if(watchModality){
+        }else if(watchMode){
             setupWatchModality()
         }
         
         // Setup all nodes
         setupNodes()
-        if(!cameraModality){
+        
+        
+        if(!cameraMode){
             startSpawning(dispatch: .now() + 1.5)
         }
         // Save this for the gameover
@@ -184,15 +173,14 @@ class GameScene: SKScene {
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
         } else if node.name == "quit" {
             
-            if(cameraModality){
+            let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
+            
+            if(cameraMode){
                 visioPoseController.stopCapture()
             }
             
             isPaused = false
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
-            
-//          return to mainMenu, should increase the counter
-            settings.increaseCalls()
             
             let scene = MainMenu(size: size)
             scene.scaleMode = scaleMode
@@ -286,7 +274,10 @@ class GameScene: SKScene {
                     executeJump()
                 }
             if #available(iOS 14.0, *) {
-                if (cameraModality){
+                
+                let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
+                
+                if (cameraMode){
                     if(visioPoseController.getCurrentPose() == .jumping){
                         executeJump()
                     }
@@ -320,14 +311,18 @@ class GameScene: SKScene {
         }
         
         if gameOver {
+            
+            let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
+            
+            if(cameraMode){
+                visioPoseController.stopCapture()
+            }
+            
             ScoreGenerator.sharedInstance.setScore(numScore) // save the last score
             let highscore = ScoreGenerator.sharedInstance.getHighscore()
             if numScore > highscore {
                 ScoreGenerator.sharedInstance.setHighscore(numScore)
             }
-//            should increase calls of mainMenu
-//            it will be called after the gameOver window
-            settings.increaseCalls()
             
             let scene = GameOver(size: size)
             scene.scaleMode = scaleMode
@@ -709,12 +704,6 @@ extension GameScene {
         lifeNodes[livesNumber].texture = SKTexture(imageNamed: "life-off")
         if livesNumber == 0{
             gameOver = true //game over state
-            
-            //stop the capture if in cameraMode
-            if(cameraModality){
-                visioPoseController.stopCapture()
-            }
-            
         }
     }
     

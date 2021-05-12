@@ -10,6 +10,7 @@ import FirebaseAuth
 import FBSDKCoreKit
 import FBSDKLoginKit
 
+
 class MainMenu: SKScene {
     
     //MARK: - Properties
@@ -35,6 +36,7 @@ class MainMenu: SKScene {
     //for the controller choice panel
     var istanceControllerActive : Bool = false
     
+
     // Facebook var
     var fbUserLogged = false
     let facebookLoginLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold") // login in with facebook label
@@ -44,6 +46,9 @@ class MainMenu: SKScene {
         setupBG()
         setupNodes()
         setupPlayer()
+        
+        setupInputController()
+        
         SKTAudio.sharedInstance().playBGMusic("backgroundMusic.mp3") // play bg music
         if UserDefaults.standard.object(forKey: "PlayerSelected") == nil { // first time setting
             UserDefaults.standard.setValue("TheBoy", forKey: playerSelectedKey)
@@ -102,22 +107,21 @@ class MainMenu: SKScene {
         case "cameraImage":
             if #available(iOS 14.0, *) {
                 
-                if(settings.cameraIsSelected){
-                    settings.cameraIsSelected = false
-                }
-                else{
-                    settings.cameraIsSelected = true
-                }
-                settings.watchIsSelected = false
+                let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
+                
+                UserDefaults.standard.set(!cameraMode, forKey: "cameraMode")
+                UserDefaults.standard.set(false, forKey: "watchMode")
+                
                 updateControllerChoicePanel()
             }
         case "watchImage":
-            if(settings.watchIsSelected){
-                settings.watchIsSelected = false
-            }else{
-                settings.watchIsSelected = true
-            }
-            settings.cameraIsSelected = false
+        
+            let watchMode = UserDefaults.standard.bool(forKey: "watchMode")
+            
+            UserDefaults.standard.set(!watchMode, forKey: "watchMode")
+            UserDefaults.standard.set(false, forKey: "cameraMode")
+            
+            
             updateControllerChoicePanel()
         case "info":
             if(!istanceInfoActive){
@@ -246,6 +250,19 @@ extension MainMenu {
         }
         // Animation activated
         cuteGirl.run(SKAction.repeatForever(SKAction.animate(with: cuteGirlFrames, timePerFrame: timePerFrameCuteGirlAnimations)), withKey: "cuteGirlAnimation")
+    }
+    
+    
+    func setupInputController(){
+        
+        if UserDefaults.standard.object(forKey: "cameraMode") == nil { // first time setting
+            UserDefaults.standard.setValue(false, forKey: "cameraMode")
+        }
+        if UserDefaults.standard.object(forKey: "watchMode") == nil { // first time setting
+            UserDefaults.standard.setValue(false, forKey: "watchMode")
+        }
+        
+        
     }
     
     func updatePlayerSelection() {
@@ -505,11 +522,7 @@ extension MainMenu {
         panel.addChild(controllerLblcamera)
         panel.addChild(controllerLblWatch)
         
-//        the menu was already called, should update the controller
-//        to show the selected device
-        if(settings.menuCalls > 0){
-            updateControllerChoicePanel()
-        }
+        updateControllerChoicePanel()
         
     }
     //aggiunto da mario 11 aprile
@@ -522,19 +535,23 @@ extension MainMenu {
         
         let blendFactor = CGFloat(0.4)
         
-        if(settings.cameraIsSelected){
+        let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
+        let watchMode = UserDefaults.standard.bool(forKey: "watchMode")
+        
+        
+        if(cameraMode){
             bgWatch?.colorBlendFactor = blendFactor
             bgCamera?.colorBlendFactor = 0
             labelCamera?.text = "Camera selected"
             labelWatch?.text = "Apple Watch"
         }
-        else if (settings.watchIsSelected){
+        else if (watchMode){
             bgCamera?.colorBlendFactor = blendFactor
             bgWatch?.colorBlendFactor = 0
             labelWatch?.text = "Watch selected"
             labelCamera?.text = "Camera Tracking"
         }
-        else if(!settings.cameraIsSelected && !settings.watchIsSelected){
+        else if(!cameraMode && !watchMode){
             bgWatch?.colorBlendFactor = 0
             labelWatch?.text = "Apple Watch"
             if #available(iOS 14.0, *) {
