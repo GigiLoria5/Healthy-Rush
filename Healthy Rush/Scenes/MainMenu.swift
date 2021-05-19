@@ -517,8 +517,6 @@ extension MainMenu {
         }
         controllerLblWatch.text = "Apple Watch"
         
-        
-        
         panel.addChild(controllerLblcamera)
         panel.addChild(controllerLblWatch)
         

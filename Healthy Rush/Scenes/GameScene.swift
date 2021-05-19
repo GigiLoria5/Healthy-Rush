@@ -342,7 +342,17 @@ extension GameScene {
         visioPoseController.startCapture()
     }
     func setupWatchModality(){
-        print("DA IMPLEMENTARE")
+//        avvio della sessione watch
+        
+//        blocco di avvio
+        if (appDI.session != nil){
+            appDI.session.activate()
+        }
+        else{
+            debugPrint("banana")
+        }
+            
+        
     }
     
     

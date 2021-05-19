@@ -48,8 +48,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         if WCSession.isSupported() {
             session = WCSession.default
             session.delegate = self
-            session.activate()
+//            session.activate()
         }
+        
+        
         // Firebase configuration
         FirebaseApp.configure()
         // Facebook configuration
