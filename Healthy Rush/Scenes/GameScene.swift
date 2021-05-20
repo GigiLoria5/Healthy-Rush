@@ -24,7 +24,15 @@ class GameScene: SKScene {
     var lastUpdateTime: TimeInterval = 0.0
     var dt: TimeInterval = 0.0
     
+<<<<<<< Updated upstream
     //for the swipe gestures
+=======
+    
+    // For camera controller
+    var visioPoseController : VisioController!
+    
+    // For the swipe gestures
+>>>>>>> Stashed changes
     var touchStart: CGPoint?
     var startTime : TimeInterval?
     let minSpeed:CGFloat = 1200
@@ -32,7 +40,6 @@ class GameScene: SKScene {
     let minDistance:CGFloat = 25
     let minDuration:TimeInterval = 0.1
     let minAngle: CGFloat = 0.26 //sin^-1(0.26) = 15 degrees ca.
-    
     enum swipeDirection{
         case left,right,up,down,None
     }
@@ -51,6 +58,13 @@ class GameScene: SKScene {
     var maxIndexObstacles = 6 // obstacle-index for setupObstacle
     var maxIndexBlocks = 3 // block-index for setupObstacle
     var groundSelected = Int.random(in: 1...4) // ground selected randomly
+    var playerDetected : Bool = false
+    var firstEntered : Bool = true
+    
+    // User Status and ViewController Reference
+    var fbUserLogged : Bool!
+    var currentUser: SparkUser!
+    var viewController: GameViewController!
 
     // Don't touch
     var onGround = true
@@ -76,6 +90,11 @@ class GameScene: SKScene {
     var soundJump = SKAction.playSoundFileNamed("jump.wav")
     var soundCollision = SKAction.playSoundFileNamed("collision.wav")
     
+    // Calibration Images
+    var readyNode : SKSpriteNode!
+    var goNode: SKSpriteNode!
+    var readyGoExecuted : Bool = false
+    
     var playableRect: CGRect {
         let ratio: CGFloat
         switch UIScreen.main.nativeBounds.height {
@@ -93,8 +112,13 @@ class GameScene: SKScene {
     var cameraRect: CGRect {
         let width = playableRect.width
         let height = playableRect.height
+<<<<<<< Updated upstream
         let x = cameraNode.position.x -  (width/2.0)
         let y = cameraNode.position.y - (height/2.0)
+=======
+        let x = cameraNode.position.x - (width)/2.0
+        let y = cameraNode.position.y - (height)/2.0
+>>>>>>> Stashed changes
         
         return CGRect(x: x, y: y, width: width, height: height)
     }
@@ -111,22 +135,46 @@ class GameScene: SKScene {
             playerSelectedRunIndex = 20
             playerSelectedJumpIndex = 30
         }
+        
+        // Setting up camera and watch mode
+        let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
+        let watchMode = UserDefaults.standard.bool(forKey: "watchMode")
+        if(cameraMode){
+            setupCameraModality()
+        } else if(watchMode){
+            setupWatchModality()
+        }
+        
         // Setup all nodes
         setupNodes()
+        
+        // Start Spawning
+        if(!cameraMode){
+            startSpawning(dispatch: .now() + 1.5)
+        }
+        
         // Save this for the gameover
         UserDefaults.standard.setValue(groundSelected, forKey: "groundSelectedKey")
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
+        // saves the initial touch point and the instant when it was pressed
+        touchStart = touches.first?.location(in: self)
+        startTime = touches.first?.timestamp
+        
+        // Get touched node
         guard let touch = touches.first else { return } // we focus only on the first touch
         let node = atPoint(touch.location(in: self)) // get the node touched
         
+<<<<<<< Updated upstream
         //saves the initial touch point and the instant when it was pressed
         touchStart = touches.first?.location(in: self)
         startTime = touches.first?.timestamp
 
 
+=======
+>>>>>>> Stashed changes
         if node.name == "pause" {
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
             if isPaused { return }
@@ -140,84 +188,88 @@ class GameScene: SKScene {
             isPaused = false
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
         } else if node.name == "quit" {
+            let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
+            if(cameraMode){
+                visioPoseController.stopCapture()
+            }
             isPaused = false
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
             let scene = MainMenu(size: size)
             scene.scaleMode = scaleMode
+            scene.fbUserLogged = self.fbUserLogged
+            scene.currentUser = self.currentUser
+            scene.viewController = self.viewController
             view!.presentScene(scene, transition: .doorsCloseVertical(withDuration: 0.8))
         } else {
             // Jump Touch
-            if !isPaused {
-                if onGround {
-                    playerRunAnimationStop()
-                    playerJumpAnimationStart()
-                    onGround = false
-                    velocityY = -25.0 // player jump to height of 25pt
-                    run(soundJump) // jump sound
-                }
+            if onGround && !isPaused {
+                executeJump()
             }
         }
     }
     
     // In order to introduce a tinier jump
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+<<<<<<< Updated upstream
         
+=======
+>>>>>>> Stashed changes
         //check if exists a starting touch when and where it was recognized
-          guard var touchStart = self.touchStart else {
-               return
-           }
-           guard var startTime = self.startTime else {
-               return
-           }
-           guard let currLocation = touches.first?.location(in: self) else {
-               return
-           }
-           guard let currTime = touches.first?.timestamp else {
-               return
-           }
-           var dx = currLocation.x - touchStart.x
-           var dy = currLocation.y - touchStart.y
-           // Distance of the gesture
-           let distance = sqrt(dx*dx+dy*dy)
-           if distance >= minDistance {
-               // Duration of the gesture
-               let deltaT = currTime - startTime
-               if deltaT > minDuration {
-                   // Speed of the gesture
-                   let speed = distance / CGFloat(deltaT)
-                   if speed >= minSpeed && speed <= maxSpeed {
-                       // Normalize by distance to obtain unit vector
-                       dx /= distance
-                       dy /= distance
-                       // Swipe detected
-                      //currentSwipe will contain the direction of the swipe
-                      if(abs(dy) < minAngle){
-                          if(dx > 0){
-                              debugPrint("destra")
-                              currentSwipe = .right
-
-                          }
-                          else{
-                              debugPrint("sinistra")
-                              currentSwipe = .left
-                          }
-                      }else if(abs(dx) < minAngle){
-                          if(dy > 0){
-                              debugPrint("su")
-                              currentSwipe = .up
-                          }else{
-                              debugPrint("giu")
-                              currentSwipe = .down
-                          }
-                      }else{
-                          currentSwipe = .None
-                      }
-                   }
-               }
-           }
-           // Reset variables
-          touchStart = .zero
-          startTime = 0
+        guard var touchStart = self.touchStart else {
+             return
+         }
+         guard var startTime = self.startTime else {
+             return
+         }
+         guard let currLocation = touches.first?.location(in: self) else {
+             return
+         }
+         guard let currTime = touches.first?.timestamp else {
+             return
+         }
+         var dx = currLocation.x - touchStart.x
+         var dy = currLocation.y - touchStart.y
+         // Distance of the gesture
+         let distance = sqrt(dx*dx+dy*dy)
+         if distance >= minDistance {
+             // Duration of the gesture
+             let deltaT = currTime - startTime
+             if deltaT > minDuration {
+                 // Speed of the gesture
+                 let speed = distance / CGFloat(deltaT)
+                 if speed >= minSpeed && speed <= maxSpeed {
+                     // Normalize by distance to obtain unit vector
+                     dx /= distance
+                     dy /= distance
+                     // Swipe detected
+                    //currentSwipe will contain the direction of the swipe
+                    if(abs(dy) < minAngle){
+                        if(dx > 0){
+                            debugPrint("destra")
+                            currentSwipe = .right
+                            
+                        }
+                        else{
+                            debugPrint("sinistra")
+                            currentSwipe = .left
+                        }
+                    }else if(abs(dx) < minAngle){
+                        if(dy > 0){
+                            debugPrint("su")
+                            currentSwipe = .up
+                        }else{
+                            debugPrint("giu")
+                            currentSwipe = .down
+                        }
+                    }else{
+                        currentSwipe = .None
+                    }
+                 }
+             }
+         }
+         // Reset variables
+        touchStart = .zero
+        startTime = 0
         
         super.touchesEnded(touches, with: event)
         if velocityY < -12.5 {
@@ -235,12 +287,31 @@ class GameScene: SKScene {
         moveCamera()
         movePlayer()
         
-        if onGround && !isPaused && appDI.jump {
-                 playerRunAnimationStop()
-                 playerJumpAnimationStart()
-                 onGround = false
-                 velocityY = -25.0 // player jump to height of 25pt
-                 run(soundJump) // jump sound
+        if onGround && !isPaused{
+            
+                if (appDI.jump){
+                    executeJump()
+                }
+            if #available(iOS 14.0, *) {
+                
+                let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
+                
+                if (cameraMode){
+                    if(visioPoseController.getCurrentPose() == .jumping){
+                        executeJump()
+                    }
+                    else if(playerDetected == false && visioPoseController.getCurrentPose() == .steady){
+                            playerDetected = true
+                        if(firstEntered){
+                            readyGoExecute()
+                            firstEntered = false
+                        }
+                    }
+                }
+                if(!readyGoExecuted){
+                    readyGoUpdate()
+                }
+            }
         }
         
         if !onGround { // The gravity will let the player fall
@@ -259,13 +330,24 @@ class GameScene: SKScene {
         }
         
         if gameOver {
+            
+            let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
+            
+            if(cameraMode){
+                visioPoseController.stopCapture()
+            }
+            
             ScoreGenerator.sharedInstance.setScore(numScore) // save the last score
             let highscore = ScoreGenerator.sharedInstance.getHighscore()
             if numScore > highscore {
                 ScoreGenerator.sharedInstance.setHighscore(numScore)
             }
+            
             let scene = GameOver(size: size)
             scene.scaleMode = scaleMode
+            scene.fbUserLogged = self.fbUserLogged
+            scene.currentUser = self.currentUser
+            scene.viewController = self.viewController
             view!.presentScene(scene, transition: .doorsCloseVertical(withDuration: 0.8))
         }
         
@@ -276,6 +358,22 @@ class GameScene: SKScene {
 //MARK: - Configurations
 extension GameScene {
     
+    func setupCameraModality(){
+        visioPoseController = VisioController()
+        visioPoseController.startCapture()
+    }
+    
+    func setupWatchModality(){
+//        avvio della sessione watch
+//        blocco di avvio
+        if (appDI.session != nil){
+            appDI.session.activate()
+        }
+        else{
+            debugPrint("banana")
+        }
+    }
+    
     func setupNodes() {
         createBG()
         createGround()
@@ -285,7 +383,11 @@ extension GameScene {
         setupScore()
         setupPause()
         setupCamera()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+        setupReadyGo()
+    }
+    
+    func startSpawning(dispatch: DispatchTime){
+        DispatchQueue.main.asyncAfter(deadline: dispatch) {
             self.setupObstacles()
             self.spawnObstacles()
             self.setupJewel()
@@ -302,8 +404,8 @@ extension GameScene {
            let bg = SKSpriteNode(imageNamed: "game_background_\(groundSelected)")
            bg.name = "BG"
            bg.anchorPoint = .zero
-           bg.position = CGPoint(x: CGFloat(i) * bg.frame.width + 120.0 * CGFloat(i), y: 0.0)
            bg.size = self.size
+           bg.position = CGPoint(x: CGFloat(i) * bg.frame.width, y: 0.0)
            bg.zPosition = -1.0
            addChild(bg)
         }
@@ -371,7 +473,8 @@ extension GameScene {
             }
         }
         // Animation activated
-        player.run((SKAction.animate(with: playerJumpingFrames, timePerFrame: 0.06)), withKey: "playerJump")
+        player.run((SKAction.animate(with: playerJumpingFrames, timePerFrame: 0.06)),
+                                     withKey: "playerJump")
     }
     
     func playerJumpAnimationStop() {
@@ -388,21 +491,14 @@ extension GameScene {
         let amountToMove = CGPoint(x: cameraMovePointPerSecond * CGFloat(dt), y: 0.0) // s = v * t
         cameraNode.position += amountToMove
         
-        // Background - we use this function to loop over all sprites called BG
-        enumerateChildNodes(withName: "BG") { (node, _) in
-            let node = node as! SKSpriteNode
-            if node.position.x + node.frame.width < self.cameraRect.origin.x {
-                node.position = CGPoint(x: node.position.x
-                                            + node.frame.width * 2.0, y: node.position.y)
-            }
-        }
-        
-        // Ground - we use this function to loop over all sprites called Ground
-        enumerateChildNodes(withName: "Ground") { (node, _) in
-            let node = node as! SKSpriteNode
-            if node.position.x + node.frame.width < self.cameraRect.origin.x {
-                node.position = CGPoint(x: node.position.x
-                                            + node.frame.width * 2.0, y: node.position.y)
+        // Background - we use this function to loop over all sprites called BG & Ground
+        enumerateChildNodes(withName: "*") { node, _ in
+            if (node.name == "BG" || node.name == "Ground") {
+                let node = node as! SKSpriteNode
+                if node.position.x + node.frame.width < self.cameraRect.origin.x {
+                    node.position = CGPoint(x: node.position.x
+                                                + node.frame.width * 3.0, y: node.position.y)
+                }
             }
         }
     }
@@ -524,7 +620,10 @@ extension GameScene {
     }
     
     func setupLife() {
+<<<<<<< Updated upstream
         
+=======
+>>>>>>> Stashed changes
         var livesSprites = [SKSpriteNode]()
         //add livesNumber hearts to the player
         for i in 0..<livesNumber{
@@ -539,7 +638,10 @@ extension GameScene {
         let height = playableRect.height
         node.setScale(0.5)
         node.zPosition = 50.0
-        node.position = CGPoint(x: -width/2.0 + node.frame.width * i + j - 15.0,
+        
+        let x = node.frame.width * i + j - 15.0 - width/2.0
+        
+        node.position = CGPoint(x: x,
                                 y: height/2.0 - node.frame.height/2.0)
         cameraNode.addChild(node)
     }
@@ -613,17 +715,73 @@ extension GameScene {
         if livesNumber <= 0 { livesNumber = 0}
         lifeNodes[livesNumber].texture = SKTexture(imageNamed: "life-off")
         if livesNumber == 0{
+<<<<<<< Updated upstream
             gameOver = true
         }
     }
     
     func hurtedAnimation(){
+=======
+            gameOver = true //game over state
+        }
+    }
+    
+    func hurtedAnimation() {
+>>>>>>> Stashed changes
         let colorize = SKAction.colorize(with: .red, colorBlendFactor: 0.6, duration: 0.2)
         let decolorize = SKAction.colorize(with: .red, colorBlendFactor: -0.6, duration: 0.6)
         player.run(colorize)
         player.run(decolorize)
     }
     
+<<<<<<< Updated upstream
+=======
+    func executeJump() {
+        playerRunAnimationStop()
+        playerJumpAnimationStart()
+        onGround = false
+        velocityY = -25.0 // player jump to height of 25pt
+        run(soundJump) // jump sound
+    }
+    
+    func setupReadyGo() {
+        readyNode = SKSpriteNode(imageNamed: "ready")
+        goNode = SKSpriteNode(imageNamed: "go")
+        readyNode.zPosition = 100.0
+        readyNode.position = CGPoint(x: size.width/2.0,
+                                y: size.height/2.0 + readyNode.frame.height/2.0)
+        goNode.zPosition = 100.0
+        goNode.position = CGPoint(x: size.width/2.0,
+                                y: size.height/2.0 + goNode.frame.height/2.0)
+        
+    }
+    
+    func readyGoExecute() {
+        let scaleUp = SKAction.scale(to:3.0, duration: 1)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 1)
+        let animation = SKAction.sequence([scaleUp,scaleDown])
+        
+        addChild(readyNode)
+        
+        readyNode.run(animation, completion: {
+            
+            self.readyNode.removeFromParent()
+            self.addChild(self.goNode)
+            
+            self.goNode.run(animation, completion: {
+                self.goNode.removeFromParent()
+                self.readyGoExecuted = true
+                self.startSpawning(dispatch: .now() + 1.0)
+            })
+        })
+    }
+    
+    func readyGoUpdate(){
+        readyNode.position = CGPoint(x:player.position.x,y: size.height/2.0 + readyNode.frame.height/2.0)
+        goNode.position = CGPoint(x:player.position.x,y: size.height/2.0 + goNode.frame.height/2.0)
+    }
+    
+>>>>>>> Stashed changes
 }
 
 //MARK: - SKPhysicsContactDelegate

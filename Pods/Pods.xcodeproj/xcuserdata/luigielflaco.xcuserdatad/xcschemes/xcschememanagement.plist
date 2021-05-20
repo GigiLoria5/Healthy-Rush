@@ -64,12 +64,16 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+<<<<<<< Updated upstream
 		<key>Pods-Healthy Rush WatchApp Extension.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
 		<key>Pods-Healthy Rush WatchApp.xcscheme</key>
+=======
+		<key>JGProgressHUD.xcscheme</key>
+>>>>>>> Stashed changes
 		<dict>
 			<key>isShown</key>
 			<false/>

@@ -37,6 +37,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+<<<<<<< Updated upstream
+=======
+        
+        // Firebase setup
+        Spark.start()
+        
+        // Facebook setup
+        ApplicationDelegate.shared.application(
+            application,
+            didFinishLaunchingWithOptions: launchOptions
+        )
+        
+>>>>>>> Stashed changes
         // Detecting screen types (iphoneX, iphone11, ...)
         switch UIScreen.main.nativeBounds.height {
         case 2688, 1792, 2436:
@@ -75,8 +88,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
                 annotation: options[UIApplication.OpenURLOptionsKey.annotation]
             )
 
+<<<<<<< Updated upstream
         }
 
+=======
+        }  
+>>>>>>> Stashed changes
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

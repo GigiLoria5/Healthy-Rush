@@ -11,6 +11,11 @@ class GameOver: SKScene {
     //MARK: - Systems
     let groundSelected = UserDefaults.standard.object(forKey: "groundSelectedKey") as? Int // Ground selected in the opening
     
+    // User Status and ViewController Reference
+    var fbUserLogged : Bool!
+    var currentUser: SparkUser!
+    var viewController: GameViewController!
+    
     override func didMove(to view: SKView) {
         createBGNodes()
         createGroundNodes()
@@ -25,6 +30,9 @@ class GameOver: SKScene {
             .run {
                 let scene = MainMenu(size: self.size)
                 scene.scaleMode = self.scaleMode
+                scene.fbUserLogged = self.fbUserLogged
+                scene.currentUser = self.currentUser
+                scene.viewController = self.viewController
                 self.view!.presentScene(scene, transition: .doorsCloseVertical(withDuration: 0.5))
             }
         ]))
@@ -42,8 +50,8 @@ extension GameOver {
             let bgNode = SKSpriteNode(imageNamed: "game_background_\(groundSelected!)")
             bgNode.name = "background"
             bgNode.anchorPoint = .zero
-            bgNode.position = CGPoint(x: CGFloat(i) * bgNode.frame.width + 105.0 * CGFloat(i), y: 0.0)
             bgNode.size = self.size
+            bgNode.position = CGPoint(x: CGFloat(i) * bgNode.frame.width, y: 0.0)
             bgNode.zPosition = -1.0
             addChild(bgNode)
         }
@@ -55,27 +63,21 @@ extension GameOver {
             groundNode.name = "ground"
             groundNode.anchorPoint = .zero
             groundNode.zPosition = 1.0
-            groundNode.position = CGPoint(x: -CGFloat(i)*groundNode.frame.width + 105.0  * CGFloat(i),                                y: appDI.isX ? 100.0 : 0.0)
+            groundNode.position = CGPoint(x: -CGFloat(i) * groundNode.frame.width,
+                                          y: appDI.isX ? 100.0 : 0.0)
             addChild(groundNode)
         }
     }
     
     func moveNodes() {
-        enumerateChildNodes(withName: "background") { (node, _) in
-            let node = node as! SKSpriteNode
-            node.position.x -= 8.0
-            
-            if node.position.x < -self.frame.width {
-                node.position.x += node.frame.width * 2.0
-            }
-        }
-        
-        enumerateChildNodes(withName: "ground") { (node, _) in
-            let node = node as! SKSpriteNode
-            node.position.x -= 8.0
-            
-            if node.position.x < -self.frame.width {
-                node.position.x += node.frame.width * 2.0
+        enumerateChildNodes(withName: "*") { node, _ in
+            if (node.name == "background" || node.name == "ground") {
+                let node = node as! SKSpriteNode
+                node.position.x -= 8.0
+                
+                if node.position.x < -self.frame.width {
+                    node.position.x += node.frame.width * 3.0
+                }
             }
         }
     }

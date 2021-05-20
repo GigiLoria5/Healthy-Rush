@@ -23,19 +23,3 @@ target 'Healthy Rush' do
   pod 'FBSDKLoginKit'
 
 end
-
-target 'Healthy Rush WatchApp' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
-
-  # Pods for Healthy Rush WatchApp
-
-end
-
-target 'Healthy Rush WatchApp Extension' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
-
-  # Pods for Healthy Rush WatchApp Extension
-
-end
