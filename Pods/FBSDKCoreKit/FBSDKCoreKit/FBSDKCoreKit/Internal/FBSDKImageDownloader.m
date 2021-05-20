@@ -18,56 +18,42 @@
 
 #import "FBSDKImageDownloader.h"
 
-#import "FBSDKCoreKitBasicsImport.h"
-#import "NSURLSession+Protocols.h"
-
 static NSString *const kImageDirectory = @"fbsdkimages";
 static NSString *const kCachedResponseUserInfoKeyTimestamp = @"timestamp";
 
-@interface FBSDKImageDownloader ()
-
-@property (nonatomic, strong) id<FBSDKSessionProviding> sessionProvider;
-@property (nonatomic, strong) NSURLCache *urlCache;
-
-@end
-
-@implementation FBSDKImageDownloader
+@implementation FBSDKImageDownloader {
+  NSURLCache *_urlCache;
+}
 
 + (FBSDKImageDownloader *)sharedInstance
 {
   static FBSDKImageDownloader *instance;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    instance = [FBSDKImageDownloader new];
+    instance = [[FBSDKImageDownloader alloc] init];
   });
   return instance;
 }
 
 - (instancetype)init
 {
-  return [self initWithSessionProvider:NSURLSession.sharedSession];
-}
-
-- (instancetype)initWithSessionProvider:(id<FBSDKSessionProviding>)sessionProvider
-{
   if ((self = [super init])) {
-  #if TARGET_OS_MACCATALYST
-    _urlCache = [[NSURLCache alloc] initWithMemoryCapacity:1024 * 1024 * 8
-                                              diskCapacity:1024 * 1024 * 100
+#if TARGET_OS_MACCATALYST
+    _urlCache = [[NSURLCache alloc] initWithMemoryCapacity:1024*1024*8
+                                              diskCapacity:1024*1024*100
                                               directoryURL:[NSURL URLWithString:kImageDirectory]];
-  #else
-    _urlCache = [[NSURLCache alloc] initWithMemoryCapacity:1024 * 1024 * 8
-                                              diskCapacity:1024 * 1024 * 100
+#else
+    _urlCache = [[NSURLCache alloc] initWithMemoryCapacity:1024*1024*8
+                                              diskCapacity:1024*1024*100
                                                   diskPath:kImageDirectory];
-  #endif
-    _sessionProvider = sessionProvider;
+#endif
   }
   return self;
 }
 
 - (void)removeAll
 {
-  [self.urlCache removeAllCachedResponses];
+  [_urlCache removeAllCachedResponses];
 }
 
 - (void)downloadImageWithURL:(NSURL *)url
@@ -75,11 +61,11 @@ static NSString *const kCachedResponseUserInfoKeyTimestamp = @"timestamp";
                   completion:(FBSDKImageDownloadBlock)completion
 {
   NSURLRequest *request = [NSURLRequest requestWithURL:url];
-  NSCachedURLResponse *cachedResponse = [self.urlCache cachedResponseForRequest:request];
+  NSCachedURLResponse *cachedResponse = [_urlCache cachedResponseForRequest:request];
   NSDate *modificationDate = cachedResponse.userInfo[kCachedResponseUserInfoKeyTimestamp];
   BOOL isExpired = ([[modificationDate dateByAddingTimeInterval:ttl] compare:[NSDate date]] == NSOrderedAscending);
 
-  void (^completionWrapper)(NSCachedURLResponse *) = ^(NSCachedURLResponse *responseData) {
+  void (^completionWrapper)(NSCachedURLResponse *) = ^(NSCachedURLResponse *responseData){
     if (completion != NULL) {
       UIImage *image = [UIImage imageWithData:responseData.data];
       completion(image);
@@ -87,24 +73,25 @@ static NSString *const kCachedResponseUserInfoKeyTimestamp = @"timestamp";
   };
 
   if (cachedResponse == nil || isExpired) {
-    id<FBSDKSessionDataTask> task = [self.sessionProvider dataTaskWithRequest:request
-                                                            completionHandler:
-                                     ^(NSData *data, NSURLResponse *response, NSError *error) {
-                                       if ([response isKindOfClass:[NSHTTPURLResponse class]]
-                                           && ((NSHTTPURLResponse *)response).statusCode == 200
-                                           && error == nil
-                                           && data != nil) {
-                                         NSCachedURLResponse *responseToCache =
-                                         [[NSCachedURLResponse alloc] initWithResponse:response
-                                                                                  data:data
-                                                                              userInfo:@{ kCachedResponseUserInfoKeyTimestamp : [NSDate date] }
-                                                                         storagePolicy:NSURLCacheStorageAllowed];
-                                         [self->_urlCache storeCachedResponse:responseToCache forRequest:request];
-                                         completionWrapper(responseToCache);
-                                       } else if (completion != NULL) {
-                                         completion(nil);
-                                       }
-                                     }];
+    NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request
+                                            completionHandler:
+                                  ^(NSData *data, NSURLResponse *response, NSError *error) {
+                                    if ([response isKindOfClass:[NSHTTPURLResponse class]] &&
+                                        ((NSHTTPURLResponse *)response).statusCode == 200 &&
+                                        error == nil &&
+                                        data != nil) {
+                                      NSCachedURLResponse *responseToCache =
+                                      [[NSCachedURLResponse alloc] initWithResponse:response
+                                                                               data:data
+                                                                           userInfo:@{ kCachedResponseUserInfoKeyTimestamp : [NSDate date] }
+                                                                      storagePolicy:NSURLCacheStorageAllowed];
+                                      [self->_urlCache storeCachedResponse:responseToCache forRequest:request];
+                                      completionWrapper(responseToCache);
+                                    } else if (completion != NULL) {
+                                      completion(nil);
+                                    }
+                                  }];
     [task resume];
   } else {
     completionWrapper(cachedResponse);

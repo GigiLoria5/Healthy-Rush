@@ -39,8 +39,6 @@ NS_SWIFT_NAME(FBButtonImpressionTracking)
 
 @property (nonatomic, readonly, getter=isImplicitlyDisabled) BOOL implicitlyDisabled;
 
-+ (void)setApplicationActivationNotifier:(id)notifier;
-
 - (void)logTapEventWithEventName:(NSString *)eventName
                       parameters:(NSDictionary *)parameters;
 - (void)checkImplicitlyDisabled;

@@ -19,8 +19,8 @@
 #import "FBSDKAccessTokenExpirer.h"
 
 #import "FBSDKAccessToken.h"
-#import "FBSDKApplicationLifecycleNotifications.h"
-#import "FBSDKCoreKitBasicsImport.h"
+#import "FBSDKApplicationDelegate+Internal.h"
+#import "FBSDKInternalUtility.h"
 
 @implementation FBSDKAccessTokenExpirer
 {
@@ -59,8 +59,8 @@
 {
   FBSDKAccessToken *accessToken = FBSDKAccessToken.currentAccessToken;
   NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-  [FBSDKTypeUtility dictionary:userInfo setObject:accessToken forKey:FBSDKAccessTokenChangeNewKey];
-  [FBSDKTypeUtility dictionary:userInfo setObject:accessToken forKey:FBSDKAccessTokenChangeOldKey];
+  [FBSDKBasicUtility dictionary:userInfo setObject:accessToken forKey:FBSDKAccessTokenChangeNewKey];
+  [FBSDKBasicUtility dictionary:userInfo setObject:accessToken forKey:FBSDKAccessTokenChangeOldKey];
   userInfo[FBSDKAccessTokenDidExpireKey] = @YES;
 
   [[NSNotificationCenter defaultCenter] postNotificationName:FBSDKAccessTokenDidChangeNotification

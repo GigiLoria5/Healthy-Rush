@@ -20,55 +20,28 @@
 
 #if !TARGET_OS_TV
 
- #import "FBSDKWebDialogView.h"
+#import "FBSDKWebDialogView.h"
 
- #import <WebKit/WebKit.h>
+#import <WebKit/WebKit.h>
 
- #import "FBSDKCloseIcon.h"
- #import "FBSDKCoreKitBasicsImport.h"
- #import "FBSDKError.h"
- #import "FBSDKURLOpener.h"
- #import "FBSDKWebViewProviding.h"
+#import "FBSDKCloseIcon.h"
+#import "FBSDKError.h"
+#import "FBSDKInternalUtility.h"
+#import "FBSDKTypeUtility.h"
 
- #ifdef BUCK
-  #import <FBSDKCoreKit_Basics/FBSDKSafeCast.h>
- #else
-  #import "FBSDKSafeCast.h"
- #endif
-
- #define FBSDK_WEB_DIALOG_VIEW_BORDER_WIDTH 10.0
+#define FBSDK_WEB_DIALOG_VIEW_BORDER_WIDTH 10.0
 
 @interface FBSDKWebDialogView () <WKNavigationDelegate>
-
-@property (nonatomic, strong) UIButton *closeButton;
-@property (nonatomic, strong) UIActivityIndicatorView *loadingView;
-@property (nonatomic, strong) id<FBSDKWebView> webView;
-
 @end
 
 @implementation FBSDKWebDialogView
-
-static id<FBSDKWebViewProviding> _webViewProvider;
-static id<FBSDKURLOpener> _urlOpener;
-
-+ (void)configureWithWebViewProvider:(id<FBSDKWebViewProviding>)provider
-                           urlOpener:(id<FBSDKURLOpener>)urlOpener;
 {
-  _webViewProvider = provider;
-  _urlOpener = urlOpener;
+  UIButton *_closeButton;
+  UIActivityIndicatorView *_loadingView;
+  WKWebView *_webView;
 }
 
-+ (id<FBSDKURLOpener>)urlOpener
-{
-  return _urlOpener;
-}
-
-- (id<FBSDKURLOpener>)urlOpener
-{
-  return FBSDKWebDialogView.urlOpener;
-}
-
- #pragma mark - Object Lifecycle
+#pragma mark - Object Lifecycle
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -76,24 +49,16 @@ static id<FBSDKURLOpener> _urlOpener;
     self.backgroundColor = [UIColor clearColor];
     self.opaque = NO;
 
-    _webView = [_webViewProvider createWebViewWithFrame:CGRectZero];
+    _webView = [[WKWebView alloc] initWithFrame:CGRectZero];
     _webView.navigationDelegate = self;
-
-    // Since we cannot constrain the webview protocol to be a UIView subclass
-    // perform a check here to make sure it can be cast to a UIView
-    UIView *webView = FBSDK_CAST_TO_CLASS_OR_NIL(_webView, UIView);
-    if (!webView) {
-      return self;
-    }
-
-    [self addSubview:webView];
+    [self addSubview:_webView];
 
     _closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    UIImage *closeImage = [[FBSDKCloseIcon new] imageWithSize:CGSizeMake(29.0, 29.0)];
+    UIImage *closeImage = [[[FBSDKCloseIcon alloc] init] imageWithSize:CGSizeMake(29.0, 29.0)];
     [_closeButton setImage:closeImage forState:UIControlStateNormal];
-    [_closeButton setTitleColor:[UIColor colorWithRed:167.0 / 255.0
-                                                green:184.0 / 255.0
-                                                 blue:216.0 / 255.0
+    [_closeButton setTitleColor:[UIColor colorWithRed:167.0/255.0
+                                                green:184.0/255.0
+                                                 blue:216.0/255.0
                                                 alpha:1.0] forState:UIControlStateNormal];
     [_closeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
     _closeButton.showsTouchWhenHighlighted = YES;
@@ -101,43 +66,32 @@ static id<FBSDKURLOpener> _urlOpener;
     [self addSubview:_closeButton];
     [_closeButton addTarget:self action:@selector(_close:) forControlEvents:UIControlEventTouchUpInside];
 
-    UIActivityIndicatorViewStyle style;
-    if (@available(iOS 13.0, *)) {
-      style = UIActivityIndicatorViewStyleLarge;
-    } else {
-      #pragma clang diagnostic push
-      #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-      style = UIActivityIndicatorViewStyleWhiteLarge;
-      #pragma clang diagnostic pop
-    }
-    _loadingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:style];
+    _loadingView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     _loadingView.color = [UIColor grayColor];
-    _loadingView.hidesWhenStopped = YES;
-    [webView addSubview:_loadingView];
+    [_webView addSubview:_loadingView];
   }
   return self;
 }
 
 - (void)dealloc
 {
-  self.webView.navigationDelegate = nil;
+  _webView.navigationDelegate = nil;
 }
 
- #pragma mark - Public Methods
+#pragma mark - Public Methods
 
 - (void)loadURL:(NSURL *)URL
 {
-  [self.loadingView startAnimating];
-  [self.webView loadRequest:[NSURLRequest requestWithURL:URL]];
+  [_loadingView startAnimating];
+  [_webView loadRequest:[NSURLRequest requestWithURL:URL]];
 }
 
 - (void)stopLoading
 {
-  [self.webView stopLoading];
-  [self.loadingView stopAnimating];
+  [_webView stopLoading];
 }
 
- #pragma mark - Layout
+#pragma mark - Layout
 
 - (void)drawRect:(CGRect)rect
 {
@@ -147,7 +101,7 @@ static id<FBSDKURLOpener> _urlOpener;
   CGContextFillRect(context, self.bounds);
   [[UIColor blackColor] setStroke];
   CGContextSetLineWidth(context, 1.0 / self.layer.contentsScale);
-  CGContextStrokeRect(context, self.webView.frame);
+  CGContextStrokeRect(context, _webView.frame);
   CGContextRestoreGState(context);
   [super drawRect:rect];
 }
@@ -157,60 +111,58 @@ static id<FBSDKURLOpener> _urlOpener;
   [super layoutSubviews];
 
   CGRect bounds = self.bounds;
-  if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+  if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
     CGFloat horizontalInset = CGRectGetWidth(bounds) * 0.2;
     CGFloat verticalInset = CGRectGetHeight(bounds) * 0.2;
     UIEdgeInsets iPadInsets = UIEdgeInsetsMake(verticalInset, horizontalInset, verticalInset, horizontalInset);
     bounds = UIEdgeInsetsInsetRect(bounds, iPadInsets);
   }
-  UIEdgeInsets webViewInsets = UIEdgeInsetsMake(
-    FBSDK_WEB_DIALOG_VIEW_BORDER_WIDTH,
-    FBSDK_WEB_DIALOG_VIEW_BORDER_WIDTH,
-    FBSDK_WEB_DIALOG_VIEW_BORDER_WIDTH,
-    FBSDK_WEB_DIALOG_VIEW_BORDER_WIDTH
-  );
-  self.webView.frame = CGRectIntegral(UIEdgeInsetsInsetRect(bounds, webViewInsets));
+  UIEdgeInsets webViewInsets = UIEdgeInsetsMake(FBSDK_WEB_DIALOG_VIEW_BORDER_WIDTH,
+                                                FBSDK_WEB_DIALOG_VIEW_BORDER_WIDTH,
+                                                FBSDK_WEB_DIALOG_VIEW_BORDER_WIDTH,
+                                                FBSDK_WEB_DIALOG_VIEW_BORDER_WIDTH);
+  _webView.frame = CGRectIntegral(UIEdgeInsetsInsetRect(bounds, webViewInsets));
 
-  CGRect webViewBounds = self.webView.bounds;
-  self.loadingView.center = CGPointMake(CGRectGetMidX(webViewBounds), CGRectGetMidY(webViewBounds));
+  CGRect webViewBounds = _webView.bounds;
+  _loadingView.center = CGPointMake(CGRectGetMidX(webViewBounds), CGRectGetMidY(webViewBounds));
 
   if (CGRectGetHeight(webViewBounds) == 0.0) {
-    self.closeButton.alpha = 0.0;
+    _closeButton.alpha = 0.0;
   } else {
-    self.closeButton.alpha = 1.0;
-    CGRect closeButtonFrame = self.closeButton.bounds;
+    _closeButton.alpha = 1.0;
+    CGRect closeButtonFrame = _closeButton.bounds;
     closeButtonFrame.origin = bounds.origin;
-    self.closeButton.frame = CGRectIntegral(closeButtonFrame);
+    _closeButton.frame = CGRectIntegral(closeButtonFrame);
   }
 }
 
- #pragma mark - Actions
+#pragma mark - Actions
 
 - (void)_close:(id)sender
 {
-  [self.delegate webDialogViewDidCancel:self];
+  [_delegate webDialogViewDidCancel:self];
 }
 
- #pragma mark - WKNavigationDelegate
+#pragma mark - WKNavigationDelegate
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error
 {
-  [self.loadingView stopAnimating];
+  [_loadingView stopAnimating];
 
   // 102 == WebKitErrorFrameLoadInterruptedByPolicyChange
   // NSURLErrorCancelled == "Operation could not be completed", note NSURLErrorCancelled occurs when the user clicks
   // away before the page has completely loaded, if we find cases where we want this to result in dialog failure
   // (usually this just means quick-user), then we should add something more robust here to account for differences in
   // application needs
-  if (!(([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled)
-        || ([error.domain isEqualToString:@"WebKitErrorDomain"] && error.code == 102))) {
-    [self.delegate webDialogView:self didFailWithError:error];
+  if (!(([error.domain isEqualToString:NSURLErrorDomain] && error.code == NSURLErrorCancelled) ||
+        ([error.domain isEqualToString:@"WebKitErrorDomain"] && error.code == 102))) {
+    [_delegate webDialogView:self didFailWithError:error];
   }
 }
 
-- (void)                  webView:(WKWebView *)webView
-  decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
-                  decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
+- (void)webView:(WKWebView *)webView
+decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
+decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
   NSURL *URL = navigationAction.request.URL;
 
@@ -220,25 +172,19 @@ static id<FBSDKURLOpener> _urlOpener;
     if ([URL.resourceSpecifier hasPrefix:@"//cancel"]) {
       NSInteger errorCode = [FBSDKTypeUtility integerValue:parameters[@"error_code"]];
       if (errorCode) {
-        NSString *errorMessage = [FBSDKTypeUtility coercedToStringValue:parameters[@"error_msg"]];
+        NSString *errorMessage = [FBSDKTypeUtility stringValue:parameters[@"error_msg"]];
         NSError *error = [FBSDKError errorWithCode:errorCode message:errorMessage];
-        [self.delegate webDialogView:self didFailWithError:error];
+        [_delegate webDialogView:self didFailWithError:error];
       } else {
-        [self.delegate webDialogViewDidCancel:self];
+        [_delegate webDialogViewDidCancel:self];
       }
     } else {
-      [self.delegate webDialogView:self didCompleteWithResults:parameters];
+      [_delegate webDialogView:self didCompleteWithResults:parameters];
     }
     decisionHandler(WKNavigationActionPolicyCancel);
   } else if (navigationAction.navigationType == WKNavigationTypeLinkActivated) {
-    if (@available(iOS 10.0, *)) {
-      [self.urlOpener openURL:URL options:@{} completionHandler:^(BOOL success) {
-        decisionHandler(WKNavigationActionPolicyCancel);
-      }];
-    } else {
-      [self.urlOpener openURL:URL];
-      decisionHandler(WKNavigationActionPolicyCancel);
-    }
+    [[UIApplication sharedApplication] openURL:URL];
+    decisionHandler(WKNavigationActionPolicyCancel);
   } else {
     decisionHandler(WKNavigationActionPolicyAllow);
   }
@@ -246,26 +192,9 @@ static id<FBSDKURLOpener> _urlOpener;
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
-  [self.loadingView stopAnimating];
-  [self.delegate webDialogViewDidFinishLoad:self];
+  [_loadingView stopAnimating];
+  [_delegate webDialogViewDidFinishLoad:self];
 }
-
- #if DEBUG
-  #if FBSDKTEST
-
-+ (void)reset
-{
-  _webViewProvider = nil;
-  _urlOpener = nil;
-}
-
-+ (id<FBSDKWebViewProviding>)webViewProvider
-{
-  return _webViewProvider;
-}
-
-  #endif
- #endif
 
 @end
 

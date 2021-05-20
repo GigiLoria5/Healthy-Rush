@@ -33,10 +33,23 @@ static inline CGSize FBSDKEdgeInsetsInsetSize(CGSize size, UIEdgeInsets insets)
  */
 static inline CGSize FBSDKEdgeInsetsOutsetSize(CGSize size, UIEdgeInsets insets)
 {
-  return CGSizeMake(
-    insets.left + size.width + insets.right,
-    insets.top + size.height + insets.bottom
-  );
+  return CGSizeMake(insets.left + size.width + insets.right,
+                    insets.top + size.height + insets.bottom);
+}
+
+/**
+  Limits a CGFloat value, using the scale to limit to pixels (instead of points).
+
+
+ The limitFunction is frequention floorf, ceilf or roundf.  If the scale is 2.0,
+ you may get back values of *.5 to correspond to pixels.
+ */
+typedef float (*FBSDKLimitFunctionType)(float);
+static inline CGFloat FBSDKPointsForScreenPixels(FBSDKLimitFunctionType limitFunction,
+                                                 CGFloat screenScale,
+                                                 CGFloat pointValue)
+{
+  return limitFunction(pointValue * screenScale) / screenScale;
 }
 
 static inline CGSize FBSDKTextSize(NSString *text,
@@ -48,17 +61,17 @@ static inline CGSize FBSDKTextSize(NSString *text,
     return CGSizeZero;
   }
 
-  NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
+  NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
   paragraphStyle.lineBreakMode = lineBreakMode;
   NSDictionary *attributes = @{
-    NSFontAttributeName : font,
-    NSParagraphStyleAttributeName : paragraphStyle,
-  };
+                               NSFontAttributeName: font,
+                               NSParagraphStyleAttributeName: paragraphStyle,
+                               };
   NSAttributedString *attributedString = [[NSAttributedString alloc] initWithString:text attributes:attributes];
   CGSize size = [attributedString boundingRectWithSize:constrainedSize
-                                               options:(NSStringDrawingUsesDeviceMetrics
-                                                 | NSStringDrawingUsesLineFragmentOrigin
-                                                 | NSStringDrawingUsesFontLeading)
+                                               options:(NSStringDrawingUsesDeviceMetrics |
+                                                        NSStringDrawingUsesLineFragmentOrigin |
+                                                        NSStringDrawingUsesFontLeading)
                                                context:NULL].size;
   return CGSizeMake(ceilf(size.width), ceilf(size.height));
 }

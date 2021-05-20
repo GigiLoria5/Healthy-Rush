@@ -20,10 +20,9 @@
 
 #if TARGET_OS_TV
 
- #import "FBSDKModalFormPresentationController.h"
+#import "FBSDKModalFormPresentationController.h"
 
-@implementation FBSDKModalFormPresentationController
-{
+@implementation FBSDKModalFormPresentationController {
   UIView *_dimmedView;
 }
 
@@ -36,16 +35,16 @@
   return _dimmedView;
 }
 
- #pragma mark - UIPresentationController overrides
+#pragma mark - UIPresentationController overrides
 
 - (void)presentationTransitionWillBegin
 {
   [self.containerView addSubview:[self dimmedView]];
   [self.containerView addSubview:[self presentedView]];
   [self.presentingViewController.transitionCoordinator
-   animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
-     [self dimmedView].alpha = 1.0;
-   } completion:NULL];
+    animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+    [self dimmedView].alpha = 1.0;
+  } completion:NULL];
 }
 
 - (void)presentationTransitionDidEnd:(BOOL)completed
@@ -58,9 +57,9 @@
 - (void)dismissalTransitionWillBegin
 {
   [self.presentingViewController.transitionCoordinator
-   animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
-     [self dimmedView].alpha = 0;
-   } completion:NULL];
+   animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+    [self dimmedView].alpha = 0;
+  } completion:NULL];
 }
 
 - (void)dismissalTransitionDidEnd:(BOOL)completed
@@ -74,9 +73,9 @@
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-  [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
-                 [self dimmedView].frame = self.containerView.bounds;
-               } completion:NULL];
+  [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+    [self dimmedView].frame = self.containerView.bounds;
+  } completion:NULL];
 }
 
 @end

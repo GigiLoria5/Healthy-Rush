@@ -20,23 +20,17 @@
 
 #if !TARGET_OS_TV
 
- #import <Foundation/Foundation.h>
-
- #import "FBSDKFeatureExtracting.h"
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface FBSDKFeatureExtractor : NSObject
 
-+ (void)loadRulesForKey:(NSString *)useCaseKey;
++ (void)loadRules;
 + (NSString *)getTextFeature:(NSString *)text
               withScreenName:(NSString *)screenName;
-+ (nullable float *)getDenseFeatures:(NSDictionary *)viewHierarchy;
++ (float *)getDenseFeatures:(NSDictionary *)viewHierarchy;
 
-@end
-
-// Default conformance to the feature extracting protocol
-@interface FBSDKFeatureExtractor (FeatureExtracting) <FBSDKFeatureExtracting>
 @end
 
 NS_ASSUME_NONNULL_END

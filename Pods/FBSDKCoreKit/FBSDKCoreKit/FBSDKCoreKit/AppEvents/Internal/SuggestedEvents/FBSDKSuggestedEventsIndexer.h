@@ -20,18 +20,13 @@
 
 #if !TARGET_OS_TV
 
- #import <Foundation/Foundation.h>
-
-@protocol FBSDKModelManagerDelegate;
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-NS_SWIFT_NAME(SuggestedEventsIndexer)
 @interface FBSDKSuggestedEventsIndexer : NSObject
 
-@property (class, nonatomic, strong, readonly) FBSDKSuggestedEventsIndexer *shared;
-
-- (void)enable;
++ (void)enable;
 
 @end
 

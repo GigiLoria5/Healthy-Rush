@@ -17,24 +17,12 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "FBSDKErrorRecoveryConfiguration.h"
-#import "FBSDKErrorConfigurationProtocol.h"
 
-@protocol FBSDKGraphRequest;
+@class FBSDKGraphRequest;
 
-@protocol FBSDKDecodableErrorConfiguration <NSObject>
-
-- (instancetype)initWithDictionary:(NSDictionary *)dictionary;
-- (void)updateWithArray:(NSArray<NSDictionary *> *)array;
-
-@end
-
+// maps codes and subcodes pairs to FBSDKErrorRecoveryConfiguration instances.
 NS_SWIFT_NAME(ErrorConfiguration)
-@interface FBSDKErrorConfiguration : NSObject <
-NSSecureCoding,
-NSCopying,
-FBSDKErrorConfiguration,
-FBSDKDecodableErrorConfiguration
->
+@interface FBSDKErrorConfiguration : NSObject <NSSecureCoding, NSCopying>
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
@@ -43,10 +31,10 @@ FBSDKDecodableErrorConfiguration
 - (instancetype)initWithDictionary:(NSDictionary *)dictionary NS_DESIGNATED_INITIALIZER;
 
 // parses the array (supplied from app settings endpoint)
-- (void)updateWithArray:(NSArray<NSDictionary *> *)array;
+- (void)parseArray:(NSArray *)array;
 
 // NSString "code" instances support "*" wildcard semantics (nil is treated as "*" also)
 // 'request' is optional, typically for identifying special graph request semantics (e.g., no recovery for client token)
-- (FBSDKErrorRecoveryConfiguration *)recoveryConfigurationForCode:(NSString *)code subcode:(NSString *)subcode request:(id<FBSDKGraphRequest>)request;
+- (FBSDKErrorRecoveryConfiguration *)recoveryConfigurationForCode:(NSString *)code subcode:(NSString *)subcode request:(FBSDKGraphRequest *)request;
 
 @end

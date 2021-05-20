@@ -1,6 +1,0 @@
-framework module Pods_Healthy_Rush_WatchApp_Extension {
-  umbrella header "Pods-Healthy Rush WatchApp Extension-umbrella.h"
-
-  export *
-  module * { export * }
-}

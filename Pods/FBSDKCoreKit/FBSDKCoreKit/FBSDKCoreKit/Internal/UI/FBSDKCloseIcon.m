@@ -20,25 +20,15 @@
 
 #if !TARGET_OS_TV
 
- #import "FBSDKCloseIcon.h"
+#import "FBSDKCloseIcon.h"
 
 @implementation FBSDKCloseIcon
 
- #pragma mark - Public API
+#pragma mark - Public API
 
 - (UIImage *)imageWithSize:(CGSize)size
 {
-  return [self imageWithSize:size
-                primaryColor:UIColor.whiteColor
-              secondaryColor:UIColor.blackColor
-                       scale:UIScreen.mainScreen.scale];
-}
-
-- (UIImage *)imageWithSize:(CGSize)size
-              primaryColor:(UIColor *)primaryColor
-            secondaryColor:(UIColor *)secondaryColor
-                     scale:(CGFloat)scale
-{
+  CGFloat scale = [UIScreen mainScreen].scale;
   UIGraphicsBeginImageContextWithOptions(size, NO, scale);
   CGContextRef context = UIGraphicsGetCurrentContext();
 
@@ -50,11 +40,11 @@
   // shadow
   rect = CGRectIntegral(CGRectInset(rect, step, step));
   NSArray *colors = @[
-    (__bridge id)[UIColor colorWithWhite:0.0 alpha:0.7].CGColor,
-    (__bridge id)[UIColor colorWithWhite:0.0 alpha:0.3].CGColor,
-    (__bridge id)[UIColor colorWithWhite:0.0 alpha:0.1].CGColor,
-    (__bridge id)[UIColor colorWithWhite:0.0 alpha:0.0].CGColor,
-  ];
+                      (__bridge id)[UIColor colorWithWhite:0.0 alpha:0.7].CGColor,
+                      (__bridge id)[UIColor colorWithWhite:0.0 alpha:0.3].CGColor,
+                      (__bridge id)[UIColor colorWithWhite:0.0 alpha:0.1].CGColor,
+                      (__bridge id)[UIColor colorWithWhite:0.0 alpha:0.0].CGColor,
+                      ];
   CGFloat locations[4] = {
     0.70,
     0.80,
@@ -70,12 +60,12 @@
 
   // outer circle
   rect = CGRectIntegral(CGRectInset(rect, step, step));
-  [primaryColor setFill];
+  [[UIColor whiteColor] setFill];
   CGContextFillEllipseInRect(context, rect);
 
   // inner circle
   rect = CGRectIntegral(CGRectInset(rect, step, step));
-  [secondaryColor setFill];
+  [[UIColor blackColor] setFill];
   CGContextFillEllipseInRect(context, rect);
 
   // cross
@@ -83,7 +73,7 @@
   CGFloat lineWidth = step * 5 / 4;
   rect.origin.y = CGRectGetMidY(rect) - lineWidth / 2;
   rect.size.height = lineWidth;
-  [primaryColor setFill];
+  [[UIColor whiteColor] setFill];
   CGContextTranslateCTM(context, size.width / 2, size.height / 2);
   CGContextRotateCTM(context, M_PI_4);
   CGContextTranslateCTM(context, -size.width / 2, -size.height / 2);

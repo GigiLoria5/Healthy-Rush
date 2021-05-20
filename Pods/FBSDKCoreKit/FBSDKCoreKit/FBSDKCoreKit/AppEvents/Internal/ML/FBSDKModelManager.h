@@ -20,28 +20,16 @@
 
 #if !TARGET_OS_TV
 
- #import <Foundation/Foundation.h>
+#import <Foundation/Foundation.h>
 
- #import "FBSDKEventProcessing.h"
+typedef void (^FBSDKDownloadCompletionBlock)(BOOL success);
 
-NS_ASSUME_NONNULL_BEGIN
+@interface FBSDKModelManager : NSObject
 
-NS_SWIFT_NAME(ModelManager)
-@interface FBSDKModelManager : NSObject<FBSDKEventProcessing>
-
-+ (instancetype)shared;
 + (void)enable;
-+ (nullable NSDictionary *)getRulesForKey:(NSString *)useCase;
-+ (nullable NSData *)getWeightsForKey:(NSString *)useCase;
-+ (nullable NSArray *)getThresholdsForKey:(NSString *)useCase;
-
-+ (BOOL)processIntegrity:(nullable NSString *)param;
-
-- (NSString *)processSuggestedEvents:(NSString *)textFeature denseData:(nullable float *)denseData;
-- (void)enable;
++ (nullable NSDictionary *)getRules;
++ (nullable NSString *)getWeightsPath:(NSString *_Nonnull)useCaseKey;
 
 @end
-
-NS_ASSUME_NONNULL_END
 
 #endif

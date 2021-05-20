@@ -20,29 +20,27 @@
 
 #if !TARGET_OS_TV
 
- #import "FBSDKBridgeAPIResponse.h"
+#import "FBSDKBridgeAPIResponse.h"
 
- #import "FBSDKBridgeAPIProtocol.h"
- #import "FBSDKBridgeAPIProtocolType.h"
- #import "FBSDKBridgeAPIRequest+Private.h"
- #import "FBSDKCoreKitBasicsImport.h"
- #import "FBSDKInternalUtility.h"
- #import "FBSDKOperatingSystemVersionComparing.h"
- #import "NSProcessInfo+Protocols.h"
+#import "FBSDKBridgeAPIProtocol.h"
+#import "FBSDKBridgeAPIProtocolType.h"
+#import "FBSDKBridgeAPIRequest+Private.h"
+#import "FBSDKInternalUtility.h"
+#import "FBSDKTypeUtility.h"
 
 @interface FBSDKBridgeAPIResponse ()
-- (instancetype)initWithRequest:(id<FBSDKBridgeAPIRequestProtocol>)request
+- (instancetype)initWithRequest:(FBSDKBridgeAPIRequest *)request
              responseParameters:(NSDictionary *)responseParameters
                       cancelled:(BOOL)cancelled
                           error:(NSError *)error
-  NS_DESIGNATED_INITIALIZER;
+NS_DESIGNATED_INITIALIZER;
 @end
 
 @implementation FBSDKBridgeAPIResponse
 
- #pragma mark - Class Methods
+#pragma mark - Class Methods
 
-+ (instancetype)bridgeAPIResponseWithRequest:(id<FBSDKBridgeAPIRequestProtocol>)request error:(NSError *)error
++ (instancetype)bridgeAPIResponseWithRequest:(FBSDKBridgeAPIRequest *)request error:(NSError *)error
 {
   return [[self alloc] initWithRequest:request
                     responseParameters:nil
@@ -50,46 +48,34 @@
                                  error:error];
 }
 
-+ (instancetype)bridgeAPIResponseWithRequest:(NSObject<FBSDKBridgeAPIRequestProtocol> *)request
++ (instancetype)bridgeAPIResponseWithRequest:(FBSDKBridgeAPIRequest *)request
                                  responseURL:(NSURL *)responseURL
                            sourceApplication:(NSString *)sourceApplication
-                                       error:(NSError *__autoreleasing *)errorRef
-{
-  return [self bridgeAPIResponseWithRequest:request
-                                responseURL:responseURL
-                          sourceApplication:sourceApplication
-                          osVersionComparer:NSProcessInfo.processInfo
-                                      error:errorRef];
-}
-
-+ (instancetype)bridgeAPIResponseWithRequest:(NSObject<FBSDKBridgeAPIRequestProtocol> *)request
-                                 responseURL:(NSURL *)responseURL
-                           sourceApplication:(NSString *)sourceApplication
-                           osVersionComparer:(id<FBSDKOperatingSystemVersionComparing>)comparer
                                        error:(NSError *__autoreleasing *)errorRef
 {
   FBSDKBridgeAPIProtocolType protocolType = request.protocolType;
-  NSOperatingSystemVersion iOS13Version = { .majorVersion = 13, .minorVersion = 0, .patchVersion = 0 };
-  if ([comparer isOperatingSystemAtLeastVersion:iOS13Version]) {
-    // SourceApplication is not available in iOS 13.
-    // https://forums.developer.apple.com/thread/119118
-  } else {
-    switch (protocolType) {
-      case FBSDKBridgeAPIProtocolTypeNative: {
+  switch (protocolType) {
+    case FBSDKBridgeAPIProtocolTypeNative:{
+      if (@available(iOS 13, *)) {
+        break;
+      } else {
         if (![FBSDKInternalUtility isFacebookBundleIdentifier:sourceApplication]) {
           return nil;
         }
         break;
       }
-      case FBSDKBridgeAPIProtocolTypeWeb: {
-        if (![FBSDKInternalUtility isSafariBundleIdentifier:sourceApplication]) {
-          return nil;
-        }
-        break;
+    }
+    case FBSDKBridgeAPIProtocolTypeWeb:{
+      if (![FBSDKInternalUtility isSafariBundleIdentifier:sourceApplication]) {
+        return nil;
       }
+      break;
     }
   }
   NSDictionary<NSString *, NSString *> *const queryParameters = [FBSDKBasicUtility dictionaryWithQueryString:responseURL.query];
+  if (!queryParameters) {
+    return nil;
+  }
   id<FBSDKBridgeAPIProtocol> protocol = request.protocol;
   BOOL cancelled;
   NSError *error;
@@ -109,7 +95,7 @@
                                  error:error];
 }
 
-+ (instancetype)bridgeAPIResponseCancelledWithRequest:(NSObject<FBSDKBridgeAPIRequestProtocol> *)request
++ (instancetype)bridgeAPIResponseCancelledWithRequest:(FBSDKBridgeAPIRequest *)request
 {
   return [[self alloc] initWithRequest:request
                     responseParameters:nil
@@ -117,9 +103,9 @@
                                  error:nil];
 }
 
- #pragma mark - Object Lifecycle
+#pragma mark - Object Lifecycle
 
-- (instancetype)initWithRequest:(NSObject<FBSDKBridgeAPIRequestProtocol> *)request
+- (instancetype)initWithRequest:(FBSDKBridgeAPIRequest *)request
              responseParameters:(NSDictionary *)responseParameters
                       cancelled:(BOOL)cancelled
                           error:(NSError *)error
@@ -133,7 +119,7 @@
   return self;
 }
 
- #pragma mark - NSCopying
+#pragma mark - NSCopying
 
 - (id)copyWithZone:(NSZone *)zone
 {

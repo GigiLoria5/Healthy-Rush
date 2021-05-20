@@ -30,7 +30,11 @@
 
 #else
 
-#import "FBSDKCoreKitImport.h"
+#if defined BUCK || defined FBSDKCOCOAPODS || defined __cplusplus
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
+#else
+@import FBSDKCoreKit;
+#endif
 
 #import "FBSDKLoginManager.h"
 #import "FBSDKTooltipView.h"
@@ -58,7 +62,7 @@ typedef NS_ENUM(NSUInteger, FBSDKLoginButtonTooltipBehavior)
 /**
   A button that initiates a log in or log out flow upon tapping.
 
- `FBSDKLoginButton` works with `FBSDKProfile.currentProfile` to
+ `FBSDKLoginButton` works with `[FBSDKAccessToken currentAccessToken]` to
   determine what to display, and automatically starts authentication when tapped (i.e.,
   you do not need to manually subscribe action targets).
 
@@ -79,6 +83,12 @@ NS_SWIFT_NAME(FBLoginButton)
   Gets or sets the delegate.
  */
 @property (weak, nonatomic) IBOutlet id<FBSDKLoginButtonDelegate> delegate;
+/**
+  Gets or sets the login behavior to use
+ */
+@property (assign, nonatomic) FBSDKLoginBehavior loginBehavior
+DEPRECATED_MSG_ATTRIBUTE("All login flows utilize the browser. This will be removed in the next major release");
+
 /*!
  @abstract The permissions to request.
  @discussion To provide the best experience, you should minimize the number of permissions you request, and only ask for them when needed.
@@ -98,15 +108,6 @@ NS_SWIFT_NAME(FBLoginButton)
   Gets or sets the desired tooltip color style.
  */
 @property (assign, nonatomic) FBSDKTooltipColorStyle tooltipColorStyle;
-/**
-  Gets or sets the desired tracking preference to use for login attempts. Defaults to `.enabled`
- */
-@property (assign, nonatomic) FBSDKLoginTracking loginTracking;
-/**
-  Gets or sets an optional nonce to use for login attempts. A valid nonce must be a non-empty string without whitespace.
- An invalid nonce will not be set. Instead, default unique nonces will be used for login attempts.
- */
-@property (copy, nonatomic, nullable) NSString *nonce;
 
 @end
 

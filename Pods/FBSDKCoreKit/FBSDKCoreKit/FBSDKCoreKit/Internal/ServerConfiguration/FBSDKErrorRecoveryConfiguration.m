@@ -28,8 +28,7 @@
 - (instancetype)initWithRecoveryDescription:(NSString *)description
                          optionDescriptions:(NSArray *)optionDescriptions
                                    category:(FBSDKGraphRequestError)category
-                         recoveryActionName:(NSString *)recoveryActionName
-{
+                         recoveryActionName:(NSString *)recoveryActionName {
   if ((self = [super init])) {
     _localizedRecoveryDescription = [description copy];
     _localizedRecoveryOptionDescriptions = [optionDescriptions copy];
@@ -71,7 +70,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-  // immutable
+  //immutable
   return self;
 }
 

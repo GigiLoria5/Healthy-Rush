@@ -21,9 +21,7 @@
 #import "FBSDKFeatureManager.h"
 #import "FBSDKGraphRequest.h"
 #import "FBSDKGraphRequestConnection.h"
-#import "FBSDKInternalUtility.h"
 #import "FBSDKSettings.h"
-#import "FBSDKSettings+Internal.h"
 
 @implementation FBSDKCrashShield
 
@@ -34,48 +32,37 @@ static NSDictionary<NSString *, NSArray<NSString *> *> *_featureMapping;
   if (self == [FBSDKCrashShield class]) {
     _featureMapping =
     @{
-      @"AEM" : @ [
-        @"FBSDKAEMConfiguration",
-        @"FBSDKAEMEvent",
-        @"FBSDKAEMInvocation",
-        @"FBSDKAEMReporter",
-        @"FBSDKAEMRule",
-      ],
       @"AAM" : @[
-        @"FBSDKMetadataIndexer",
+          @"FBSDKMetadataIndexer",
       ],
       @"CodelessEvents" : @[
-        @"FBSDKCodelessIndexer",
-        @"FBSDKEventBinding",
-        @"FBSDKEventBindingManager",
-        @"FBSDKViewHierarchy",
-        @"FBSDKCodelessPathComponent",
-        @"FBSDKCodelessParameterComponent",
+          @"FBSDKCodelessIndexer",
+          @"FBSDKEventBinding",
+          @"FBSDKEventBindingManager",
+          @"FBSDKViewHierarchy",
+          @"FBSDKCodelessPathComponent",
+          @"FBSDKCodelessParameterComponent",
       ],
       @"RestrictiveDataFiltering" : @[
-        @"FBSDKRestrictiveDataFilterManager",
+          @"FBSDKRestrictiveDataFilterManager",
       ],
       @"ErrorReport" : @[
-        @"FBSDKErrorReport",
+          @"FBSDKErrorReport",
       ],
       @"PrivacyProtection" : @[
-        @"FBSDKModelManager",
+          @"FBSDKModelManager",
       ],
       @"SuggestedEvents" : @[
-        @"FBSDKSuggestedEventsIndexer",
-        @"FBSDKFeatureExtractor",
+          @"FBSDKSuggestedEventsIndexer",
+          @"FBSDKFeatureExtractor",
+          @"FBSDKEventInferencer",
       ],
-      @"IntelligentIntegrity" : @[
-        @"FBSDKIntegrityManager",
+      @"PIIFiltering" : @[
+          @"FBSDKAddressFilterManager",
+          @"FBSDKAddressInferencer",
       ],
       @"EventDeactivation" : @[
-        @"FBSDKEventDeactivationManager",
-      ],
-      @"SKAdNetworkConversionValue" : @[
-        @"FBSDKSKAdNetworkReporter",
-        @"FBSDKSKAdNetworkConversionConfiguration",
-        @"FBSDKSKAdNetworkRule",
-        @"FBSDKSKAdNetworkEvent",
+          @"FBSDKEventDeactivationManager",
       ],
     };
   }
@@ -86,25 +73,23 @@ static NSDictionary<NSString *, NSArray<NSString *> *> *_featureMapping;
   NSMutableSet<NSString *> *disabledFeatues = [NSMutableSet set];
   for (NSDictionary<NSString *, id> *crashLog in crashLogs) {
     NSArray<NSString *> *callstack = crashLog[@"callstack"];
-    NSString *featureName = [self _getFeature:callstack];
-    if (featureName) {
-      [FBSDKFeatureManager.shared disableFeature:featureName];
-      [disabledFeatues addObject:featureName];
-      continue;
-    }
-  }
-  if ([FBSDKSettings isDataProcessingRestricted]) {
-    return;
+    NSString *featureName = [self getFeature:callstack];
+      if (featureName) {
+        [FBSDKFeatureManager disableFeature:featureName];
+        [disabledFeatues addObject:featureName];
+        continue;
+      }
   }
   if (disabledFeatues.count > 0) {
-    NSDictionary<NSString *, id> *disabledFeatureLog = @{@"feature_names" : [disabledFeatues allObjects],
-                                                         @"timestamp" : [NSString stringWithFormat:@"%.0lf", [[NSDate date] timeIntervalSince1970]], };
-    NSData *jsonData = [FBSDKTypeUtility dataWithJSONObject:disabledFeatureLog options:0 error:nil];
+    NSDictionary<NSString *, id> *disabledFeatureLog = @{@"feature_names":[disabledFeatues allObjects],
+                                                         @"timestamp":[NSString stringWithFormat:@"%.0lf", [[NSDate date] timeIntervalSince1970]],
+    };
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:disabledFeatureLog options:0 error:nil];
     if (jsonData) {
       NSString *disabledFeatureReport = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
       if (disabledFeatureReport) {
         FBSDKGraphRequest *request = [[FBSDKGraphRequest alloc] initWithGraphPath:[NSString stringWithFormat:@"%@/instruments", [FBSDKSettings appID]]
-                                                                       parameters:@{@"crash_shield" : disabledFeatureReport}
+                                                                       parameters:@{@"crash_shield":disabledFeatureReport}
                                                                        HTTPMethod:FBSDKHTTPMethodPOST];
 
         [request startWithCompletionHandler:nil];
@@ -113,16 +98,13 @@ static NSDictionary<NSString *, NSArray<NSString *> *> *_featureMapping;
   }
 }
 
-#pragma mark - Private Methods
-
-+ (nullable NSString *)_getFeature:(NSArray<NSString *> *)callstack
++ (nullable NSString *)getFeature:(NSArray<NSString *> *)callstack
 {
-  NSArray<NSString *> *validCallstack = [FBSDKTypeUtility arrayValue:callstack];
   NSArray<NSString *> *featureNames = _featureMapping.allKeys;
-  for (NSString *entry in validCallstack) {
-    NSString *className = [self _getClassName:[FBSDKTypeUtility coercedToStringValue:entry]];
+  for (NSString *entry in callstack) {
+    NSString *className = [self getClassName:entry];
     for (NSString *featureName in featureNames) {
-      NSArray<NSString *> *classArray = [FBSDKTypeUtility dictionary:_featureMapping objectForKey:featureName ofType:NSObject.class];
+      NSArray<NSString *> *classArray = [_featureMapping objectForKey:featureName];
       if (className && [classArray containsObject:className]) {
         return featureName;
       }
@@ -131,15 +113,14 @@ static NSDictionary<NSString *, NSArray<NSString *> *> *_featureMapping;
   return nil;
 }
 
-+ (nullable NSString *)_getClassName:(NSString *)entry
++ (nullable NSString *)getClassName:(NSString *)entry
 {
-  NSString *validEntry = [FBSDKTypeUtility coercedToStringValue:entry];
-  NSArray<NSString *> *items = [validEntry componentsSeparatedByString:@" "];
+  NSArray<NSString *> *items = [entry componentsSeparatedByString:@" "];
   NSString *className = nil;
   // parse class name only from an entry in format "-[className functionName]+offset"
   // or "+[className functionName]+offset"
-  if (items.count > 0 && ([[FBSDKTypeUtility array:items objectAtIndex:0] hasPrefix:@"+["] || [[FBSDKTypeUtility array:items objectAtIndex:0] hasPrefix:@"-["])) {
-    className = [[FBSDKTypeUtility array:items objectAtIndex:0] substringFromIndex:2];
+  if (items.count > 0 && ([items[0] hasPrefix:@"+["] || [items[0] hasPrefix:@"-["])) {
+    className = [items[0] substringFromIndex:2];
   }
   return className;
 }

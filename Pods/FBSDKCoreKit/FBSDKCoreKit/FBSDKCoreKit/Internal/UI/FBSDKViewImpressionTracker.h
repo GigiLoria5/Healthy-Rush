@@ -18,29 +18,13 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol FBSDKGraphRequestProviding;
-@protocol FBSDKEventLogging;
-@protocol FBSDKNotificationObserving;
-@protocol FBSDKAccessTokenProviding;
-
-NS_ASSUME_NONNULL_BEGIN
-
 NS_SWIFT_NAME(ViewImpressionTracker)
 @interface FBSDKViewImpressionTracker : NSObject
 
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
-
-+ (instancetype)impressionTrackerWithEventName:(NSString *)eventName
-                          graphRequestProvider:(id<FBSDKGraphRequestProviding>)graphRequestProvider
-                                   eventLogger:(id<FBSDKEventLogging>)eventLogger
-                          notificationObserver:(id<FBSDKNotificationObserving>)notificationObserver
-                                   tokenWallet:(Class<FBSDKAccessTokenProviding>)tokenWallet;
++ (instancetype)impressionTrackerWithEventName:(NSString *)eventName;
 
 @property (nonatomic, copy, readonly) NSString *eventName;
 
 - (void)logImpressionWithIdentifier:(NSString *)identifier parameters:(NSDictionary *)parameters;
 
 @end
-
-NS_ASSUME_NONNULL_END

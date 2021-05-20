@@ -18,12 +18,24 @@
 
 #import <Foundation/Foundation.h>
 
-#import "FBSDKGraphRequestProtocol.h"
-#import "FBSDKGraphRequestHTTPMethod.h"
-
-@protocol FBSDKGraphRequestConnecting;
+#import "FBSDKGraphRequestConnection.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class FBSDKAccessToken;
+
+/// typedef for FBSDKHTTPMethod
+typedef NSString *const FBSDKHTTPMethod NS_TYPED_EXTENSIBLE_ENUM NS_SWIFT_NAME(HTTPMethod);
+
+/// GET Request
+FOUNDATION_EXPORT FBSDKHTTPMethod FBSDKHTTPMethodGET NS_SWIFT_NAME(get);
+
+/// POST Request
+FOUNDATION_EXPORT FBSDKHTTPMethod FBSDKHTTPMethodPOST NS_SWIFT_NAME(post);
+
+/// DELETE Request
+FOUNDATION_EXPORT FBSDKHTTPMethod FBSDKHTTPMethodDELETE NS_SWIFT_NAME(delete);
+
 /**
   Represents a request to the Facebook Graph API.
 
@@ -44,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
  @see FBSDKGraphErrorRecoveryProcessor
  */
 NS_SWIFT_NAME(GraphRequest)
-@interface FBSDKGraphRequest : NSObject <FBSDKGraphRequest>
+@interface FBSDKGraphRequest : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
@@ -139,7 +151,7 @@ NS_SWIFT_NAME(setGraphErrorRecovery(disabled:));
   Starts a connection to the Graph API.
  @param handler The handler block to call when the request completes.
  */
-- (id<FBSDKGraphRequestConnecting>)startWithCompletionHandler:(nullable FBSDKGraphRequestBlock)handler;
+- (FBSDKGraphRequestConnection *)startWithCompletionHandler:(nullable FBSDKGraphRequestBlock)handler;
 
 @end
 

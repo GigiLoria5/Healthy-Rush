@@ -20,29 +20,30 @@
 
 #import "FBSDKAppEvents+Internal.h"
 #import "FBSDKAppEventsUtility.h"
-#import "FBSDKCoreKitBasicsImport.h"
 #import "FBSDKInternalUtility.h"
 #import "FBSDKLogger.h"
 #import "FBSDKServerConfiguration.h"
 #import "FBSDKServerConfigurationManager.h"
 #import "FBSDKSettings.h"
 
+
 // Filename and keys for session length
-NSString *const FBSDKTimeSpentFilename = @"com-facebook-sdk-AppEventsTimeSpent.json";
-static NSString *const FBSDKTimeSpentPersistKeySessionSecondsSpent = @"secondsSpentInCurrentSession";
-static NSString *const FBSDKTimeSpentPersistKeySessionNumInterruptions = @"numInterruptions";
-static NSString *const FBSDKTimeSpentPersistKeyLastSuspendTime = @"lastSuspendTime";
-static NSString *const FBSDKTimeSpentPersistKeySessionID = @"sessionID";
+NSString *const FBSDKTimeSpentFilename                                           = @"com-facebook-sdk-AppEventsTimeSpent.json";
+static NSString *const FBSDKTimeSpentPersistKeySessionSecondsSpent               = @"secondsSpentInCurrentSession";
+static NSString *const FBSDKTimeSpentPersistKeySessionNumInterruptions           = @"numInterruptions";
+static NSString *const FBSDKTimeSpentPersistKeyLastSuspendTime                   = @"lastSuspendTime";
+static NSString *const FBSDKTimeSpentPersistKeySessionID                         = @"sessionID";
 
-static NSString *const FBSDKAppEventNameActivatedApp = @"fb_mobile_activate_app";
-static NSString *const FBSDKAppEventNameDeactivatedApp = @"fb_mobile_deactivate_app";
-static NSString *const FBSDKAppEventParameterNameSessionInterruptions = @"fb_mobile_app_interruptions";
-static NSString *const FBSDKAppEventParameterNameTimeBetweenSessions = @"fb_mobile_time_between_sessions";
-static NSString *const FBSDKAppEventParameterNameSessionID = @"_session_id";
+static NSString *const FBSDKAppEventNameActivatedApp                             = @"fb_mobile_activate_app";
+static NSString *const FBSDKAppEventNameDeactivatedApp                           = @"fb_mobile_deactivate_app";
+static NSString *const FBSDKAppEventParameterNameSessionInterruptions            = @"fb_mobile_app_interruptions";
+static NSString *const FBSDKAppEventParameterNameTimeBetweenSessions             = @"fb_mobile_time_between_sessions";
+static NSString *const FBSDKAppEventParameterNameSessionID                       = @"_session_id";
 
-static const int SECS_PER_MIN = 60;
-static const int SECS_PER_HOUR = 60 * SECS_PER_MIN;
-static const int SECS_PER_DAY = 24 * SECS_PER_HOUR;
+
+static const int SECS_PER_MIN                       = 60;
+static const int SECS_PER_HOUR                      = 60 * SECS_PER_MIN;
+static const int SECS_PER_DAY                       = 24 * SECS_PER_HOUR;
 
 static NSString *g_sourceApplication;
 static BOOL g_isOpenedFromAppLink;
@@ -69,7 +70,7 @@ static const long INACTIVE_SECONDS_QUANTA[] =
   150 * SECS_PER_DAY,
   180 * SECS_PER_DAY,
   365 * SECS_PER_DAY,
-  LONG_MAX, // keep as LONG_MAX to guarantee loop will terminate
+  LONG_MAX,   // keep as LONG_MAX to guarantee loop will terminate
 };
 
 /**
@@ -87,9 +88,9 @@ static const long INACTIVE_SECONDS_QUANTA[] =
   BOOL _isCurrentlyLoaded;
   BOOL _shouldLogActivateEvent;
   BOOL _shouldLogDeactivateEvent;
-  long _secondsSpentInCurrentSession;
-  long _timeSinceLastSuspend;
-  int _numInterruptionsInCurrentSession;
+  long  _secondsSpentInCurrentSession;
+  long  _timeSinceLastSuspend;
+  int  _numInterruptionsInCurrentSession;
   long _lastRestoreTime;
   long _lastSuspendTime;
   NSString *_sessionID;
@@ -118,7 +119,7 @@ static const long INACTIVE_SECONDS_QUANTA[] =
   static FBSDKTimeSpentData *shared = nil;
 
   dispatch_once(&pred, ^{
-    shared = [FBSDKTimeSpentData new];
+    shared = [[FBSDKTimeSpentData alloc] init];
   });
   return shared;
 }
@@ -126,6 +127,7 @@ static const long INACTIVE_SECONDS_QUANTA[] =
 // Calculate and persist time spent data for this instance of the app activation.
 - (void)instanceSuspend
 {
+
   [FBSDKAppEventsUtility ensureOnMainThread:NSStringFromSelector(_cmd) className:NSStringFromClass([self class])];
   if (!_isCurrentlyLoaded) {
     FBSDKConditionalLog(YES, FBSDKLoggingBehaviorInformational, @"[FBSDKTimeSpentData suspend] invoked without corresponding restore");
@@ -150,7 +152,7 @@ static const long INACTIVE_SECONDS_QUANTA[] =
     FBSDKTimeSpentPersistKeySessionNumInterruptions : @(_numInterruptionsInCurrentSession),
     FBSDKTimeSpentPersistKeyLastSuspendTime : @(now),
     FBSDKTimeSpentPersistKeySessionID : _sessionID,
-  };
+    };
 
   NSString *content = [FBSDKBasicUtility JSONStringForObject:timeSpentData error:NULL invalidObjectHandler:NULL];
 
@@ -165,16 +167,19 @@ static const long INACTIVE_SECONDS_QUANTA[] =
   _isCurrentlyLoaded = NO;
 }
 
+
 // Called during activation - either through an explicit 'activateApp' call or implicitly when the app is foregrounded.
 // In both cases, we restore the persisted event data.  In the case of the activateApp, we log an 'app activated'
 // event if there's been enough time between the last deactivation and now.
 - (void)instanceRestore:(BOOL)calledFromActivateApp
 {
+
   [FBSDKAppEventsUtility ensureOnMainThread:NSStringFromSelector(_cmd) className:NSStringFromClass([self class])];
 
   // It's possible to call this multiple times during the time the app is in the foreground.  If this is the case,
   // just restore persisted data the first time.
   if (!_isCurrentlyLoaded) {
+
     NSString *content =
     [[NSString alloc] initWithContentsOfFile:[FBSDKBasicUtility persistenceFilePath:FBSDKTimeSpentFilename]
                                 usedEncoding:nil
@@ -185,6 +190,7 @@ static const long INACTIVE_SECONDS_QUANTA[] =
 
     long now = [FBSDKAppEventsUtility unixTimeNow];
     if (!content) {
+
       // Nothing persisted, so this is the first launch.
       _sessionID = [NSUUID UUID].UUIDString;
       _secondsSpentInCurrentSession = 0;
@@ -194,14 +200,16 @@ static const long INACTIVE_SECONDS_QUANTA[] =
       // We want to log the app activation event on the first launch, but not the deactivate event
       _shouldLogActivateEvent = YES;
       _shouldLogDeactivateEvent = NO;
+
     } else {
+
       NSDictionary<id, id> *results = [FBSDKBasicUtility objectForJSONString:content error:NULL];
 
       _lastSuspendTime = [results[FBSDKTimeSpentPersistKeyLastSuspendTime] longValue];
 
       _timeSinceLastSuspend = now - _lastSuspendTime;
       _secondsSpentInCurrentSession = [results[FBSDKTimeSpentPersistKeySessionSecondsSpent] intValue];
-      _sessionID = results[FBSDKTimeSpentPersistKeySessionID] ?: [NSUUID UUID].UUIDString;
+      _sessionID = results[FBSDKTimeSpentPersistKeySessionID] ? : [NSUUID UUID].UUIDString;
       _numInterruptionsInCurrentSession = [results[FBSDKTimeSpentPersistKeySessionNumInterruptions] intValue];
       _shouldLogActivateEvent = (_timeSinceLastSuspend > [FBSDKServerConfigurationManager cachedServerConfiguration].sessionTimoutInterval);
 
@@ -213,6 +221,7 @@ static const long INACTIVE_SECONDS_QUANTA[] =
         // so errant or test uses doesn't blow out the cardinality on the backend processing
         _numInterruptionsInCurrentSession = MIN(_numInterruptionsInCurrentSession + 1, 200);
       }
+
     }
 
     _lastRestoreTime = now;
@@ -247,9 +256,9 @@ static const long INACTIVE_SECONDS_QUANTA[] =
 - (NSDictionary *)appEventsParametersForActivate
 {
   return @{
-    FBSDKAppEventParameterLaunchSource : [[self class] getSourceApplication],
-    FBSDKAppEventParameterNameSessionID : _sessionID,
-  };
+           FBSDKAppEventParameterLaunchSource: [[self class] getSourceApplication],
+           FBSDKAppEventParameterNameSessionID: _sessionID,
+           };
 }
 
 - (NSDictionary *)appEventsParametersForDeactivate
@@ -261,10 +270,11 @@ static const long INACTIVE_SECONDS_QUANTA[] =
 
   NSMutableDictionary *params = [@{ FBSDKAppEventParameterNameSessionInterruptions : @(_numInterruptionsInCurrentSession),
                                     FBSDKAppEventParameterNameTimeBetweenSessions : [NSString stringWithFormat:@"session_quanta_%d", quantaIndex],
-                                    FBSDKAppEventParameterLaunchSource : [[self class] getSourceApplication],
-                                    FBSDKAppEventParameterNameSessionID : _sessionID ?: @"", } mutableCopy];
+                                    FBSDKAppEventParameterLaunchSource: [[self class] getSourceApplication],
+                                    FBSDKAppEventParameterNameSessionID : _sessionID ?: @"",
+                                    } mutableCopy];
   if (_lastSuspendTime) {
-    [FBSDKTypeUtility dictionary:params setObject:@(_lastSuspendTime) forKey:FBSDKAppEventParameterLogTime];
+    params[FBSDKAppEventParameterLogTime] = @(_lastSuspendTime);
   }
   return [params copy];
 }
@@ -272,7 +282,7 @@ static const long INACTIVE_SECONDS_QUANTA[] =
 + (void)setSourceApplication:(NSString *)sourceApplication openURL:(NSURL *)url
 {
   [self setSourceApplication:sourceApplication
-               isFromAppLink:[FBSDKInternalUtility parametersFromFBURL:url][@"al_applink_data"] != nil];
+               isFromAppLink:[FBSDKInternalUtility dictionaryFromFBURL:url][@"al_applink_data"] != nil];
 }
 
 + (void)setSourceApplication:(NSString *)sourceApplication isFromAppLink:(BOOL)isFromAppLink
@@ -287,9 +297,9 @@ static const long INACTIVE_SECONDS_QUANTA[] =
   if (g_isOpenedFromAppLink) {
     openType = @"AppLink";
   }
-  return (g_sourceApplication
-    ? [NSString stringWithFormat:@"%@(%@)", openType, g_sourceApplication]
-    : openType);
+  return (g_sourceApplication ?
+          [NSString stringWithFormat:@"%@(%@)", openType, g_sourceApplication]
+          : openType);
 }
 
 + (void)resetSourceApplication
