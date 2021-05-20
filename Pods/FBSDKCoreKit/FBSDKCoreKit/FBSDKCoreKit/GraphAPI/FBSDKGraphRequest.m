@@ -23,8 +23,6 @@
 #import "FBSDKAccessToken.h"
 #import "FBSDKCoreKit.h"
 #import "FBSDKGraphRequestConnection.h"
-#import "FBSDKGraphRequestConnectionFactory.h"
-#import "FBSDKGraphRequestConnectionProviding.h"
 #import "FBSDKGraphRequestDataAttachment.h"
 #import "FBSDKInternalUtility.h"
 #import "FBSDKLogger.h"
@@ -35,34 +33,26 @@ FBSDKHTTPMethod FBSDKHTTPMethodGET = @"GET";
 FBSDKHTTPMethod FBSDKHTTPMethodPOST = @"POST";
 FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
 
-@interface FBSDKGraphRequest ()
+@interface FBSDKGraphRequest()
 @property (nonatomic, assign) FBSDKGraphRequestFlags flags;
-@property (nonatomic, readwrite, copy) FBSDKHTTPMethod HTTPMethod;
-@property (nonatomic, strong) id<FBSDKGraphRequestConnectionProviding> connectionFactory;
+@property (nonatomic, copy, readwrite) FBSDKHTTPMethod HTTPMethod;
 @end
 
 @implementation FBSDKGraphRequest
 
 @synthesize HTTPMethod;
 
-- (instancetype)initWithGraphPath:(NSString *)graphPath
-{
-  return [self initWithGraphPath:graphPath parameters:@{@"fields" : @""}];
+- (instancetype)initWithGraphPath:(NSString *)graphPath {
+  return [self initWithGraphPath:graphPath parameters:@{}];
 }
 
 - (instancetype)initWithGraphPath:(NSString *)graphPath
-                       HTTPMethod:(FBSDKHTTPMethod)method
-{
-  if (method == FBSDKHTTPMethodGET) {
-    return [self initWithGraphPath:graphPath parameters:@{@"fields" : @""} HTTPMethod:method];
-  } else {
-    return [self initWithGraphPath:graphPath parameters:@{} HTTPMethod:method];
-  }
+                       HTTPMethod:(FBSDKHTTPMethod)method {
+  return [self initWithGraphPath:graphPath parameters:@{} HTTPMethod:method];
 }
 
 - (instancetype)initWithGraphPath:(NSString *)graphPath
-                       parameters:(NSDictionary *)parameters
-{
+                       parameters:(NSDictionary *)parameters {
   return [self initWithGraphPath:graphPath
                       parameters:parameters
                            flags:FBSDKGraphRequestFlagNone];
@@ -70,8 +60,7 @@ FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
 
 - (instancetype)initWithGraphPath:(NSString *)graphPath
                        parameters:(NSDictionary *)parameters
-                       HTTPMethod:(FBSDKHTTPMethod)method
-{
+                       HTTPMethod:(FBSDKHTTPMethod)method {
   return [self initWithGraphPath:graphPath
                       parameters:parameters
                      tokenString:[FBSDKAccessToken currentAccessToken].tokenString
@@ -81,8 +70,7 @@ FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
 
 - (instancetype)initWithGraphPath:(NSString *)graphPath
                        parameters:(NSDictionary *)parameters
-                            flags:(FBSDKGraphRequestFlags)flags
-{
+                            flags:(FBSDKGraphRequestFlags)flags {
   return [self initWithGraphPath:graphPath
                       parameters:parameters
                      tokenString:[FBSDKAccessToken currentAccessToken].tokenString
@@ -94,8 +82,7 @@ FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
                        parameters:(NSDictionary *)parameters
                       tokenString:(NSString *)tokenString
                        HTTPMethod:(FBSDKHTTPMethod)method
-                            flags:(FBSDKGraphRequestFlags)flags
-{
+                            flags:(FBSDKGraphRequestFlags)flags {
   if ((self = [self initWithGraphPath:graphPath
                            parameters:parameters
                           tokenString:tokenString
@@ -109,44 +96,8 @@ FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
 - (instancetype)initWithGraphPath:(NSString *)graphPath
                        parameters:(NSDictionary *)parameters
                       tokenString:(NSString *)tokenString
-                       HTTPMethod:(NSString *)method
-                            flags:(FBSDKGraphRequestFlags)flags
-                connectionFactory:(id<FBSDKGraphRequestConnectionProviding>)factory
-{
-  return [self initWithGraphPath:graphPath
-                      parameters:parameters
-                     tokenString:tokenString
-                      HTTPMethod:method
-                         version:[FBSDKSettings graphAPIVersion]
-                           flags:flags
-               connectionFactory:factory];
-}
-
-- (instancetype)initWithGraphPath:(NSString *)graphPath
-                       parameters:(NSDictionary *)parameters
-                      tokenString:(NSString *)tokenString
-                       HTTPMethod:(NSString *)method
                           version:(NSString *)version
-                            flags:(FBSDKGraphRequestFlags)flags
-                connectionFactory:(id<FBSDKGraphRequestConnectionProviding>)factory
-{
-  if ((self = [self initWithGraphPath:graphPath
-                           parameters:parameters
-                          tokenString:tokenString
-                              version:version
-                           HTTPMethod:method])) {
-    self.flags |= flags;
-    self.connectionFactory = factory;
-  }
-  return self;
-}
-
-- (instancetype)initWithGraphPath:(NSString *)graphPath
-                       parameters:(NSDictionary *)parameters
-                      tokenString:(NSString *)tokenString
-                          version:(NSString *)version
-                       HTTPMethod:(FBSDKHTTPMethod)method
-{
+                       HTTPMethod:(FBSDKHTTPMethod)method {
   if ((self = [super init])) {
     _tokenString = tokenString ? [tokenString copy] : nil;
     _version = version ? [version copy] : [FBSDKSettings graphAPIVersion];
@@ -156,7 +107,6 @@ FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
     if (!FBSDKSettings.isGraphErrorRecoveryEnabled) {
       _flags = FBSDKGraphRequestFlagDisableErrorRecovery;
     }
-    _connectionFactory = [FBSDKGraphRequestConnectionFactory new];
   }
   return self;
 }
@@ -178,7 +128,7 @@ FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
 - (BOOL)hasAttachments
 {
   __block BOOL hasAttachments = NO;
-  [FBSDKTypeUtility dictionary:self.parameters enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+  [self.parameters enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
     if ([FBSDKGraphRequest isAttachment:obj]) {
       hasAttachments = YES;
       *stop = YES;
@@ -189,35 +139,33 @@ FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
 
 + (BOOL)isAttachment:(id)item
 {
-  return ([item isKindOfClass:[UIImage class]]
-    || [item isKindOfClass:[NSData class]]
-    || [item isKindOfClass:[FBSDKGraphRequestDataAttachment class]]);
+  return ([item isKindOfClass:[UIImage class]] ||
+          [item isKindOfClass:[NSData class]] ||
+          [item isKindOfClass:[FBSDKGraphRequestDataAttachment class]]);
 }
 
+
 + (NSString *)serializeURL:(NSString *)baseUrl
-                    params:(NSDictionary *)params
-{
+                    params:(NSDictionary *)params {
   return [self serializeURL:baseUrl params:params httpMethod:FBSDKHTTPMethodGET];
 }
 
 + (NSString *)serializeURL:(NSString *)baseUrl
                     params:(NSDictionary *)params
-                httpMethod:(NSString *)httpMethod
-{
+                httpMethod:(NSString *)httpMethod {
   return [self serializeURL:baseUrl params:params httpMethod:httpMethod forBatch:NO];
 }
 
 + (NSString *)serializeURL:(NSString *)baseUrl
                     params:(NSDictionary *)params
                 httpMethod:(NSString *)httpMethod
-                  forBatch:(BOOL)forBatch
-{
-  params = [self preprocessParams:params];
+                  forBatch:(BOOL)forBatch {
+  params = [self preprocessParams: params];
 
-  #pragma clang diagnostic push
-  #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   NSURL *parsedURL = [NSURL URLWithString:[baseUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-  #pragma clang diagnostic pop
+#pragma clang pop
 
   if ([httpMethod isEqualToString:FBSDKHTTPMethodPOST] && !forBatch) {
     return baseUrl;
@@ -225,7 +173,7 @@ FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
 
   NSString *queryPrefix = parsedURL.query ? @"&" : @"?";
 
-  NSString *query = [FBSDKBasicUtility queryStringWithDictionary:params error:NULL invalidObjectHandler:^id (id object, BOOL *stop) {
+  NSString *query = [FBSDKBasicUtility queryStringWithDictionary:params error:NULL invalidObjectHandler:^id(id object, BOOL *stop) {
     if ([self isAttachment:object]) {
       if ([httpMethod isEqualToString:FBSDKHTTPMethodGET]) {
         [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorDeveloperErrors logEntry:@"can not use GET to upload a file"];
@@ -242,7 +190,7 @@ FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
   NSString *debugValue = [FBSDKSettings graphAPIDebugParamValue];
   if (debugValue) {
     NSMutableDictionary *mutableParams = [NSMutableDictionary dictionaryWithDictionary:params];
-    [FBSDKTypeUtility dictionary:mutableParams setObject:debugValue forKey:@"debug"];
+    mutableParams[@"debug"] = debugValue;
     return mutableParams;
   }
 
@@ -251,11 +199,10 @@ FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
 
 - (FBSDKGraphRequestConnection *)startWithCompletionHandler:(FBSDKGraphRequestBlock)handler
 {
-  id<FBSDKGraphRequestConnecting> connection = [self.connectionFactory createGraphRequestConnection];
-  id<FBSDKGraphRequest> request = (id<FBSDKGraphRequest>)self;
-  [connection addRequest:request completionHandler:handler];
+  FBSDKGraphRequestConnection *connection = [[FBSDKGraphRequestConnection alloc] init];
+  [connection addRequest:self completionHandler:handler];
   [connection start];
-  return (FBSDKGraphRequestConnection *)connection;
+  return connection;
 }
 
 #pragma mark - Debugging helpers

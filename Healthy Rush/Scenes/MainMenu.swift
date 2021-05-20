@@ -6,14 +6,8 @@
 //
 
 import SpriteKit
-<<<<<<< Updated upstream
-import FirebaseAuth
-import FBSDKCoreKit
-import FBSDKLoginKit
-=======
 import JGProgressHUD
 import FirebaseAuth
->>>>>>> Stashed changes
 
 class MainMenu: SKScene {
     
@@ -37,16 +31,6 @@ class MainMenu: SKScene {
     var pageInfoNum : Int = 3
     var istanceInfoActive : Bool = false
     
-<<<<<<< Updated upstream
-    //for the controller choice panel
-    var istanceControllerActive : Bool = false
-    var cameraIsSelected : Bool = false
-    var watchIsSelected : Bool = false
-    
-    // Facebook var
-    var fbUserLogged = false
-    let facebookLoginLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold") // login in with facebook label
-=======
     // For the controller choice panel
     var istanceControllerActive : Bool = false
     
@@ -65,7 +49,6 @@ class MainMenu: SKScene {
         hud.interactionType = .blockTouchesOnHUDView
         return hud
     } ()
->>>>>>> Stashed changes
     
     //MARK: - Systems
     override func didMove(to view: SKView) {
@@ -84,7 +67,6 @@ class MainMenu: SKScene {
         }
         setupSelectionLabel()
         updatePlayerSelection()
-        currentUserName() // check if the user is already logged in via facebook and if so it updates the user's infos
     }
     
     //MARK: - Touches
@@ -120,18 +102,11 @@ class MainMenu: SKScene {
             node.texture = SKTexture(imageNamed: effectEnabled ? "effectOn" : "effectOff")
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
         case "facebookBtn":
-            if !fbUserLogged{
-                fbActionSignIn()
-            } else {
-                fbActionSignOut()
-            }
+            run(SKAction.playSoundFileNamed("buttonSound.wav"))
+            fbUserLogged ? handleSignOutWithFacebookButtonTapped() : handleSignInWithFacebookButtonTapped()
             let node = node as! SKSpriteNode
             node.texture = SKTexture(imageNamed: fbUserLogged ? "facebookOn" : "facebookOff")
-<<<<<<< Updated upstream
-            run(SKAction.playSoundFileNamed("buttonSound.wav"))
-=======
             facebookLoginLbl.text = fbUserLogged ? afterLoginTxt + (Auth.auth().currentUser?.displayName ?? "DISPLAY NAME NOT FOUND") : beforeLoginTxt
->>>>>>> Stashed changes
         case "controllerSelect":
             if(!istanceControllerActive){
                 run(SKAction.playSoundFileNamed("buttonSound.wav"))
@@ -161,7 +136,7 @@ class MainMenu: SKScene {
             
             updateControllerChoicePanel()
         case "info":
-            if(!istanceInfoActive){
+            if(istanceInfoActive == false){
                 run(SKAction.playSoundFileNamed("buttonSound.wav"))
                 if(containerNode != nil) {
                     containerNode.removeFromParent() // Remove any other panel already active
@@ -184,7 +159,6 @@ class MainMenu: SKScene {
         case "container":
             currInfoPageNum = 1 //reset the page counter
             istanceInfoActive = false
-            istanceControllerActive = false
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
             containerNode.removeFromParent()
         case "theBoy":
@@ -241,26 +215,18 @@ extension MainMenu {
         addChild(setting)
         
         let info = SKSpriteNode(imageNamed: "info")
-        info.setScale(0.8)
+        info.setScale(0.625)
         info.zPosition = 50.0
         info.name = "info"
         info.position = CGPoint(x: info.frame.width/2 + 50, y: size.height/2 + play.frame.height + 120)
         addChild(info)
         
-<<<<<<< Updated upstream
-        let controllerSelect = SKSpriteNode(imageNamed: "selController")
-=======
         let controllerSelect = SKSpriteNode(imageNamed: "controllerOn")
->>>>>>> Stashed changes
         controllerSelect.setScale(0.8)
         controllerSelect.zPosition = 50.0
         controllerSelect.name = "controllerSelect"
         controllerSelect.position = CGPoint(x: size.width - controllerSelect.frame.width, y: info.position.y)
         addChild(controllerSelect)
-<<<<<<< Updated upstream
-        
-=======
->>>>>>> Stashed changes
     }
     
     func setupPlayer() {
@@ -347,144 +313,6 @@ extension MainMenu {
         addChild(selectionLbl)
     }
     
-<<<<<<< Updated upstream
-    func setupHighscorePanel() {
-        // Create a Container
-        setupContainer()
-        
-        // Create a panel inside the container
-        let panel = SKSpriteNode(imageNamed: "panel")
-        panel.name = "HighscorePanel"
-        panel.setScale(1.5)
-        panel.zPosition = 20.0
-        panel.position = .zero
-        containerNode.addChild(panel)
-        
-        // Highscore
-        let x = -panel.frame.width/2.0 + 300.0
-        let highscoreLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
-        highscoreLbl.text = "Highscore: \(ScoreGenerator.sharedInstance.getHighscore())"
-        highscoreLbl.horizontalAlignmentMode = .left
-        highscoreLbl.fontSize = 80.0
-        highscoreLbl.zPosition = 25.0
-        highscoreLbl.fontColor = .black
-        highscoreLbl.position = CGPoint(x: x, y: highscoreLbl.frame.height/2.0 - 20.0)
-        panel.addChild(highscoreLbl)
-        
-        let scoreLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
-        scoreLbl.text = "Last Score: \(ScoreGenerator.sharedInstance.getScore())"
-        scoreLbl.horizontalAlignmentMode = .left
-        scoreLbl.fontSize = 80.0
-        scoreLbl.zPosition = 25.0
-        scoreLbl.fontColor = .black
-        scoreLbl.position = CGPoint(x: x, y: -scoreLbl.frame.height - 20.0)
-        panel.addChild(scoreLbl)
-    }
-    
-    func setupContainer() {
-        containerNode = SKSpriteNode()
-        containerNode.name = "container"
-        containerNode.zPosition = 15.0
-        containerNode.color = .clear // UIColor (white: 0.5, alpha 0.5)
-        containerNode.size = size
-        containerNode.position = CGPoint(x: size.width/2.0, y: size.height/2.0)
-        addChild(containerNode)
-    }
-    
-    func setupSettingPanel() {
-        // Create a Container
-        setupContainer()
-        
-        // Create a panel inside the container
-        let panel = SKSpriteNode(imageNamed: "panel")
-        panel.name = "SettingPanel"
-        panel.setScale(1.5)
-        panel.zPosition = 20.0
-        panel.position = .zero
-        containerNode.addChild(panel)
-        
-        // Music
-        let music = SKSpriteNode(imageNamed: SKTAudio.musicEnabled ? "musicOn" : "musicOff")
-        music.name = "music"
-        music.setScale(0.875)
-        music.zPosition = 25.0
-        music.position = CGPoint(x: -music.frame.width - 50.0, y: 5.0)
-        panel.addChild(music)
-        
-        // Sound
-        let effect = SKSpriteNode(imageNamed: effectEnabled ? "effectOn" : "effectOff")
-        effect.name = "effect"
-        effect.setScale(0.875)
-        effect.zPosition = 25.0
-        effect.position = CGPoint(x: music.frame.width + 50.0, y: 5.0)
-        panel.addChild(effect)
-        
-        // Facebook
-        let facebookBtn = SKSpriteNode(imageNamed: fbUserLogged ? "facebookOn" : "facebookOff")
-        facebookBtn.name = "facebookBtn"
-        facebookBtn.setScale(0.875)
-        facebookBtn.zPosition = 25.0
-        facebookBtn.position = CGPoint(x: 0.0, y: 5.0)
-        panel.addChild(facebookBtn)
-        
-        // Log In with Facebook Label
-        facebookLoginLbl.text = "To save your progress, login with Facebook"
-        facebookLoginLbl.horizontalAlignmentMode = .center
-        facebookLoginLbl.fontSize = 30.0
-        facebookLoginLbl.fontColor = .black
-        facebookLoginLbl.zPosition = 25.0
-        facebookLoginLbl.position = CGPoint(x: 0.0, y: -(facebookBtn.size.height/2.0 + 25.0))
-        panel.addChild(facebookLoginLbl)
-    }
-    
-    func fbActionSignIn() {
-        let loginManager = LoginManager()
-        loginManager.logIn(permissions: ["gaming_profile", "gaming_user_picture", "email", "user_friends"],
-                           from: viewController) { (result, error) in
-            if let error = error {
-                print("Failed to login: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let accessToken = AccessToken.current else {
-                print("Failed to get access token")
-                return
-            }
-            
-            let credential = FacebookAuthProvider.credential(withAccessToken: accessToken.tokenString)
-            
-            // Perform login by calling Firebase APIs
-            Auth.auth().signIn(with: credential, completion: { (user, error) in
-                if let error = error {
-                    print("Login error: \(error.localizedDescription)")
-                    let alertController = UIAlertController(title: "Login Error", message: error.localizedDescription, preferredStyle: .alert)
-                    let okayAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-                    alertController.addAction(okayAction)
-                    self.viewController.present(alertController, animated: true, completion: nil)
-                    return
-                } else {
-                    self.currentUserName()
-                }
-                
-            })
-        }
-    }
-    
-    func currentUserName() {
-        if let currentUser = Auth.auth().currentUser {
-            fbUserLogged = true
-            facebookLoginLbl.text = "You are login as - " + (currentUser.displayName ?? "Display name not found")
-        }
-    }
-    
-    func fbActionSignOut() {
-        let firebaseAuth = Auth.auth()
-        do {
-            try firebaseAuth.signOut()
-            facebookLoginLbl.text = "To save your progress, login with Facebook"
-        } catch let signOutError as NSError {
-            print("Error signing out: %@", signOutError)
-=======
     //MARK: - Input Controller Panel
     func setupInputController() {
         if UserDefaults.standard.object(forKey: "cameraMode") == nil { // first time setting
@@ -492,7 +320,6 @@ extension MainMenu {
         }
         if UserDefaults.standard.object(forKey: "watchMode") == nil { // first time setting
             UserDefaults.standard.setValue(false, forKey: "watchMode")
->>>>>>> Stashed changes
         }
     }
     
@@ -599,8 +426,6 @@ extension MainMenu {
         }
     }
     
-<<<<<<< Updated upstream
-=======
     //MARK: - Highscore Panel
     func setupHighscorePanel() {
         // Create a Container
@@ -831,7 +656,6 @@ extension MainMenu {
             }
         }
     }
->>>>>>> Stashed changes
     
     //MARK: - Info Panel
     func setupInfoPanel() {
@@ -851,9 +675,8 @@ extension MainMenu {
         rightArrow.name = "infoArrowRight"
         rightArrow.setScale(0.5)
         rightArrow.zPosition = 20.0
-        rightArrow.position = CGPoint(
-            x: panel.position.x + panel.size.width/2 - 60,
-            y: panel.position.y/2)
+        rightArrow.position = CGPoint(x: panel.position.x + panel.size.width/2 - 60, y: panel.position.y/2)
+        
         panel.addChild(rightArrow)
         
         // add left arrow
@@ -861,9 +684,7 @@ extension MainMenu {
         leftArrow.name = "infoArrowLeft"
         leftArrow.setScale(0) // invisible arrow (no dimension)
         leftArrow.zPosition = 20.0
-        leftArrow.position = CGPoint(
-            x: -(panel.position.x + panel.size.width/2 - 60),
-            y: panel.position.y/2)
+        leftArrow.position = CGPoint(x: -(panel.position.x + panel.size.width/2 - 60), y: panel.position.y/2)
         panel.addChild(leftArrow)
         
         // add info images to panel

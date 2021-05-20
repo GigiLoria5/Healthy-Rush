@@ -20,13 +20,13 @@
 
 #if !TARGET_OS_TV
 
- #import "FBSDKLoginTooltipView.h"
+#import "FBSDKLoginTooltipView.h"
 
- #ifdef FBSDKCOCOAPODS
-  #import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
- #else
-  #import "FBSDKCoreKit+Internal.h"
- #endif
+#ifdef FBSDKCOCOAPODS
+#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
+#else
+#import "FBSDKCoreKit+Internal.h"
+#endif
 
 @interface FBSDKLoginTooltipView ()
 @end
@@ -36,13 +36,9 @@
 - (instancetype)init
 {
   NSString *tooltipMessage =
-  NSLocalizedStringWithDefaultValue(
-    @"LoginTooltip.Message",
-    @"FacebookSDK",
-    [FBSDKInternalUtility bundleForStrings],
-    @"You're in control - choose what info you want to share with apps.",
-    @"The message of the FBSDKLoginTooltipView"
-  );
+  NSLocalizedStringWithDefaultValue(@"LoginTooltip.Message", @"FacebookSDK", [FBSDKInternalUtility bundleForStrings],
+                                    @"You're in control - choose what info you want to share with apps.",
+                                    @"The message of the FBSDKLoginTooltipView");
   return [super initWithTagline:nil message:tooltipMessage colorStyle:FBSDKTooltipColorStyleFriendlyBlue];
 }
 
@@ -51,6 +47,7 @@
   if (self.forceDisplay) {
     [super presentInView:view withArrowPosition:arrowPosition direction:arrowDirection];
   } else {
+
     [FBSDKServerConfigurationManager loadServerConfigurationWithCompletionBlock:^(FBSDKServerConfiguration *serverConfiguration, NSError *error) {
       self.message = serverConfiguration.loginTooltipText;
       BOOL shouldDisplay = serverConfiguration.loginTooltipEnabled;
@@ -70,7 +67,6 @@
     }];
   }
 }
-
 @end
 
 #endif

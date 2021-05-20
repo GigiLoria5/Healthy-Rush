@@ -7,7 +7,7 @@
 
 import UIKit
 import WatchConnectivity
-import Firebase
+import FacebookCore
 import FBSDKCoreKit
 
 @main
@@ -37,8 +37,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-<<<<<<< Updated upstream
-=======
         
         // Firebase setup
         Spark.start()
@@ -49,7 +47,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
             didFinishLaunchingWithOptions: launchOptions
         )
         
->>>>>>> Stashed changes
         // Detecting screen types (iphoneX, iphone11, ...)
         switch UIScreen.main.nativeBounds.height {
         case 2688, 1792, 2436:
@@ -57,24 +54,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         default:
             isX = false
         }
-        // To activate the Watch Connettivity
+        
+        // Override point for customization after application launch.
         if WCSession.isSupported() {
             session = WCSession.default
             session.delegate = self
             session.activate()
         }
-        // Firebase configuration
-        FirebaseApp.configure()
-        // Facebook configuration
-        ApplicationDelegate.shared.application(
-            application,
-            didFinishLaunchingWithOptions: launchOptions
-        )
-        
         return true
     }
     
-    // Facebook configuration
+    // Facebook Setup
     func application(
             _ app: UIApplication,
             open url: URL,
@@ -88,12 +78,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
                 annotation: options[UIApplication.OpenURLOptionsKey.annotation]
             )
 
-<<<<<<< Updated upstream
-        }
-
-=======
         }  
->>>>>>> Stashed changes
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -110,6 +95,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        // Add Facebook Analytics
+        // This step is unnecessary but it could be useful
+        // From 30th June 2021 it won't work more (but we don't care atm)
+        AppEvents.activateApp()
     }
 
 

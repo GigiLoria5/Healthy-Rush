@@ -20,7 +20,6 @@
 
 #import "FBSDKAccessToken.h"
 #import "FBSDKAppEvents+Internal.h"
-#import "FBSDKInternalUtility.h"
 
 @implementation FBSDKViewImpressionTracker
 {
@@ -40,7 +39,7 @@
   FBSDKViewImpressionTracker *impressionTracker = _impressionTrackers[eventName];
   if (!impressionTracker) {
     impressionTracker = [[self alloc] initWithEventName:eventName];
-    [FBSDKTypeUtility dictionary:_impressionTrackers setObject:impressionTracker forKey:eventName];
+    _impressionTrackers[eventName] = impressionTracker;
   }
   return impressionTracker;
 }
@@ -71,7 +70,7 @@
 - (void)logImpressionWithIdentifier:(NSString *)identifier parameters:(NSDictionary *)parameters
 {
   NSMutableDictionary *keys = [NSMutableDictionary dictionary];
-  [FBSDKTypeUtility dictionary:keys setObject:identifier forKey:@"__view_impression_identifier__"];
+  keys[@"__view_impression_identifier__"] = identifier;
   [keys addEntriesFromDictionary:parameters];
   NSDictionary *impressionKey = [keys copy];
   // Ensure that each impression is only tracked once

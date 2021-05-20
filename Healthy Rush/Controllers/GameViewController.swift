@@ -8,18 +8,9 @@
 import UIKit
 import SpriteKit
 import GameplayKit
+import FirebaseAuth
 
 class GameViewController: UIViewController {
-<<<<<<< Updated upstream
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        let scene = MainMenu(size: CGSize(width: 2048, height: 1536))
-        scene.scaleMode = .aspectFill
-        scene.viewController = self // save controller reference
-        
-        let skView = view as! SKView
-=======
     
     // Firebase utilis
     var handler: AuthStateDidChangeListenerHandle?
@@ -68,7 +59,6 @@ class GameViewController: UIViewController {
         Spark.viewController = self              // save controller reference
         
         let skView = self.view as! SKView
->>>>>>> Stashed changes
         skView.showsFPS = false
         skView.showsNodeCount = false
         skView.showsPhysics = false
@@ -76,10 +66,6 @@ class GameViewController: UIViewController {
         skView.presentScene(scene)
     }
     
-<<<<<<< Updated upstream
-    override var prefersStatusBarHidden: Bool {
-        return true
-=======
     func showTextInputPrompt(withMessage message: String,
                                completionBlock: @escaping ((Bool, String?) -> Void)) {
         let prompt = UIAlertController(title: nil, message: message, preferredStyle: .alert)
@@ -104,7 +90,6 @@ class GameViewController: UIViewController {
             alert.addAction(action)
         }
         present(alert, animated: true, completion: completion)
->>>>>>> Stashed changes
     }
     
 }

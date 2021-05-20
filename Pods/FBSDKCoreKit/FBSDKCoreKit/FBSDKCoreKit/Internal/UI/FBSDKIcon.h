@@ -19,20 +19,13 @@
 #import <UIKit/UIKit.h>
 
 NS_SWIFT_NAME(Icon)
-
 @interface FBSDKIcon : NSObject
 
-- (UIImage *)imageWithSize:(CGSize)size
-NS_SWIFT_NAME(image(size:));
+- (instancetype)initWithColor:(UIColor *)color NS_DESIGNATED_INITIALIZER;
 
-- (UIImage *)imageWithSize:(CGSize)size scale:(CGFloat)scale
-NS_SWIFT_NAME(image(size:scale:));
+@property (nonatomic, strong, readonly) UIColor *color;
 
-- (UIImage *)imageWithSize:(CGSize)size color:(UIColor *)color
-NS_SWIFT_NAME(image(size:color:));
-
-- (UIImage *)imageWithSize:(CGSize)size scale:(CGFloat)scale color:(UIColor *)color
-NS_SWIFT_NAME(image(size:scale:color:));
+- (UIImage *)imageWithSize:(CGSize)size;
 
 - (CGPathRef)pathWithSize:(CGSize)size;
 

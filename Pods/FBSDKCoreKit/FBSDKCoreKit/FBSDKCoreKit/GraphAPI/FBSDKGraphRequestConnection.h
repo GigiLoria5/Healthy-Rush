@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 FOUNDATION_EXPORT NSString *const FBSDKNonJSONResponseProperty
 NS_SWIFT_NAME(NonJSONResponseProperty);
 
-@protocol FBSDKGraphRequest;
+@class FBSDKGraphRequest;
 @class FBSDKGraphRequestConnection;
 
 /**
@@ -213,7 +213,7 @@ NS_SWIFT_NAME(GraphRequestConnection)
  The completion handler is retained until the block is called upon the
  completion or cancellation of the connection.
  */
-- (void)addRequest:(id<FBSDKGraphRequest>)request
+- (void)addRequest:(FBSDKGraphRequest *)request
  completionHandler:(FBSDKGraphRequestBlock)handler;
 
 /**
@@ -235,7 +235,7 @@ NS_SWIFT_NAME(GraphRequestConnection)
  completion or cancellation of the connection. This request can be named
  to allow for using the request's response in a subsequent request.
  */
-- (void)addRequest:(id<FBSDKGraphRequest>)request
+- (void)addRequest:(FBSDKGraphRequest *)request
     batchEntryName:(NSString *)name
  completionHandler:(FBSDKGraphRequestBlock)handler;
 
@@ -256,7 +256,7 @@ NS_SWIFT_NAME(GraphRequestConnection)
  completion or cancellation of the connection. This request can be named
  to allow for using the request's response in a subsequent request.
  */
-- (void)addRequest:(id<FBSDKGraphRequest>)request
+- (void)addRequest:(FBSDKGraphRequest *)request
    batchParameters:(nullable NSDictionary<NSString *, id> *)batchParameters
  completionHandler:(FBSDKGraphRequestBlock)handler;
 

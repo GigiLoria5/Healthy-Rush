@@ -24,15 +24,11 @@ class GameScene: SKScene {
     var lastUpdateTime: TimeInterval = 0.0
     var dt: TimeInterval = 0.0
     
-<<<<<<< Updated upstream
-    //for the swipe gestures
-=======
     
     // For camera controller
     var visioPoseController : VisioController!
     
     // For the swipe gestures
->>>>>>> Stashed changes
     var touchStart: CGPoint?
     var startTime : TimeInterval?
     let minSpeed:CGFloat = 1200
@@ -112,13 +108,8 @@ class GameScene: SKScene {
     var cameraRect: CGRect {
         let width = playableRect.width
         let height = playableRect.height
-<<<<<<< Updated upstream
-        let x = cameraNode.position.x -  (width/2.0)
-        let y = cameraNode.position.y - (height/2.0)
-=======
         let x = cameraNode.position.x - (width)/2.0
         let y = cameraNode.position.y - (height)/2.0
->>>>>>> Stashed changes
         
         return CGRect(x: x, y: y, width: width, height: height)
     }
@@ -167,14 +158,6 @@ class GameScene: SKScene {
         guard let touch = touches.first else { return } // we focus only on the first touch
         let node = atPoint(touch.location(in: self)) // get the node touched
         
-<<<<<<< Updated upstream
-        //saves the initial touch point and the instant when it was pressed
-        touchStart = touches.first?.location(in: self)
-        startTime = touches.first?.timestamp
-
-
-=======
->>>>>>> Stashed changes
         if node.name == "pause" {
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
             if isPaused { return }
@@ -210,10 +193,6 @@ class GameScene: SKScene {
     
     // In order to introduce a tinier jump
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-<<<<<<< Updated upstream
-        
-=======
->>>>>>> Stashed changes
         //check if exists a starting touch when and where it was recognized
         guard var touchStart = self.touchStart else {
              return
@@ -620,10 +599,6 @@ extension GameScene {
     }
     
     func setupLife() {
-<<<<<<< Updated upstream
-        
-=======
->>>>>>> Stashed changes
         var livesSprites = [SKSpriteNode]()
         //add livesNumber hearts to the player
         for i in 0..<livesNumber{
@@ -715,27 +690,17 @@ extension GameScene {
         if livesNumber <= 0 { livesNumber = 0}
         lifeNodes[livesNumber].texture = SKTexture(imageNamed: "life-off")
         if livesNumber == 0{
-<<<<<<< Updated upstream
-            gameOver = true
-        }
-    }
-    
-    func hurtedAnimation(){
-=======
             gameOver = true //game over state
         }
     }
     
     func hurtedAnimation() {
->>>>>>> Stashed changes
         let colorize = SKAction.colorize(with: .red, colorBlendFactor: 0.6, duration: 0.2)
         let decolorize = SKAction.colorize(with: .red, colorBlendFactor: -0.6, duration: 0.6)
         player.run(colorize)
         player.run(decolorize)
     }
     
-<<<<<<< Updated upstream
-=======
     func executeJump() {
         playerRunAnimationStop()
         playerJumpAnimationStart()
@@ -781,7 +746,6 @@ extension GameScene {
         goNode.position = CGPoint(x:player.position.x,y: size.height/2.0 + goNode.frame.height/2.0)
     }
     
->>>>>>> Stashed changes
 }
 
 //MARK: - SKPhysicsContactDelegate
@@ -814,10 +778,8 @@ extension GameScene: SKPhysicsContactDelegate {
                 scoreLbl.text = "\(numScore)"
         
             case PhysicsCategory.Obstacle:
-                hurtedAnimation() // the obstable hurts the player
                 setupGameOver()
                 run(soundCollision) // collision sound
-                
         
             case PhysicsCategory.Jewel:
                 if let node = other.node {

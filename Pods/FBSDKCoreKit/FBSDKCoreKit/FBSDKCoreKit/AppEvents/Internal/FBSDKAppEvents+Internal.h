@@ -17,12 +17,10 @@
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #if SWIFT_PACKAGE
- #import "FBSDKAppEvents.h"
+#import "FBSDKAppEvents.h"
 #else
- #import <FBSDKCoreKit/FBSDKAppEvents.h>
+#import <FBSDKCoreKit/FBSDKAppEvents.h>
 #endif
-
-#import <UIKit/UIApplication.h>
 
 #import "FBSDKAppEventsUtility.h"
 
@@ -62,12 +60,16 @@ FOUNDATION_EXPORT NSString *const FBSDKAppEventParameterLaunchSource;
 /** Use to log the result of a call to FBDialogs presentShareDialogWithParams: */
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBDialogsPresentShareDialog;
 
+/** Use to log the result of a call to FBDialogs presentShareDialogWithOpenGraphActionParams: */
+FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBDialogsPresentShareDialogOG;
+
 /** Use to log the result of a call to FBDialogs presentLikeDialogWithLikeParams: */
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBDialogsPresentLikeDialogOG;
 
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBDialogsPresentShareDialogPhoto;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBDialogsPresentMessageDialog;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBDialogsPresentMessageDialogPhoto;
+FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBDialogsPresentMessageDialogOG;
 
 /** Use to log the start of an auth request that cannot be fulfilled by the token cache */
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBSessionAuthStart;
@@ -80,15 +82,6 @@ FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBSessionAuthMethodStart;
 
 /** Use to log the end of the last tried auth method as part of an auth request */
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBSessionAuthMethodEnd;
-
-/** Use to log the post-login heartbeat event after  the end of an auth request*/
-FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBSessionAuthHeartbeat;
-
-/** Use to log the start of a referral request */
-FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBReferralStart;
-
-/** Use to log the end of a referral request */
-FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBReferralEnd;
 
 /** Use to log the timestamp for the transition to the Facebook native login dialog */
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBDialogsNativeLoginDialogStart;
@@ -145,11 +138,16 @@ FOUNDATION_EXPORT NSString *const FBSDKAppEventsDialogOutcomeValue_Completed;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventsDialogOutcomeValue_Cancelled;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventsDialogOutcomeValue_Failed;
 
+FOUNDATION_EXPORT NSString *const FBSDKAppEventsDialogShareContentTypeOpenGraph;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventsDialogShareContentTypeStatus;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventsDialogShareContentTypePhoto;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventsDialogShareContentTypeVideo;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventsDialogShareContentTypeCamera;
+FOUNDATION_EXPORT NSString *const FBSDKAppEventsDialogShareContentTypeMessengerGenericTemplate;
+FOUNDATION_EXPORT NSString *const FBSDKAppEventsDialogShareContentTypeMessengerMediaTemplate;
+FOUNDATION_EXPORT NSString *const FBSDKAppEventsDialogShareContentTypeMessengerOpenGraphMusicTemplate;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventsDialogShareContentTypeUnknown;
+
 
 FOUNDATION_EXPORT NSString *const FBSDKAppEventsDialogShareModeAutomatic;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventsDialogShareModeBrowser;
@@ -166,6 +164,7 @@ FOUNDATION_EXPORT NSString *const FBSDKAppEventsNativeLoginDialogEndTime;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventsWebLoginE2E;
 
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBSDKLikeButtonImpression;
+FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBSDKLoginButtonImpression;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBSDKSendButtonImpression;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBSDKShareButtonImpression;
 FOUNDATION_EXPORT NSString *const FBSDKAppEventNameFBSDKLiveStreamingButtonImpression;
@@ -202,11 +201,11 @@ FOUNDATION_EXPORT NSString *const FBSDKAppEventsWKWebViewMessagesPixelIDKey;
 
 @interface FBSDKAppEvents (Internal)
 
-@property (class, nonatomic, readonly, strong) FBSDKAppEvents *singleton;
+@property (class, nonatomic, strong, readonly) FBSDKAppEvents *singleton;
 
-+ (void)setCanLogEvents;
-
-+ (void)setApplicationState:(UIApplicationState)state;
+#ifdef DEBUG
++ (void)resetSingleton;
+#endif
 
 + (void)logInternalEvent:(FBSDKAppEventName)eventName
       isImplicitlyLogged:(BOOL)isImplicitlyLogged;
@@ -233,7 +232,7 @@ FOUNDATION_EXPORT NSString *const FBSDKAppEventsWKWebViewMessagesPixelIDKey;
               valueToSum:(NSNumber *)valueToSum
               parameters:(NSDictionary *)parameters
       isImplicitlyLogged:(BOOL)isImplicitlyLogged
-             accessToken:(FBSDKAccessToken *)accessToken;
+            accessToken:(FBSDKAccessToken *)accessToken;
 
 + (void)logImplicitEvent:(NSString *)eventName
               valueToSum:(NSNumber *)valueToSum

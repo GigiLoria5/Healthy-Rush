@@ -20,25 +20,37 @@
 
 #if !TARGET_OS_TV
 
- #import "FBSDKViewHierarchy.h"
+#import "FBSDKViewHierarchy.h"
 
- #import <QuartzCore/QuartzCore.h>
+#import <objc/runtime.h>
 
- #import <objc/runtime.h>
+#import <QuartzCore/QuartzCore.h>
 
- #import "FBSDKCodelessPathComponent.h"
- #import "FBSDKCoreKit+Internal.h"
- #import "FBSDKViewHierarchyMacros.h"
+#import "FBSDKCodelessPathComponent.h"
+#import "FBSDKCoreKit+Internal.h"
+#import "FBSDKViewHierarchyMacros.h"
 
- #define MAX_VIEW_HIERARCHY_LEVEL 35
+#define MAX_VIEW_HIERARCHY_LEVEL 35
 
-NS_ASSUME_NONNULL_BEGIN
+void fb_dispatch_on_main_thread(dispatch_block_t block) {
+  if (block != nil) {
+    if ([NSThread isMainThread]) {
+      block();
+    } else {
+      dispatch_async(dispatch_get_main_queue(), block);
+    }
+  }
+}
 
-_Nullable id getVariableFromInstance(NSObject *instance, NSString *variableName);
+void fb_dispatch_on_default_thread(dispatch_block_t block) {
+  if (block != nil) {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), block);
+  }
+}
 
 @implementation FBSDKViewHierarchy
 
-+ (nullable NSArray *)getChildren:(NSObject *)obj
++ (NSArray*)getChildren:(NSObject*)obj
 {
   if ([obj isKindOfClass:[UIControl class]]) {
     return nil;
@@ -54,13 +66,13 @@ _Nullable id getVariableFromInstance(NSObject *instance, NSString *variableName)
       if (child != rootVC.view) {
         UIViewController *vc = [FBSDKViewHierarchy getParentViewController:child];
         if (vc != nil && vc.view == child) {
-          [FBSDKTypeUtility array:children addObject:vc];
+          [children addObject:vc];
         } else {
-          [FBSDKTypeUtility array:children addObject:child];
+          [children addObject:child];
         }
       } else {
         if (rootVC) {
-          [FBSDKTypeUtility array:children addObject:rootVC];
+          [children addObject:rootVC];
         }
       }
     }
@@ -69,53 +81,53 @@ _Nullable id getVariableFromInstance(NSObject *instance, NSString *variableName)
     for (UIView *child in subviews) {
       UIViewController *vc = [FBSDKViewHierarchy getParentViewController:child];
       if (vc && vc.view == child) {
-        [FBSDKTypeUtility array:children addObject:vc];
+        [children addObject:vc];
       } else {
-        [FBSDKTypeUtility array:children addObject:child];
+        [children addObject:child];
       }
     }
   } else if ([obj isKindOfClass:[UINavigationController class]]) {
-    UIViewController *vc = ((UINavigationController *)obj).visibleViewController;
-    UIViewController *tc = ((UINavigationController *)obj).topViewController;
-    NSArray *nextChildren = [FBSDKViewHierarchy getChildren:((UIViewController *)obj).view];
+    UIViewController *vc = ((UINavigationController*)obj).visibleViewController;
+    UIViewController *tc = ((UINavigationController*)obj).topViewController;
+    NSArray *nextChildren = [FBSDKViewHierarchy getChildren:((UIViewController*)obj).view];
     for (NSObject *child in nextChildren) {
       if (tc && [self isView:child superViewOfView:tc.view]) {
-        [FBSDKTypeUtility array:children addObject:tc];
+        [children addObject:tc];
       } else if (vc && [self isView:child superViewOfView:vc.view]) {
-        [FBSDKTypeUtility array:children addObject:vc];
+        [children addObject:vc];
       } else {
         if (child != vc.view && child != tc.view) {
-          [FBSDKTypeUtility array:children addObject:child];
+          [children addObject:child];
         } else {
           if (vc && child == vc.view) {
-            [FBSDKTypeUtility array:children addObject:vc];
+            [children addObject:vc];
           } else if (tc && child == tc.view) {
-            [FBSDKTypeUtility array:children addObject:tc];
+            [children addObject:tc];
           }
         }
       }
     }
 
     if (vc && ![children containsObject:vc]) {
-      [FBSDKTypeUtility array:children addObject:vc];
+      [children addObject:vc];
     }
   } else if ([obj isKindOfClass:[UITabBarController class]]) {
     UIViewController *vc = ((UITabBarController *)obj).selectedViewController;
-    NSArray *nextChildren = [FBSDKViewHierarchy getChildren:((UIViewController *)obj).view];
+    NSArray *nextChildren = [FBSDKViewHierarchy getChildren:((UIViewController*)obj).view];
     for (NSObject *child in nextChildren) {
       if (vc && [self isView:child superViewOfView:vc.view]) {
-        [FBSDKTypeUtility array:children addObject:vc];
+        [children addObject:vc];
       } else {
         if (vc && child == vc.view) {
-          [FBSDKTypeUtility array:children addObject:vc];
+          [children addObject:vc];
         } else {
-          [FBSDKTypeUtility array:children addObject:child];
+          [children addObject:child];
         }
       }
     }
 
     if (vc && ![children containsObject:vc]) {
-      [FBSDKTypeUtility array:children addObject:vc];
+      [children addObject:vc];
     }
   } else if ([obj isKindOfClass:[UIViewController class]]) {
     UIViewController *vc = (UIViewController *)obj;
@@ -126,17 +138,17 @@ _Nullable id getVariableFromInstance(NSObject *instance, NSString *variableName)
       }
     }
     for (NSObject *child in vc.childViewControllers) {
-      [FBSDKTypeUtility array:children addObject:child];
+      [children addObject:child];
     }
     UIViewController *presentedVC = vc.presentedViewController;
     if (presentedVC) {
-      [FBSDKTypeUtility array:children addObject:presentedVC];
+      [children addObject:presentedVC];
     }
   }
   return children;
 }
 
-+ (nullable NSObject *)getParent:(nullable NSObject *)obj
++ (NSObject *)getParent:(NSObject *)obj
 {
   if ([obj isKindOfClass:[UIView class]]) {
     UIView *superview = ((UIView *)obj).superview;
@@ -148,7 +160,8 @@ _Nullable id getVariableFromInstance(NSObject *instance, NSString *variableName)
     if (superview && superview != obj) {
       return superview;
     }
-  } else if ([obj isKindOfClass:[UIViewController class]]) {
+  }
+  else if ([obj isKindOfClass:[UIViewController class]]) {
     UIViewController *vc = (UIViewController *)obj;
     UIViewController *parentVC = vc.parentViewController;
     UIViewController *presentingVC = vc.presentingViewController;
@@ -180,12 +193,12 @@ _Nullable id getVariableFromInstance(NSObject *instance, NSString *variableName)
   return nil;
 }
 
-+ (nullable NSArray *)getPath:(NSObject *)obj
++ (NSArray *)getPath:(NSObject *)obj
 {
   return [FBSDKViewHierarchy getPath:obj limit:MAX_VIEW_HIERARCHY_LEVEL];
 }
 
-+ (nullable NSArray *)getPath:(NSObject *)obj limit:(int)limit
++ (NSArray *)getPath:(NSObject *)obj limit:(int)limit
 {
   if (!obj || limit <= 0) {
     return nil;
@@ -204,59 +217,59 @@ _Nullable id getVariableFromInstance(NSObject *instance, NSString *variableName)
   NSDictionary *componentInfo = [FBSDKViewHierarchy getAttributesOf:obj parent:parent];
 
   FBSDKCodelessPathComponent *pathComponent = [[FBSDKCodelessPathComponent alloc]
-                                               initWithJSON:componentInfo];
-  [FBSDKTypeUtility array:path addObject:pathComponent];
+                                        initWithJSON:componentInfo];
+  [path addObject:pathComponent];
 
   return [NSArray arrayWithArray:path];
 }
 
-+ (NSDictionary<NSString *, id> *)getAttributesOf:(NSObject *)obj parent:(NSObject *_Nullable)parent
++ (NSDictionary<NSString *, id> *)getAttributesOf:(NSObject *)obj parent:(NSObject *)parent
 {
   NSMutableDictionary *componentInfo = [NSMutableDictionary dictionary];
-  [FBSDKTypeUtility dictionary:componentInfo setObject:NSStringFromClass([obj class]) forKey:CODELESS_MAPPING_CLASS_NAME_KEY];
+  componentInfo[CODELESS_MAPPING_CLASS_NAME_KEY] = NSStringFromClass([obj class]);
 
   if (![FBSDKViewHierarchy isUserInputView:obj]) {
     NSString *text = [FBSDKViewHierarchy getText:obj];
-    if (text.length > 0) {
-      [FBSDKTypeUtility dictionary:componentInfo setObject:text forKey:CODELESS_MAPPING_TEXT_KEY];
+    if (text) {
+      componentInfo[CODELESS_MAPPING_TEXT_KEY] = text;
     }
   } else {
-    [FBSDKTypeUtility dictionary:componentInfo setObject:@"" forKey:CODELESS_MAPPING_TEXT_KEY];
+    componentInfo[CODELESS_MAPPING_TEXT_KEY] = @"";
     componentInfo[CODELESS_MAPPING_IS_USER_INPUT_KEY] = @YES;
   }
 
   NSString *hint = [FBSDKViewHierarchy getHint:obj];
-  if (hint.length > 0) {
-    [FBSDKTypeUtility dictionary:componentInfo setObject:hint forKey:CODELESS_MAPPING_HINT_KEY];
+  if (hint) {
+    componentInfo[CODELESS_MAPPING_HINT_KEY] = hint;
   }
 
   NSIndexPath *indexPath = [FBSDKViewHierarchy getIndexPath:obj];
   if (indexPath) {
-    [FBSDKTypeUtility dictionary:componentInfo setObject:@(indexPath.section) forKey:CODELESS_MAPPING_SECTION_KEY];
-    [FBSDKTypeUtility dictionary:componentInfo setObject:@(indexPath.row) forKey:CODELESS_MAPPING_ROW_KEY];
+    componentInfo[CODELESS_MAPPING_SECTION_KEY] = @(indexPath.section);
+    componentInfo[CODELESS_MAPPING_ROW_KEY] = @(indexPath.row);
   }
 
   if (parent != nil) {
     NSArray *children = [FBSDKViewHierarchy getChildren:parent];
     NSUInteger index = [children indexOfObject:obj];
     if (index != NSNotFound) {
-      [FBSDKTypeUtility dictionary:componentInfo setObject:@(index) forKey:CODELESS_MAPPING_INDEX_KEY];
+      componentInfo[CODELESS_MAPPING_INDEX_KEY] = @(index);
     }
   } else {
-    [FBSDKTypeUtility dictionary:componentInfo setObject:@0 forKey:CODELESS_MAPPING_INDEX_KEY];
+    componentInfo[CODELESS_MAPPING_INDEX_KEY] = @0;
   }
 
-  [FBSDKTypeUtility dictionary:componentInfo setObject:@([FBSDKViewHierarchy getTag:obj]) forKey:CODELESS_VIEW_TREE_TAG_KEY];
+  componentInfo[CODELESS_VIEW_TREE_TAG_KEY] = @([FBSDKViewHierarchy getTag:obj]);
 
   return [componentInfo copy];
 }
 
-+ (nullable NSMutableDictionary<NSString *, id> *)getDetailAttributesOf:(NSObject *)obj
++ (NSMutableDictionary<NSString *, id> *)getDetailAttributesOf:(NSObject *)obj
 {
   return [self getDetailAttributesOf:obj withHash:YES];
 }
 
-+ (nullable NSMutableDictionary<NSString *, id> *)getDetailAttributesOf:(NSObject *)obj withHash:(BOOL)hash
++ (NSMutableDictionary<NSString *, id> *)getDetailAttributesOf:(NSObject *)obj withHash:(BOOL)hash
 {
   if (!obj) {
     return nil;
@@ -269,10 +282,10 @@ _Nullable id getVariableFromInstance(NSObject *instance, NSString *variableName)
   NSMutableDictionary *result = [NSMutableDictionary dictionaryWithDictionary:simpleAttributes];
 
   NSString *className = NSStringFromClass([obj class]);
-  [FBSDKTypeUtility dictionary:result setObject:className forKey:VIEW_HIERARCHY_CLASS_NAME_KEY];
+  result[VIEW_HIERARCHY_CLASS_NAME_KEY] = className;
 
   NSUInteger classBitmask = [FBSDKViewHierarchy getClassBitmask:obj];
-  [FBSDKTypeUtility dictionary:result setObject:[NSString stringWithFormat:@"%lu", (unsigned long)classBitmask] forKey:VIEW_HIERARCHY_CLASS_TYPE_BITMASK_KEY];
+  result[VIEW_HIERARCHY_CLASS_TYPE_BITMASK_KEY] = [NSString stringWithFormat:@"%lu", (unsigned long)classBitmask];
 
   if ([obj isKindOfClass:[UIControl class]]) {
     // Get actions of UIControl
@@ -286,27 +299,27 @@ _Nullable id getVariableFromInstance(NSObject *instance, NSString *variableName)
       }
     }
     if (targets.count > 0) {
-      [FBSDKTypeUtility dictionary:result setObject:actions.allObjects forKey:CODELESS_VIEW_TREE_ACTIONS_KEY];
+      result[CODELESS_VIEW_TREE_ACTIONS_KEY] = actions.allObjects;
     }
   }
 
-  [FBSDKTypeUtility dictionary:result setObject:[FBSDKViewHierarchy getDimensionOf:obj] forKey:CODELESS_VIEW_TREE_DIMENSION_KEY];
+  result[CODELESS_VIEW_TREE_DIMENSION_KEY] = [FBSDKViewHierarchy getDimensionOf:obj];
 
   NSDictionary<NSString *, id> *textStyle = [FBSDKViewHierarchy getTextStyle:obj];
   if (textStyle) {
-    [FBSDKTypeUtility dictionary:result setObject:textStyle forKey:CODELESS_VIEW_TREE_TEXT_STYLE_KEY];
+    result[CODELESS_VIEW_TREE_TEXT_STYLE_KEY] = textStyle;
   }
 
   if (hash) {
     // hash text and hint
-    [FBSDKTypeUtility dictionary:result setObject:[FBSDKUtility SHA256Hash:result[VIEW_HIERARCHY_TEXT_KEY]] forKey:VIEW_HIERARCHY_TEXT_KEY];
-    [FBSDKTypeUtility dictionary:result setObject:[FBSDKUtility SHA256Hash:result[VIEW_HIERARCHY_HINT_KEY]] forKey:VIEW_HIERARCHY_HINT_KEY];
+    result[VIEW_HIERARCHY_TEXT_KEY] = [FBSDKUtility SHA256Hash:result[VIEW_HIERARCHY_TEXT_KEY]];
+    result[VIEW_HIERARCHY_HINT_KEY] = [FBSDKUtility SHA256Hash:result[VIEW_HIERARCHY_HINT_KEY]];
   }
 
   return result;
 }
 
-+ (nullable NSIndexPath *)getIndexPath:(NSObject *)obj
++ (NSIndexPath *)getIndexPath:(NSObject *)obj
 {
   NSIndexPath *indexPath = nil;
 
@@ -321,33 +334,15 @@ _Nullable id getVariableFromInstance(NSObject *instance, NSString *variableName)
   return indexPath;
 }
 
-// This method only works for ObjC objects (whether statically typed or id)
-id getVariableFromInstance(NSObject *instance, NSString *variableName)
-{
-  if (instance == nil || variableName.length == 0) {
-    return [NSNull null];
-  }
-
-  Ivar ivar = class_getInstanceVariable([instance class], variableName.UTF8String);
-  if (ivar != NULL) {
-    const char *encoding = ivar_getTypeEncoding(ivar);
-    if (encoding != NULL && encoding[0] == '@') {
-      return object_getIvar(instance, ivar);
-    }
-  }
-
-  return [NSNull null];
-}
-
-+ (NSString *)getText:(nullable NSObject *)obj
++ (NSString *)getText:(NSObject *)obj
 {
   NSString *text = nil;
 
   if ([obj isKindOfClass:[UIButton class]]) {
     text = ((UIButton *)obj).currentTitle;
-  } else if ([obj isKindOfClass:[UITextView class]]
-             || [obj isKindOfClass:[UITextField class]]
-             || [obj isKindOfClass:[UILabel class]]) {
+  } else if ([obj isKindOfClass:[UITextView class]] ||
+             [obj isKindOfClass:[UITextField class]] ||
+             [obj isKindOfClass:[UILabel class]]) {
     text = ((UILabel *)obj).text;
   } else if ([obj isKindOfClass:[UIPickerView class]]) {
     UIPickerView *picker = (UIPickerView *)obj;
@@ -355,10 +350,6 @@ id getVariableFromInstance(NSObject *instance, NSString *variableName)
     NSMutableArray *titles = [NSMutableArray array];
 
     for (NSInteger i = 0; i < sections; i++) {
-      NSInteger numberOfRow = [picker numberOfRowsInComponent:i];
-      if (numberOfRow <= 0) {
-        continue;
-      }
       NSInteger row = [picker selectedRowInComponent:i];
       NSString *title;
       if ([picker.delegate
@@ -370,7 +361,7 @@ id getVariableFromInstance(NSObject *instance, NSString *variableName)
                  pickerView:picker
                  attributedTitleForRow:row forComponent:i].string;
       }
-      [FBSDKTypeUtility array:titles addObject:title ?: @""];
+      [titles addObject:title ?: @""];
     }
 
     if (titles.count > 0) {
@@ -380,25 +371,25 @@ id getVariableFromInstance(NSObject *instance, NSString *variableName)
     }
   } else if ([obj isKindOfClass:[UIDatePicker class]]) {
     UIDatePicker *picker = (UIDatePicker *)obj;
-    NSDateFormatter *const formatter = [NSDateFormatter new];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     formatter.dateFormat = @"yyyy-MM-dd HH:mm:ssZ";
     text = [formatter stringFromDate:picker.date];
   } else if ([obj isKindOfClass:objc_lookUpClass("RCTTextView")]) {
-    NSTextStorage *const textStorage = FBSDK_CAST_TO_CLASS_OR_NIL(getVariableFromInstance(obj, @"_textStorage"), NSTextStorage);
+    NSTextStorage *textStorage = [FBSDKAppEventsUtility getVariable:@"_textStorage"
+                                                       fromInstance:obj];
     if (textStorage) {
-      text = [textStorage string];
+      text = textStorage.string;
     }
   } else if ([obj isKindOfClass:objc_lookUpClass("RCTBaseTextInputView")]) {
-    NSAttributedString *const attributedText = FBSDK_CAST_TO_CLASS_OR_NIL(getVariableFromInstance(obj, @"attributedText"), NSAttributedString);
-    if (attributedText) {
-      text = [attributedText string];
-    }
+    NSAttributedString *attributedText = [FBSDKAppEventsUtility getVariable:@"attributedText"
+                                                               fromInstance:obj];
+    text = attributedText.string;
   }
 
-  return text ?: @"";
+  return text.length > 0 ? text : nil;
 }
 
-+ (nullable NSDictionary<NSString *, id> *)getTextStyle:(NSObject *)obj
++ (NSDictionary<NSString *, id> *)getTextStyle:(NSObject *)obj
 {
   UIFont *font = nil;
   if ([obj isKindOfClass:[UIButton class]]) {
@@ -418,23 +409,21 @@ id getVariableFromInstance(NSObject *instance, NSString *variableName)
     CGFloat fontSize = font.pointSize;
 
     return @{
-      CODELESS_VIEW_TREE_TEXT_IS_BOLD_KEY : @(isBold),
-      CODELESS_VIEW_TREE_TEXT_IS_ITALIC_KEY : @(isItalic),
-      CODELESS_VIEW_TREE_TEXT_SIZE_KEY : @(fontSize)
-    };
+             CODELESS_VIEW_TREE_TEXT_IS_BOLD_KEY: @(isBold),
+             CODELESS_VIEW_TREE_TEXT_IS_ITALIC_KEY: @(isItalic),
+             CODELESS_VIEW_TREE_TEXT_SIZE_KEY: @(fontSize)
+             };
   }
 
   return nil;
 }
 
-+ (NSString *)getHint:(nullable NSObject *)obj
++ (NSString *)getHint:(NSObject *)obj
 {
   NSString *hint = nil;
 
   if ([obj isKindOfClass:[UITextField class]]) {
-    UITextField *textField = (UITextField *)obj;
-    hint = textField.placeholder ?: @"";
-    hint = [hint stringByAppendingString:[self recursiveGetLabelsFromView:textField]];
+    hint = ((UITextField *)obj).placeholder;
   } else if ([obj isKindOfClass:[UINavigationController class]]) {
     UIViewController *top = ((UINavigationController *)obj).topViewController;
     if (top) {
@@ -442,7 +431,7 @@ id getVariableFromInstance(NSObject *instance, NSString *variableName)
     }
   }
 
-  return hint ?: @"";
+  return hint.length > 0 ? hint : nil;
 }
 
 + (NSUInteger)getClassBitmask:(NSObject *)obj
@@ -456,7 +445,7 @@ id getVariableFromInstance(NSObject *instance, NSString *variableName)
         bitmask |= FBCodelessClassBitmaskUIButton;
       } else if ([obj isKindOfClass:[UISwitch class]]) {
         bitmask |= FBCodelessClassBitmaskSwitch;
-      } else if ([obj isKindOfClass:[UIDatePicker class]]) {
+      }else if ([obj isKindOfClass:[UIDatePicker class]]) {
         bitmask |= FBCodelessClassBitmaskPicker;
       }
     } else if ([obj isKindOfClass:[UITableViewCell class]]) {
@@ -504,51 +493,35 @@ id getVariableFromInstance(NSObject *instance, NSString *variableName)
   }
 
   NSString *text = [FBSDKViewHierarchy getText:obj];
-  return text.length > 0 && [FBSDKAppEventsUtility isSensitiveUserData:text];
+  return text && [FBSDKAppEventsUtility isSensitiveUserData:text];
 }
 
-+ (nullable NSDictionary<NSString *, id> *)recursiveCaptureTreeWithCurrentNode:(NSObject *)currentNode
-                                                                    targetNode:(nullable NSObject *)targetNode
-                                                                 objAddressSet:(nullable NSMutableSet *)objAddressSet
-                                                                          hash:(BOOL)hash
++ (NSDictionary<NSString *, id> *)recursiveCaptureTree:(NSObject *)obj withObject:(NSObject *)interact
 {
-  if (!currentNode) {
+  if (!obj) {
     return nil;
   }
 
-  if (objAddressSet) {
-    if ([objAddressSet containsObject:currentNode]) {
-      return nil;
-    }
-    [objAddressSet addObject:currentNode];
-  }
+  NSMutableDictionary<NSString *, id> *result = [FBSDKViewHierarchy getDetailAttributesOf:obj withHash:NO];
 
-  NSMutableDictionary<NSString *, id> *result = [FBSDKViewHierarchy getDetailAttributesOf:currentNode
-                                                                                 withHash:hash];
-
-  NSArray<NSObject *> *children = [FBSDKViewHierarchy getChildren:currentNode];
+  NSArray<NSObject *> *children = [FBSDKViewHierarchy getChildren:obj];
   NSMutableArray<NSDictionary<NSString *, id> *> *childrenTrees = [NSMutableArray array];
   for (NSObject *child in children) {
-    NSDictionary<NSString *, id> *objTree = [self recursiveCaptureTreeWithCurrentNode:child
-                                                                           targetNode:targetNode
-                                                                        objAddressSet:objAddressSet
-                                                                                 hash:hash];
-    if (objTree != nil) {
-      [FBSDKTypeUtility array:childrenTrees addObject:objTree];
-    }
+    NSDictionary<NSString *, id> *objTree = [self recursiveCaptureTree:child withObject:interact];
+    [childrenTrees addObject:objTree];
   }
 
   if (childrenTrees.count > 0) {
-    [FBSDKTypeUtility dictionary:result setObject:[childrenTrees copy] forKey:VIEW_HIERARCHY_CHILD_VIEWS_KEY];
+    [result setObject:[childrenTrees copy] forKey:VIEW_HIERARCHY_CHILD_VIEWS_KEY];
   }
-  if (targetNode && currentNode == targetNode) {
-    [FBSDKTypeUtility dictionary:result setObject:[NSNumber numberWithBool:YES] forKey:VIEW_HIERARCHY_IS_INTERACTED_KEY];
+  if (obj == interact) {
+    [result setObject:[NSNumber numberWithBool:YES] forKey:VIEW_HIERARCHY_IS_INTERACTED_KEY];
   }
   return [result copy];
 }
 
- #pragma clang diagnostic push
- #pragma clang diagnostic ignored "-Wundeclared-selector"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
 + (BOOL)isRCTButton:(UIView *)view
 {
   if (view == nil) {
@@ -556,10 +529,10 @@ id getVariableFromInstance(NSObject *instance, NSString *variableName)
   }
 
   Class classRCTView = objc_lookUpClass(ReactNativeClassRCTView);
-  if (classRCTView && [view isKindOfClass:classRCTView]
-      && [view respondsToSelector:@selector(reactTagAtPoint:)]
-      && [view respondsToSelector:@selector(reactTag)]
-      && view.userInteractionEnabled) {
+  if (classRCTView && [view isKindOfClass:classRCTView] &&
+      [view respondsToSelector:@selector(reactTagAtPoint:)] &&
+      [view respondsToSelector:@selector(reactTag)] &&
+      view.userInteractionEnabled) {
     // We check all its subviews locations and the view is clickable if there exists one that mathces reactTagAtPoint
     for (UIView *subview in view.subviews) {
       if (subview && ![subview isKindOfClass:classRCTView]) {
@@ -576,7 +549,7 @@ id getVariableFromInstance(NSObject *instance, NSString *variableName)
   return NO;
 }
 
-+ (nullable NSNumber *)getViewReactTag:(UIView *)view
++ (NSNumber *)getViewReactTag:(UIView *)view
 {
   if (view != nil && [view respondsToSelector:@selector(reactTag)]) {
     NSNumber *reactTag = [view performSelector:@selector(reactTag)];
@@ -587,8 +560,7 @@ id getVariableFromInstance(NSObject *instance, NSString *variableName)
 
   return nil;
 }
-
- #pragma clang diagnostic pop
+#pragma clang diagnostic pop
 
 + (BOOL)isView:(NSObject *)obj1 superViewOfView:(UIView *)obj2
 {
@@ -609,7 +581,7 @@ id getVariableFromInstance(NSObject *instance, NSString *variableName)
   return NO;
 }
 
-+ (nullable UIViewController *)getParentViewController:(UIView *)view
++ (UIViewController *)getParentViewController:(UIView *)view
 {
   UIResponder *parentResponder = view;
 
@@ -623,7 +595,7 @@ id getVariableFromInstance(NSObject *instance, NSString *variableName)
   return nil;
 }
 
-+ (nullable UITableView *)getParentTableView:(UIView *)cell
++ (UITableView *)getParentTableView:(UIView *)cell
 {
   UIView *superview = cell.superview;
   while (superview) {
@@ -635,7 +607,7 @@ id getVariableFromInstance(NSObject *instance, NSString *variableName)
   return nil;
 }
 
-+ (nullable UICollectionView *)getParentCollectionView:(UIView *)cell
++ (UICollectionView *)getParentCollectionView:(UIView *)cell
 {
   UIView *superview = cell.superview;
   while (superview) {
@@ -652,10 +624,7 @@ id getVariableFromInstance(NSObject *instance, NSString *variableName)
   if ([obj isKindOfClass:[UIView class]]) {
     return ((UIView *)obj).tag;
   } else if ([obj isKindOfClass:[UIViewController class]]) {
-    UIViewController *vc = (UIViewController *)obj;
-    if (vc.isViewLoaded) {
-      return ((UIViewController *)obj).view.tag;
-    }
+    return ((UIViewController *)obj).view.tag;
   }
 
   return 0;
@@ -674,35 +643,20 @@ id getVariableFromInstance(NSObject *instance, NSString *variableName)
   CGRect frame = view.frame;
   CGPoint offset = CGPointZero;
 
-  if ([view isKindOfClass:[UIScrollView class]]) {
+  if ([view isKindOfClass:[UIScrollView class]])
     offset = ((UIScrollView *)view).contentOffset;
-  }
 
   return @{
-    CODELESS_VIEW_TREE_TOP_KEY : @((int)frame.origin.y),
-    CODELESS_VIEW_TREE_LEFT_KEY : @((int)frame.origin.x),
-    CODELESS_VIEW_TREE_WIDTH_KEY : @((int)frame.size.width),
-    CODELESS_VIEW_TREE_HEIGHT_KEY : @((int)frame.size.height),
-    CODELESS_VIEW_TREE_OFFSET_X_KEY : @((int)offset.x),
-    CODELESS_VIEW_TREE_OFFSET_Y_KEY : @((int)offset.y),
-    CODELESS_VIEW_TREE_VISIBILITY_KEY : view.isHidden ? @4 : @0
-  };
-}
-
-+ (NSString *)recursiveGetLabelsFromView:(UIView *)view
-{
-  NSString *str = @"";
-  for (UIView *subview in view.subviews) {
-    str = [str stringByAppendingString:[self recursiveGetLabelsFromView:subview]];
-  }
-  if ([view isKindOfClass:[UILabel class]] && ((UILabel *)view).text.length > 0) {
-    str = [str stringByAppendingFormat:@" %@", ((UILabel *)view).text];
-  }
-  return str;
+           CODELESS_VIEW_TREE_TOP_KEY: @((int)frame.origin.y),
+           CODELESS_VIEW_TREE_LEFT_KEY: @((int)frame.origin.x),
+           CODELESS_VIEW_TREE_WIDTH_KEY: @((int)frame.size.width),
+           CODELESS_VIEW_TREE_HEIGHT_KEY: @((int)frame.size.height),
+           CODELESS_VIEW_TREE_OFFSET_X_KEY: @((int)offset.x),
+           CODELESS_VIEW_TREE_OFFSET_Y_KEY: @((int)offset.y),
+           CODELESS_VIEW_TREE_VISIBILITY_KEY: view.isHidden ? @4 : @0
+           };
 }
 
 @end
-
-NS_ASSUME_NONNULL_END
 
 #endif
