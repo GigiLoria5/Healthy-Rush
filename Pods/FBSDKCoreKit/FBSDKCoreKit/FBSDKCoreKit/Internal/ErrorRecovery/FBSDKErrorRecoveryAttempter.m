@@ -19,21 +19,36 @@
 #import "FBSDKErrorRecoveryAttempter.h"
 
 #import "FBSDKErrorRecoveryConfiguration.h"
-#import "_FBSDKTemporaryErrorRecoveryAttempter.h"
+
+@interface FBSDKTemporaryErrorRecoveryAttempter : FBSDKErrorRecoveryAttempter
+@end
+
+@implementation FBSDKTemporaryErrorRecoveryAttempter
+
+- (void)attemptRecoveryFromError:(NSError *)error optionIndex:(NSUInteger)recoveryOptionIndex completionHandler:(void (^)(BOOL didRecover))completionHandler
+{
+  @try {
+    completionHandler(YES);
+  } @catch (NSException *exception) {
+    NSLog(@"Fail to complete error recovery. Exception reason: %@", exception.reason);
+  }
+}
+
+@end
 
 @implementation FBSDKErrorRecoveryAttempter
 
 + (instancetype)recoveryAttempterFromConfiguration:(FBSDKErrorRecoveryConfiguration *)configuration
 {
   if (configuration.errorCategory == FBSDKGraphRequestErrorTransient) {
-    return [[_FBSDKTemporaryErrorRecoveryAttempter alloc] init];
+    return [FBSDKTemporaryErrorRecoveryAttempter new];
   } else if (configuration.errorCategory == FBSDKGraphRequestErrorOther) {
     return nil;
   }
   if ([configuration.recoveryActionName isEqualToString:@"login"]) {
     Class loginRecoveryAttmpterClass = NSClassFromString(@"_FBSDKLoginRecoveryAttempter");
     if (loginRecoveryAttmpterClass) {
-      return [[loginRecoveryAttmpterClass alloc] init];
+      return [loginRecoveryAttmpterClass new];
     }
   }
   return nil;

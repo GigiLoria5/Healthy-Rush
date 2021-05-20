@@ -18,12 +18,6 @@
 
 #import "FBSDKAuthenticationTokenFactory.h"
 
-#if SWIFT_PACKAGE
-@import FBSDKCoreKit;
-#else
- #import <FBSDKCoreKit/FBSDKCoreKit.h>
-#endif
-
 #ifdef FBSDKCOCOAPODS
  #import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
 #else
@@ -35,7 +29,7 @@
 #import <CommonCrypto/CommonCrypto.h>
 
 #import "FBSDKAuthenticationTokenClaims.h"
-#import "FBSDKSessionProviding.h"
+#import "NSURLSession+Protocols.h"
 
 static NSString *const FBSDKBeginCertificate = @"-----BEGIN CERTIFICATE-----";
 static NSString *const FBSDKEndCertificate = @"-----END CERTIFICATE-----";
@@ -147,10 +141,12 @@ typedef void (^FBSDKVerifySignatureCompletionBlock)(BOOL success);
              completion:(FBSDKVerifySignatureCompletionBlock)completion
 {
 #if DEBUG
+#if FBSDKTEST
   // skip signature checking for tests
   if (_skipSignatureVerification && completion) {
     completion(YES);
   }
+#endif
 #endif
 
   NSData *signatureData = [FBSDKBase64 decodeAsData:[FBSDKBase64 base64FromBase64Url:signature]];
@@ -258,6 +254,7 @@ typedef void (^FBSDKVerifySignatureCompletionBlock)(BOOL success);
 #pragma mark - Test methods
 
 #if DEBUG
+ #if FBSDKTEST
 
 static BOOL _skipSignatureVerification;
 
@@ -276,6 +273,7 @@ static BOOL _skipSignatureVerification;
   _cert = certificate;
 }
 
+ #endif
 #endif
 
 @end

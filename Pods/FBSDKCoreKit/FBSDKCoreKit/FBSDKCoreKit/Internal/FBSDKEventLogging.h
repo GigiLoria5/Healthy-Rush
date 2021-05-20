@@ -18,13 +18,27 @@
 
 #import <Foundation/Foundation.h>
 
+@class FBSDKAccessToken;
+
 NS_ASSUME_NONNULL_BEGIN
 
 NS_SWIFT_NAME(EventLogging)
 @protocol FBSDKEventLogging
 
+- (void)logEvent:(NSString *)eventName
+      parameters:(NSDictionary<NSString *, id> *)parameters;
+
 - (void)logInternalEvent:(NSString *)eventName
       isImplicitlyLogged:(BOOL)isImplicitlyLogged;
+
+- (void)logInternalEvent:(NSString *)eventName
+              parameters:(NSDictionary *)parameters
+      isImplicitlyLogged:(BOOL)isImplicitlyLogged;
+
+- (void)logInternalEvent:(NSString *)eventName
+              parameters:(NSDictionary *)parameters
+      isImplicitlyLogged:(BOOL)isImplicitlyLogged
+             accessToken:(FBSDKAccessToken *)accessToken;
 
 @end
 

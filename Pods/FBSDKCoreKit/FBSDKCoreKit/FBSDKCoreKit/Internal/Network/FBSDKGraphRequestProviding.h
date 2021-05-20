@@ -18,10 +18,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import "FBSDKGraphRequestFlags.h"
+
 @protocol FBSDKGraphRequest;
 
 typedef NSString *const FBSDKHTTPMethod NS_TYPED_EXTENSIBLE_ENUM NS_SWIFT_NAME(HTTPMethod);
-typedef NS_OPTIONS(NSUInteger, FBSDKGraphRequestFlags);
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,11 +30,23 @@ NS_ASSUME_NONNULL_BEGIN
 NS_SWIFT_NAME(GraphRequestProviding)
 @protocol FBSDKGraphRequestProviding
 
-- (nonnull id<FBSDKGraphRequest>)createGraphRequestWithGraphPath:(NSString *)graphPath
+- (id<FBSDKGraphRequest>)createGraphRequestWithGraphPath:(NSString *)graphPath
                                                       parameters:(NSDictionary *)parameters
                                                      tokenString:(nullable NSString *)tokenString
                                                       HTTPMethod:(nullable FBSDKHTTPMethod)method
                                                            flags:(FBSDKGraphRequestFlags)flags;
+
+- (id<FBSDKGraphRequest>)createGraphRequestWithGraphPath:(NSString *)graphPath;
+
+- (id<FBSDKGraphRequest>)createGraphRequestWithGraphPath:(NSString *)graphPath
+                           parameters:(NSDictionary<NSString *, id> *)parameters
+                           HTTPMethod:(FBSDKHTTPMethod)method;
+
+- (id<FBSDKGraphRequest>)createGraphRequestWithGraphPath:(NSString *)graphPath
+                           parameters:(NSDictionary<NSString *, id> *)parameters
+                           tokenString:(nullable NSString *)tokenString
+                           version:(nullable NSString *)version
+                           HTTPMethod:(FBSDKHTTPMethod)method;
 
 @end
 

@@ -19,19 +19,31 @@
 #import "FBSDKAppEventsAtePublisher.h"
 
 #import "FBSDKAppEventsDeviceInfo.h"
+#import "FBSDKCoreKitBasicsImport.h"
+#import "FBSDKDataPersisting.h"
 #import "FBSDKInternalUtility.h"
+#import "FBSDKLogger.h"
+#import "FBSDKSettings+Internal.h"
+
+@interface FBSDKAppEventsAtePublisher ()
+
+@property (nullable, nonatomic, assign) id<FBSDKDataPersisting> store;
+
+@end
 
 @implementation FBSDKAppEventsAtePublisher
 
 - (nullable instancetype)initWithAppIdentifier:(NSString *)appIdentifier
+                                         store:(id<FBSDKDataPersisting>)store
 {
   if ((self = [self init])) {
-    NSString *identifier = [FBSDKTypeUtility stringValue:appIdentifier];
+    NSString *identifier = [FBSDKTypeUtility coercedToStringValue:appIdentifier];
     if (identifier.length == 0) {
       [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorDeveloperErrors logEntry:@"Missing [FBSDKAppEvents appID] for [FBSDKAppEvents publishATE:]"];
       return nil;
     }
     _appIdentifier = identifier;
+    _store = store;
   }
   return self;
 }
@@ -39,8 +51,7 @@
 - (void)publishATE
 {
   NSString *lastATEPingString = [NSString stringWithFormat:@"com.facebook.sdk:lastATEPing%@", self.appIdentifier];
-  NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-  id lastPublishDate = [defaults objectForKey:lastATEPingString];
+  id lastPublishDate = [self.store objectForKey:lastATEPingString];
   if ([lastPublishDate isKindOfClass:[NSDate class]] && [(NSDate *)lastPublishDate timeIntervalSinceNow] * -1 < 24 * 60 * 60) {
     return;
   }
@@ -57,7 +68,7 @@
   NSArray *event = @[
     @{
       @"_eventName" : @"fb_mobile_ate_status",
-      @"ate_status" : @([FBSDKSettings getAdvertisingTrackingStatus]).stringValue,
+      @"ate_status" : @([FBSDKSettings advertisingTrackingStatus]).stringValue,
       @"os_version" : osVersion,
     }
   ];
@@ -71,9 +82,10 @@
                                                                 tokenString:nil
                                                                  HTTPMethod:FBSDKHTTPMethodPOST
                                                                       flags:FBSDKGraphRequestFlagDoNotInvalidateTokenOnError | FBSDKGraphRequestFlagDisableErrorRecovery];
+  __block id<FBSDKDataPersisting> weakStore = self.store;
   [request startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
     if (!error) {
-      [defaults setObject:[NSDate date] forKey:lastATEPingString];
+      [weakStore setObject:[NSDate date] forKey:lastATEPingString];
     }
   }];
 }

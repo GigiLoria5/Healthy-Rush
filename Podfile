@@ -1,5 +1,4 @@
 # Uncomment the next line to define a global platform for your project
-# platform :ios, '9.0'
 
 target 'Healthy Rush' do
   # Comment the next line if you don't want to use dynamic frameworks
@@ -21,21 +20,5 @@ target 'Healthy Rush' do
   # FOR FACEBOOK
   pod 'FBSDKCoreKit'
   pod 'FBSDKLoginKit'
-
-end
-
-target 'Healthy Rush WatchApp' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
-
-  # Pods for Healthy Rush WatchApp
-
-end
-
-target 'Healthy Rush WatchApp Extension' do
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
-
-  # Pods for Healthy Rush WatchApp Extension
 
 end

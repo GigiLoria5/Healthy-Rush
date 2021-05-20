@@ -39,6 +39,8 @@ static long const MaxTimeSinceTokenIssued = 10 * 60; // 10 mins
                       email:(nullable NSString *)email
                     picture:(nullable NSString *)picture
                 userFriends:(nullable NSArray<NSString *> *)userFriends
+               userBirthday:(nullable NSString *)userBirthday
+               userAgeRange:(nullable NSDictionary<NSString *, NSNumber *> *)userAgeRange
 {
   if (self = [super init]) {
     _jti = jti;
@@ -52,6 +54,8 @@ static long const MaxTimeSinceTokenIssued = 10 * 60; // 10 mins
     _email = email;
     _picture = picture;
     _userFriends = userFriends;
+    _userBirthday = userBirthday;
+    _userAgeRange = userAgeRange;
   }
 
   return self;
@@ -68,13 +72,13 @@ static long const MaxTimeSinceTokenIssued = 10 * 60; // 10 mins
       long currentTime = [[NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]] longValue];
 
       // verify claims
-      NSString *jti = [FBSDKTypeUtility stringValue:claimsDict[@"jti"]];
+      NSString *jti = [FBSDKTypeUtility coercedToStringValue:claimsDict[@"jti"]];
       BOOL hasJti = jti.length > 0;
 
-      NSString *iss = [FBSDKTypeUtility stringValue:claimsDict[@"iss"]];
+      NSString *iss = [FBSDKTypeUtility coercedToStringValue:claimsDict[@"iss"]];
       BOOL isFacebook = iss.length > 0 && [[[NSURL URLWithString:iss] host] isEqualToString:@"facebook.com"];
 
-      NSString *aud = [FBSDKTypeUtility stringValue:claimsDict[@"aud"]];
+      NSString *aud = [FBSDKTypeUtility coercedToStringValue:claimsDict[@"aud"]];
       BOOL audMatched = [aud isEqualToString:[FBSDKSettings appID]];
 
       NSNumber *expValue = [FBSDKTypeUtility numberValue:claimsDict[@"exp"]];
@@ -85,19 +89,35 @@ static long const MaxTimeSinceTokenIssued = 10 * 60; // 10 mins
       long iat = [iatValue doubleValue];
       BOOL issuedRecently = iatValue != nil && iat >= currentTime - MaxTimeSinceTokenIssued;
 
-      NSString *nonce = [FBSDKTypeUtility stringValue:claimsDict[@"nonce"]];
+      NSString *nonce = [FBSDKTypeUtility coercedToStringValue:claimsDict[@"nonce"]];
       BOOL nonceMatched = nonce.length > 0 && [nonce isEqualToString:expectedNonce];
 
-      NSString *sub = [FBSDKTypeUtility stringValue:claimsDict[@"sub"]];
+      NSString *sub = [FBSDKTypeUtility coercedToStringValue:claimsDict[@"sub"]];
       BOOL userIDValid = sub.length > 0;
 
-      NSString *name = [FBSDKTypeUtility stringValue:claimsDict[@"name"]];
-      NSString *email = [FBSDKTypeUtility stringValue:claimsDict[@"email"]];
-      NSString *picture = [FBSDKTypeUtility stringValue:claimsDict[@"picture"]];
+      NSString *name = [FBSDKTypeUtility coercedToStringValue:claimsDict[@"name"]];
+      NSString *email = [FBSDKTypeUtility coercedToStringValue:claimsDict[@"email"]];
+      NSString *picture = [FBSDKTypeUtility coercedToStringValue:claimsDict[@"picture"]];
+      NSString *userBirthday = [FBSDKTypeUtility coercedToStringValue:claimsDict[@"user_birthday"]];
+
+      NSMutableDictionary<NSString *, NSNumber *> *userAgeRange;
+      NSDictionary *rawUserAgeRange = [FBSDKTypeUtility dictionaryValue:claimsDict[@"user_age_range"]];
+      if (rawUserAgeRange.count > 0) {
+        userAgeRange = NSMutableDictionary.new;
+        for (NSString *key in rawUserAgeRange) {
+          NSNumber *value = [FBSDKTypeUtility dictionary:rawUserAgeRange objectForKey:key ofType:NSNumber.class];
+          if (value == nil) {
+            userAgeRange = nil;
+            break;
+          }
+
+          [FBSDKTypeUtility dictionary:userAgeRange setObject:value forKey:key];
+        }
+      }
 
       NSArray<NSString *> *userFriends = [FBSDKTypeUtility arrayValue:claimsDict[@"user_friends"]];
       for (NSString *friend in userFriends) {
-        if (![FBSDKTypeUtility stringValue:friend]) {
+        if (![FBSDKTypeUtility coercedToStringValue:friend]) {
           userFriends = nil;
           break;
         }
@@ -114,7 +134,9 @@ static long const MaxTimeSinceTokenIssued = 10 * 60; // 10 mins
                                                               name:name
                                                              email:email
                                                            picture:picture
-                                                       userFriends:userFriends];
+                                                       userFriends:userFriends
+                                                      userBirthday:userBirthday
+                                                      userAgeRange:userAgeRange];
       }
     }
   }
@@ -136,7 +158,9 @@ static long const MaxTimeSinceTokenIssued = 10 * 60; // 10 mins
   && [_name isEqualToString:claims.name]
   && [_email isEqualToString:claims.email]
   && [_picture isEqualToString:claims.picture]
-  && [_userFriends isEqualToArray:claims.userFriends];
+  && [_userFriends isEqualToArray:claims.userFriends]
+  && [_userBirthday isEqualToString:claims.userBirthday]
+  && [_userAgeRange isEqualToDictionary:claims.userAgeRange];
 }
 
 - (BOOL)isEqual:(id)object

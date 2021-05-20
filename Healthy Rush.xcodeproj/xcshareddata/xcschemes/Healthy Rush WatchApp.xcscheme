@@ -53,11 +53,10 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
-      allowLocationSimulation = "YES">
-      <RemoteRunnable
-         runnableDebuggingMode = "2"
-         BundleIdentifier = "com.apple.Carousel"
-         RemotePath = "/Healthy Rush">
+      allowLocationSimulation = "YES"
+      notificationPayloadFile = "Healthy Rush WatchApp Extension/PushNotificationPayload.apns">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "62B125BF25DEE04500B7471E"
@@ -65,18 +64,17 @@
             BlueprintName = "Healthy Rush WatchApp"
             ReferencedContainer = "container:Healthy Rush.xcodeproj">
          </BuildableReference>
-      </RemoteRunnable>
+      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
-      debugDocumentVersioning = "YES">
-      <RemoteRunnable
-         runnableDebuggingMode = "2"
-         BundleIdentifier = "com.apple.Carousel"
-         RemotePath = "/Healthy Rush">
+      debugDocumentVersioning = "YES"
+      notificationPayloadFile = "Healthy Rush WatchApp Extension/PushNotificationPayload.apns">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "62B125BF25DEE04500B7471E"
@@ -84,16 +82,7 @@
             BlueprintName = "Healthy Rush WatchApp"
             ReferencedContainer = "container:Healthy Rush.xcodeproj">
          </BuildableReference>
-      </RemoteRunnable>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "62B125BF25DEE04500B7471E"
-            BuildableName = "Healthy Rush WatchApp.app"
-            BlueprintName = "Healthy Rush WatchApp"
-            ReferencedContainer = "container:Healthy Rush.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

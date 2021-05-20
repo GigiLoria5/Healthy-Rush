@@ -20,20 +20,21 @@
 
 #import <UIKit/UIKit.h>
 
-#import "FBSDKAccessToken.h"
 #import "FBSDKCoreKit.h"
-#import "FBSDKGraphRequestConnection.h"
 #import "FBSDKGraphRequestConnectionFactory.h"
 #import "FBSDKGraphRequestConnectionProviding.h"
 #import "FBSDKGraphRequestDataAttachment.h"
 #import "FBSDKInternalUtility.h"
 #import "FBSDKLogger.h"
 #import "FBSDKSettings+Internal.h"
+#import "FBSDKTokenStringProviding.h"
 
 // constants
 FBSDKHTTPMethod FBSDKHTTPMethodGET = @"GET";
 FBSDKHTTPMethod FBSDKHTTPMethodPOST = @"POST";
 FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
+
+static Class<FBSDKTokenStringProviding> _currentAccessTokenStringProvider;
 
 @interface FBSDKGraphRequest ()
 @property (nonatomic, assign) FBSDKGraphRequestFlags flags;
@@ -74,7 +75,7 @@ FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
 {
   return [self initWithGraphPath:graphPath
                       parameters:parameters
-                     tokenString:[FBSDKAccessToken currentAccessToken].tokenString
+                     tokenString:[_currentAccessTokenStringProvider tokenString]
                          version:nil
                       HTTPMethod:method];
 }
@@ -85,7 +86,7 @@ FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
 {
   return [self initWithGraphPath:graphPath
                       parameters:parameters
-                     tokenString:[FBSDKAccessToken currentAccessToken].tokenString
+                     tokenString:[_currentAccessTokenStringProvider tokenString]
                       HTTPMethod:FBSDKHTTPMethodGET
                            flags:flags];
 }
@@ -249,18 +250,30 @@ FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
   return params;
 }
 
-- (FBSDKGraphRequestConnection *)startWithCompletionHandler:(FBSDKGraphRequestBlock)handler
++ (void)setCurrentAccessTokenStringProvider:(Class<FBSDKTokenStringProviding>)provider
+{
+  if (_currentAccessTokenStringProvider != provider) {
+    _currentAccessTokenStringProvider = provider;
+  }
+}
+
+- (id<FBSDKGraphRequestConnecting>)startWithCompletionHandler:(FBSDKGraphRequestBlock)handler
 {
   id<FBSDKGraphRequestConnecting> connection = [self.connectionFactory createGraphRequestConnection];
   id<FBSDKGraphRequest> request = (id<FBSDKGraphRequest>)self;
   [connection addRequest:request completionHandler:handler];
   [connection start];
-  return (FBSDKGraphRequestConnection *)connection;
+  return connection;
 }
 
 #pragma mark - Debugging helpers
 
 - (NSString *)description
+{
+  return [self formattedDescription];
+}
+
+- (NSString *)formattedDescription
 {
   NSMutableString *result = [NSMutableString stringWithFormat:@"<%@: %p",
                              NSStringFromClass([self class]),
@@ -274,5 +287,21 @@ FBSDKHTTPMethod FBSDKHTTPMethodDELETE = @"DELETE";
   [result appendFormat:@", parameters: %@>", self.parameters.description];
   return result;
 }
+
+#if DEBUG
+ #if FBSDKTEST
+
++ (void)reset
+{
+  _currentAccessTokenStringProvider = nil;
+}
+
++ (Class<FBSDKTokenStringProviding>)currentAccessTokenStringProvider
+{
+  return _currentAccessTokenStringProvider;
+}
+
+ #endif
+#endif
 
 @end

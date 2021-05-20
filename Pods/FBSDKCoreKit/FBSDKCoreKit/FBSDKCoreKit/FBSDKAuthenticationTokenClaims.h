@@ -59,9 +59,15 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  End-User's friends.
 
- IMPORTANT: This field is not broadly available to developers at this time.
+ IMPORTANT: This field will only be populated if your user has granted your application the 'user_friends' permission.
  */
 @property (nullable, nonatomic, readonly, strong) NSArray<NSString *> *userFriends;
+
+/// End-User's birthday
+@property (nullable, nonatomic, readonly, strong) NSString *userBirthday;
+
+/// End-User's age range
+@property (nullable, nonatomic, readonly, strong) NSDictionary<NSString *, NSNumber *> *userAgeRange;
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;

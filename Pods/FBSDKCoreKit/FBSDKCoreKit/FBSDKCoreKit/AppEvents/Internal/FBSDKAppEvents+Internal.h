@@ -26,7 +26,16 @@
 
 #import "FBSDKAppEventsUtility.h"
 
-@class FBSDKGraphRequest;
+@protocol FBSDKGateKeeperManaging;
+@protocol FBSDKAppEventsConfigurationProviding;
+@protocol FBSDKServerConfigurationProviding;
+@protocol FBSDKGraphRequestProviding;
+@protocol FBSDKDataPersisting;
+@protocol FBSDKFeatureChecking;
+@protocol FBSDKLogging;
+@protocol FBSDKSettings;
+@protocol FBSDKEventProcessing;
+@protocol FBSDKPaymentObserving;
 
 // Internally known event names
 
@@ -208,6 +217,16 @@ FOUNDATION_EXPORT NSString *const FBSDKAppEventsWKWebViewMessagesPixelIDKey;
 
 + (void)setApplicationState:(UIApplicationState)state;
 
++ (void)configureWithGateKeeperManager:(Class<FBSDKGateKeeperManaging>)gateKeeperManager
+        appEventsConfigurationProvider:(Class<FBSDKAppEventsConfigurationProviding>)appEventsConfigurationProvider
+           serverConfigurationProvider:(Class<FBSDKServerConfigurationProviding>)serverConfigurationProvider
+                  graphRequestProvider:(id<FBSDKGraphRequestProviding>)provider
+                        featureChecker:(id<FBSDKFeatureChecking>)featureChecker
+                                 store:(id<FBSDKDataPersisting>)store
+                                logger:(Class<FBSDKLogging>)logger
+                              settings:(id<FBSDKSettings>)settings
+                       paymentObserver:(Class<FBSDKPaymentObserving>)paymentObserver;
+
 + (void)logInternalEvent:(FBSDKAppEventName)eventName
       isImplicitlyLogged:(BOOL)isImplicitlyLogged;
 
@@ -242,5 +261,9 @@ FOUNDATION_EXPORT NSString *const FBSDKAppEventsWKWebViewMessagesPixelIDKey;
 
 - (void)flushForReason:(FBSDKAppEventsFlushReason)flushReason;
 - (void)registerNotifications;
+
+#if !TARGET_OS_TV
++ (void)setEventProcessor:(id<FBSDKEventProcessing>)eventProcessor;
+#endif
 
 @end

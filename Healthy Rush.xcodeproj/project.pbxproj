@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3DCDF05FDD3C17DFF6E32495 /* Pods_Healthy_Rush_WatchApp_Extension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50EFC91B7053AC55295ABC2 /* Pods_Healthy_Rush_WatchApp_Extension.framework */; };
 		62B125C425DEE04500B7471E /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 62B125C225DEE04500B7471E /* Interface.storyboard */; };
 		62B125C625DEE04500B7471E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62B125C525DEE04500B7471E /* Assets.xcassets */; };
 		62B125CD25DEE04500B7471E /* Healthy Rush WatchApp Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 62B125CC25DEE04500B7471E /* Healthy Rush WatchApp Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -18,7 +17,6 @@
 		62B125DA25DEE04500B7471E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62B125D925DEE04500B7471E /* Assets.xcassets */; };
 		62B125DF25DEE04500B7471E /* Healthy Rush WatchApp.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 62B125C025DEE04500B7471E /* Healthy Rush WatchApp.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		62EA6C0D25E17371006DF000 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62EA6C0C25E17371006DF000 /* Types.swift */; };
-		991C5D7E1700CEF7198C4E12 /* Pods_Healthy_Rush_WatchApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F9452D9B124306CEE0290C4 /* Pods_Healthy_Rush_WatchApp.framework */; };
 		A446204584EA22101A9E37A9 /* Pods_Healthy_Rush.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8993CCA99A755AD43ED3F66 /* Pods_Healthy_Rush.framework */; };
 		ACD66BD02622FBBF00B675A2 /* BodyPoseProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD66BCF2622FBBF00B675A2 /* BodyPoseProcessor.swift */; };
 		ACD66BDA2622FC0100B675A2 /* VideoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD66BD92622FC0100B675A2 /* VideoCapture.swift */; };
@@ -92,7 +90,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2F9452D9B124306CEE0290C4 /* Pods_Healthy_Rush_WatchApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Healthy_Rush_WatchApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		392C8CB87BC5FE912D62FB54 /* Pods-Healthy Rush.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush.debug.xcconfig"; path = "Target Support Files/Pods-Healthy Rush/Pods-Healthy Rush.debug.xcconfig"; sourceTree = "<group>"; };
 		414B59109E9710DC57EB29E2 /* Pods-Healthy Rush WatchApp Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush WatchApp Extension.release.xcconfig"; path = "Target Support Files/Pods-Healthy Rush WatchApp Extension/Pods-Healthy Rush WatchApp Extension.release.xcconfig"; sourceTree = "<group>"; };
 		574500EFC22DD2FD3E87EDB1 /* Pods-Healthy Rush WatchApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Healthy Rush WatchApp.debug.xcconfig"; path = "Target Support Files/Pods-Healthy Rush WatchApp/Pods-Healthy Rush WatchApp.debug.xcconfig"; sourceTree = "<group>"; };
@@ -143,7 +140,6 @@
 		CC59DEF825D4989A0089C664 /* CGFloat+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Ext.swift"; sourceTree = "<group>"; };
 		CC5BFE34261CE71B001030FB /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CCBD64CC261A37E400FD5995 /* Healthy Rush.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Healthy Rush.entitlements"; sourceTree = "<group>"; };
-		F50EFC91B7053AC55295ABC2 /* Pods_Healthy_Rush_WatchApp_Extension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Healthy_Rush_WatchApp_Extension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,7 +147,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3DCDF05FDD3C17DFF6E32495 /* Pods_Healthy_Rush_WatchApp_Extension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -159,7 +154,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				991C5D7E1700CEF7198C4E12 /* Pods_Healthy_Rush_WatchApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -227,8 +221,6 @@
 			isa = PBXGroup;
 			children = (
 				C8993CCA99A755AD43ED3F66 /* Pods_Healthy_Rush.framework */,
-				2F9452D9B124306CEE0290C4 /* Pods_Healthy_Rush_WatchApp.framework */,
-				F50EFC91B7053AC55295ABC2 /* Pods_Healthy_Rush_WatchApp_Extension.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

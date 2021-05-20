@@ -25,9 +25,35 @@
 // A wrapper class for AppEvents to help change the semantics and decouple it from the types that use it
 @implementation FBSDKEventLogger
 
+- (void)logEvent:(NSString *)eventName
+      parameters:(NSDictionary<NSString *, id> *)parameters
+{
+  [FBSDKAppEvents logEvent:eventName parameters:parameters];
+}
+
 - (void)logInternalEvent:(nonnull NSString *)eventName isImplicitlyLogged:(BOOL)isImplicitlyLogged
 {
   [FBSDKAppEvents logInternalEvent:eventName isImplicitlyLogged:isImplicitlyLogged];
+}
+
+- (void)logInternalEvent:(NSString *)eventName
+              parameters:(NSDictionary *)parameters
+      isImplicitlyLogged:(BOOL)isImplicitlyLogged
+{
+  [FBSDKAppEvents logInternalEvent:eventName
+                        parameters:parameters
+                isImplicitlyLogged:isImplicitlyLogged];
+}
+
+- (void)logInternalEvent:(nonnull NSString *)eventName
+              parameters:(nonnull NSDictionary *)parameters
+      isImplicitlyLogged:(BOOL)isImplicitlyLogged
+             accessToken:(id)accessToken
+{
+  [FBSDKAppEvents logInternalEvent:eventName
+                        parameters:parameters
+                isImplicitlyLogged:isImplicitlyLogged
+                       accessToken:accessToken];
 }
 
 @end

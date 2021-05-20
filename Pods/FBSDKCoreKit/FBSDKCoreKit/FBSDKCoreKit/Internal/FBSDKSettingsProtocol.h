@@ -16,7 +16,8 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-@class FBSDKSettings;
+#import "FBSDKLoggingBehavior.h"
+#import "FBSDKAppEventsUtility.h"
 
 NS_SWIFT_NAME(SettingsProtocol)
 @protocol FBSDKSettings
@@ -26,5 +27,16 @@ NS_SWIFT_NAME(SettingsProtocol)
 @property (class, nullable, nonatomic, copy) NSString *userAgentSuffix;
 @property (class, nullable, nonatomic, copy) NSString *sdkVersion;
 @property (class, nonatomic, copy, nonnull) NSSet<FBSDKLoggingBehavior> *loggingBehaviors;
+@property (nonatomic, copy, nullable) NSString *appID;
+@property (nonatomic, readonly) BOOL isDataProcessingRestricted;
+@property (nonatomic, readonly) BOOL isAutoLogAppEventsEnabled;
+@property (nonatomic, readonly) BOOL isSetATETimeExceedsInstallTime;
+@property (nonatomic, readonly) BOOL isSKAdNetworkReportEnabled;
+@property (nonatomic, readonly, nonnull) NSSet<FBSDKLoggingBehavior> *loggingBehaviors;
+@property (nonatomic) FBSDKAdvertisingTrackingStatus advertisingTrackingStatus;
+@property (nonatomic, readonly, nullable) NSDate* installTimestamp;
+@property (nonatomic, readonly, nullable) NSDate* advertiserTrackingEnabledTimestamp;
+@property (nonatomic, readonly) BOOL shouldLimitEventAndDataUsage;
+@property (nonatomic) BOOL shouldUseTokenOptimizations;
 
 @end

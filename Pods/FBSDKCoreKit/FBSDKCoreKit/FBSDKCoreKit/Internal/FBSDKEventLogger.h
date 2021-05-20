@@ -18,6 +18,7 @@
 
 #import "FBSDKEventLogging.h"
 
+NS_SWIFT_NAME(EventLogger)
 @interface FBSDKEventLogger : NSObject <FBSDKEventLogging>
 
 @end
