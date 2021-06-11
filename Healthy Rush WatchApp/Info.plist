@@ -26,7 +26,7 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>WKCompanionAppBundleIdentifier</key>
-	<string>it.unisa.applefoundationprogram.Healthy-Rush</string>
+	<string>it.mario.Healthy-Rush</string>
 	<key>WKWatchKitApp</key>
 	<true/>
 </dict>
