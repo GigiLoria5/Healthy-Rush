@@ -31,8 +31,8 @@ class MainMenu: SKScene {
     var pageInfoNum : Int = 3
     var istanceInfoActive : Bool = false
     
-    // Gesture Captures
-    var gestureCaptureIstance = GesturesCapture()
+    // For the controller choice panel
+    var istanceControllerActive : Bool = false
     
     // Firebase utilis
     var currentUser: SparkUser!
@@ -72,11 +72,6 @@ class MainMenu: SKScene {
     //MARK: - Touches
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-        
-        // saves the initial touch point and the instant when it was pressed
-        gestureCaptureIstance.startCapturing(touches, scene: self)
-        print(gestureCaptureIstance.getCurrentSwipe())
-        
         guard let touch = touches.first else { return }
         let node = atPoint(touch.location(in: self))
         
@@ -113,22 +108,32 @@ class MainMenu: SKScene {
             node.texture = SKTexture(imageNamed: fbUserLogged ? "facebookOn" : "facebookOff")
             facebookLoginLbl.text = fbUserLogged ? afterLoginTxt + (Auth.auth().currentUser?.displayName ?? "DISPLAY NAME NOT FOUND") : beforeLoginTxt
         case "controllerSelect":
-            run(SKAction.playSoundFileNamed("buttonSound.wav"))
-            if(containerNode != nil) {
-                containerNode.removeFromParent() // Remove any other panel already active
+            if(!istanceControllerActive){
+                run(SKAction.playSoundFileNamed("buttonSound.wav"))
+                if(containerNode != nil) {
+                    containerNode.removeFromParent() // Remove any other panel already active
+                }
+                setupControllerChoicePanel()
+                istanceControllerActive = true
             }
-            setupControllerChoicePanel()
         case "cameraImage":
             if #available(iOS 14.0, *) {
+                
                 let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
+                
                 UserDefaults.standard.set(!cameraMode, forKey: "cameraMode")
                 UserDefaults.standard.set(false, forKey: "watchMode")
+                
                 updateControllerChoicePanel()
             }
         case "watchImage":
+        
             let watchMode = UserDefaults.standard.bool(forKey: "watchMode")
+            
             UserDefaults.standard.set(!watchMode, forKey: "watchMode")
             UserDefaults.standard.set(false, forKey: "cameraMode")
+            
+            
             updateControllerChoicePanel()
         case "info":
             if(istanceInfoActive == false){
@@ -155,7 +160,6 @@ class MainMenu: SKScene {
             currInfoPageNum = 1 //reset the page counter
             istanceInfoActive = false
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
-            containerNode.removeAllChildren()
             containerNode.removeFromParent()
         case "theBoy":
             run(SKAction.playSoundFileNamed("playerSelect.mp3"))
@@ -174,21 +178,6 @@ class MainMenu: SKScene {
         default:
             break
         }
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        // Find the gesture
-        gestureCaptureIstance.findGesture(touches, scene: self)
-        print(gestureCaptureIstance.getCurrentSwipe())
-        
-        containerNode.enumerateChildNodes(withName: "HighscorePanel") { node, _ in
-            print("Highscore Is Here")
-            node.enumerateChildNodes(withName: "TopRun") { node, _ in
-                print("Top Run is Here")
-            }
-        }
-        
-        super.touchesEnded(touches, with: event)
     }
 }
 
@@ -453,12 +442,11 @@ extension MainMenu {
         if(fbUserLogged) { // Show Top Run
             // Heading
             let headingLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
-            headingLbl.name = "TopRun"
             headingLbl.text = "Top Run"
             headingLbl.fontSize = 60.0
             headingLbl.zPosition = 25.0
             headingLbl.fontColor = .black
-            headingLbl.position = CGPoint(x: 0, y: panel.frame.height/3 - 35)
+            headingLbl.position = CGPoint(x: 0, y: panel.frame.height/3 - 25)
             panel.addChild(headingLbl)
             
             // Get All Users
@@ -472,7 +460,6 @@ extension MainMenu {
                     return
                 }
                 for (index, element) in sparkUsers {
-                    print(element.data())
                     self.insertIntoTopRun(index: index+1, panel: panel, sparkUser: element.data() as NSDictionary)
                 }
             }
@@ -502,7 +489,10 @@ extension MainMenu {
     
     func insertIntoTopRun(index i: Int, panel: SKSpriteNode, sparkUser: NSDictionary) {
         // Check if is currentUser
-        let isCurrentUser:Bool = (sparkUser.value(forKey: "uid") as? String) == currentUser.uid
+        var isCurrentUser = false
+        if (sparkUser.value(forKey: "uid") as? String) == currentUser.uid {
+            isCurrentUser = true
+        }
         let userColor = UIColor(red: 0.25, green: 0.17, blue: 0.08, alpha: 1.00)
         let notUserColor = UIColor(red: 0.84, green: 0.68, blue: 0.31, alpha: 1.00)
         let rowColor = (isCurrentUser ? userColor : notUserColor)
@@ -512,12 +502,8 @@ extension MainMenu {
         row.name = "row\(String(describing: index))"
         row.zPosition = 22.0
         row.position = CGPoint(x: 0.0,
-                               y: panel.frame.height/4.6 - (row.frame.height * CGFloat(i-1)) - (10.0 * CGFloat(i)))
+                               y: panel.frame.height/4.3 - (row.frame.height * CGFloat(i-1)) - (10.0 * CGFloat(i)))
         panel.addChild(row)
-        row.drawBorder(color: .black, width: 2)
-        if(i > 4) {
-            row.isHidden = true
-        }
         // Add Position
         let rank = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         rank.text = String(i)
@@ -525,7 +511,7 @@ extension MainMenu {
         rank.zPosition = 25.0
         rank.fontColor = rowFontColor
         row.addChild(rank)
-        rank.position = CGPoint(x: -row.frame.width/2.0 + 40,
+        rank.position = CGPoint(x: -row.frame.width/2.0 + 50,
                                 y: -15.0)
         // Add Image
         // Find user by uid
@@ -552,27 +538,25 @@ extension MainMenu {
                 let userImage = SKSpriteNode(texture: texture)
                 userImage.zPosition = 25.0
                 userImage.scale(to: CGSize(width: 100.0, height: 100.0))
-                userImage.position = CGPoint(x: -row.frame.width/2.0 + 120,
+                userImage.position = CGPoint(x: -row.frame.width/2.0 + 150,
                                         y: 0.0)
                 row.addChild(userImage)
             }
         }
-        // Add Name (only)
+        // Add Name
         let userName = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         userName.text = (sparkUser.value(forKey: "name") as? String)?.components(separatedBy: " ").first
         if isCurrentUser {
             userName.text?.append(" (Me)")
         }
-        userName.fontSize = 40.0
+        userName.fontSize = 45.0
         userName.zPosition = 25.0
         userName.fontColor = rowFontColor
-        userName.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        userName.position = CGPoint(x: -row.frame.width/2.0 + 120 + 60,
+        userName.position = CGPoint(x: rank.position.x + 300,
                                     y: rank.position.y)
         row.addChild(userName)
     }
     
-    //MARK: - Setting Panel
     func setupContainer() {
         containerNode = SKSpriteNode()
         containerNode.name = "container"
@@ -583,6 +567,7 @@ extension MainMenu {
         addChild(containerNode)
     }
     
+    //MARK: - Setting Panel
     func setupSettingPanel() {
         // Create a Container
         setupContainer()
@@ -632,8 +617,7 @@ extension MainMenu {
     //MARK: - Facebook
     func handleSignInWithFacebookButtonTapped() {
         // Present the signing-in process message
-        hud.textLabel.text = "Login"
-        hud.detailTextLabel.text = duringLoginTxt
+        hud.textLabel.text = duringLoginTxt
         hud.show(in: view!)
         // Sign-in with facebook
         Spark.signInWithFacebook(in: viewController) { (message, err, sparkUser) in
@@ -656,8 +640,7 @@ extension MainMenu {
     
     func handleSignOutWithFacebookButtonTapped() {
         // Present the signing-out process message
-        hud.textLabel.text = "Logout"
-        hud.detailTextLabel.text = signingOutTxt
+        hud.textLabel.text = signingOutTxt
         hud.show(in: view!)
         Spark.logout { (result, err) in
             if let err = err {

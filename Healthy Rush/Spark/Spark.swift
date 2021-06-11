@@ -140,6 +140,7 @@ class Spark {
                 }
                 
                 if result {
+                    
                     saveSparkUser(profileImageData: profileImageData, sparkUser: sparkUser, completion: completion)
                     
                 } else {
@@ -216,7 +217,7 @@ class Spark {
     // MARK: -
     // MARK: Fetch Spark User with uid
     static func fetchAllSparkUsers(completion: @escaping (_ message: String, _ error: Error?, _ sparkUsers: EnumeratedSequence<[QueryDocumentSnapshot]>?) ->()) {
-        Firestore_Users_Collection.order(by: "name", descending: false).getDocuments { (snapshot, err) in
+        Firestore_Users_Collection.getDocuments { (snapshot, err) in
             if let err = err { completion("Failed to fetch document with error:", err, nil); return }
             guard let snapshot = snapshot else {
                 completion("Failed to get spark user from snapshot.", nil, nil); return }
