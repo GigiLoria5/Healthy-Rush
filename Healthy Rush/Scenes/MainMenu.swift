@@ -22,6 +22,8 @@ class MainMenu: SKScene {
     let buttonScaleBigger: CGFloat = 1.44
     var timePerFrameTheBoyAnimations: TimeInterval = 0.095 // Animations speed
     var timePerFrameCuteGirlAnimations: TimeInterval = 0.065 // Animations speed
+    var timePerFrameDino : TimeInterval = 0.095
+    var timePerFrameIndiana : TimeInterval = 0.075
     var playerSelectedKey = "PlayerSelected"
     var firstOpen = true // in order to avoid bug in updatePlayerSelection()
     let selectionLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold") // selection label
@@ -30,6 +32,14 @@ class MainMenu: SKScene {
     var currInfoPageNum : Int = 1
     var pageInfoNum : Int = 3
     var istanceInfoActive : Bool = false
+    
+    
+//    For the shop panel
+    var currShopPageNum : Int = 1
+    var prevShopPageNum : Int = 1
+    var shopCharacters : Int = 4
+    var istanceShopActive : Bool = false
+    
     
     // For the top run panel
     var currTopRunPageNum : Int = 1
@@ -133,6 +143,32 @@ class MainMenu: SKScene {
             UserDefaults.standard.set(!watchMode, forKey: "watchMode")
             UserDefaults.standard.set(false, forKey: "cameraMode")
             updateControllerChoicePanel()
+        
+        case "shop":
+            if(istanceInfoActive == false){
+                run(SKAction.playSoundFileNamed("buttonSound.wav"))
+                if(containerNode != nil) {
+                    containerNode.removeFromParent() // Remove any other panel already active
+                }
+                setupShopPanel()
+                istanceShopActive = true
+            }
+            
+        case "ShopArrowRight":
+            if(currShopPageNum <= shopCharacters) {
+                run(SKAction.playSoundFileNamed("buttonSound.wav"))
+                prevShopPageNum = currShopPageNum
+                currShopPageNum += 1
+                updateShop()
+            }
+        case "ShopArrowLeft":
+            if(currInfoPageNum >= 1) {
+                run(SKAction.playSoundFileNamed("buttonSound.wav"))
+                prevShopPageNum = currShopPageNum
+                currShopPageNum -= 1
+                updateShop()
+            }
+            
         case "info":
             if(istanceInfoActive == false){
                 run(SKAction.playSoundFileNamed("buttonSound.wav"))
@@ -183,7 +219,7 @@ class MainMenu: SKScene {
         // Find the gesture
         gestureCaptureIstance.findGesture(touches, scene: self)
         
-        containerNode.enumerateChildNodes(withName: "HighscorePanel") { node, _ in
+        containerNode?.enumerateChildNodes(withName: "HighscorePanel") { node, _ in
             node.enumerateChildNodes(withName: "TopRun") { node, _ in
                 let gesture = self.gestureCaptureIstance.getCurrentSwipe()
                 if(gesture == .up) {
@@ -237,6 +273,13 @@ extension MainMenu {
         info.name = "info"
         info.position = CGPoint(x: info.frame.width/2 + 50, y: size.height/2 + play.frame.height + 120)
         addChild(info)
+        
+        let shop = SKSpriteNode(imageNamed: "shop")
+        shop.setScale(0.625)
+        shop.zPosition = 10.0
+        shop.name = "shop"
+        shop.position = CGPoint(x: info.position.x, y: info.position.y - 3*shop.size.height/2)
+        addChild(shop)
         
         let controllerSelect = SKSpriteNode(imageNamed: "controllerOn")
         controllerSelect.setScale(0.8)
@@ -679,6 +722,189 @@ extension MainMenu {
             }
         }
     }
+    
+//    MARK: Shop Panel
+    func setupShopPanel(){
+
+        // Create a Container
+        setupContainer()
+
+        // Create a panel inside the container
+        let panel = SKSpriteNode(imageNamed: "bigPanel")
+        panel.name = "ShopPanel"
+        panel.setScale(1)
+        panel.zPosition = 20.0
+        panel.position = .zero
+        containerNode.addChild(panel)
+
+
+        // add a right arrow to the panel
+        let rightArrow = SKSpriteNode(imageNamed: "rightArrow")
+        rightArrow.name = "ShopArrowRight"
+        rightArrow.setScale(0.5)
+        rightArrow.zPosition = 20.0
+        rightArrow.position = CGPoint(x: panel.position.x + panel.size.width/2 - 60, y: panel.position.y/2)
+
+        panel.addChild(rightArrow)
+
+        // add left arrow
+        let leftArrow = SKSpriteNode(imageNamed: "leftArrow")
+        leftArrow.name = "ShopArrowLeft"
+        leftArrow.setScale(0) // invisible arrow (no dimension)
+        leftArrow.zPosition = 20.0
+        leftArrow.position = CGPoint(x: -(panel.position.x + panel.size.width/2 - 60), y: panel.position.y/2)
+        panel.addChild(leftArrow)
+        
+        //first call
+        updateShop()
+    }
+    func updateShop(){
+//        print(currShopPageNum,prevShopPageNum)
+        
+        loadShopPage(pageNum: currShopPageNum)
+        if(currShopPageNum != prevShopPageNum){
+            unloadShopPage(pageNum: prevShopPageNum)
+        }
+        
+        updateShopArrows()
+        
+    }
+    func loadShopPage(pageNum: Int){
+        
+        guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
+        else{
+            print("nope load")
+            return
+        }
+        
+        
+        switch pageNum {
+//        pagina dedicata a boy
+        case 1:
+            let theBoy = SKSpriteNode(imageNamed: "TheBoy/Idle (1)")
+            theBoy.name = "theBoy"
+            theBoy.zPosition = 10.0
+            theBoy.position = CGPoint(x: -3*theBoy.frame.width/4, y:panel.position.y/2)
+            panel.addChild(theBoy)
+            // Add animations
+            var theBoyFrames = [SKTexture]()
+            for i in 2...15 {
+                let frameName = "TheBoy/Idle (\(i))"
+                theBoyFrames.append(SKTexture(imageNamed: frameName))
+            }
+            // Animation activated
+            theBoy.run(SKAction.repeatForever(SKAction.animate(with: theBoyFrames, timePerFrame: timePerFrameTheBoyAnimations)), withKey: "theBoyAnimation")
+
+//        pagina dedicata a girl
+        case 2:
+            // Setup the girl
+            let cuteGirl = SKSpriteNode(imageNamed: "CuteGirl/Idle (1)")
+            cuteGirl.name = "cuteGirl"
+            cuteGirl.zPosition = 10.0
+            cuteGirl.position = CGPoint(x: -3*cuteGirl.frame.width/4, y:panel.position.y/2)
+            panel.addChild(cuteGirl)
+            // Add animations
+            var cuteGirlFrames = [SKTexture]()
+            for i in 2...16 {
+                let frameName = "CuteGirl/Idle (\(i))"
+                cuteGirlFrames.append(SKTexture(imageNamed: frameName))
+            }
+            // Animation activated
+            cuteGirl.run(SKAction.repeatForever(SKAction.animate(with: cuteGirlFrames, timePerFrame: timePerFrameCuteGirlAnimations)), withKey: "cuteGirlAnimation")
+            
+//        pagina dedicata a dino
+        case 4:
+            let dino = SKSpriteNode(imageNamed: "Dino/Idle (1)")
+            dino.name = "Dino"
+            dino.zPosition = 10.0
+            dino.position = CGPoint(x: -dino.frame.width/2, y:panel.position.y/2)
+            panel.addChild(dino)
+            // Add animations
+            var dinoFrames = [SKTexture]()
+            for i in 2...10 {
+                let frameName = "Dino/Idle (\(i))"
+                dinoFrames.append(SKTexture(imageNamed: frameName))
+            }
+            // Animation activated
+            dino.run(SKAction.repeatForever(SKAction.animate(with: dinoFrames, timePerFrame: timePerFrameDino)), withKey: "DinoAnimation")
+            
+//        pagina dedicata a indiana
+        case 3:
+            let indiana = SKSpriteNode(imageNamed: "indianaFemmina/Idle (1)")
+            indiana.name = "Indiana"
+            indiana.zPosition = 10.0
+            indiana.position = CGPoint(x: -3*indiana.frame.width/4, y:panel.position.y/2)
+            panel.addChild(indiana)
+            // Add animations
+            var indianaFrames = [SKTexture]()
+            for i in 2...10 {
+                let frameName = "indianaFemmina/Idle (\(i))"
+                indianaFrames.append(SKTexture(imageNamed: frameName))
+            }
+            // Animation activated
+            indiana.run(SKAction.repeatForever(SKAction.animate(with: indianaFrames, timePerFrame: timePerFrameIndiana)), withKey: "IndianaAnimation")
+        default:
+            return
+        }
+        
+    }
+    func unloadShopPage(pageNum: Int){
+        
+        guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
+        else{
+            
+            print("nope unload")
+            return
+        }
+        switch pageNum {
+        case 1:
+            let boy = panel.childNode(withName: "theBoy") as? SKSpriteNode
+            boy?.removeFromParent()
+        case 2:
+            let girl = panel.childNode(withName: "cuteGirl") as? SKSpriteNode
+            girl?.removeFromParent()
+        case 4:
+            let dino = panel.childNode(withName: "Dino") as? SKSpriteNode
+            dino?.removeFromParent()
+        case 3:
+            let indiana = panel.childNode(withName: "Indiana") as? SKSpriteNode
+            indiana?.removeFromParent()
+        default:
+            return
+        }
+    }
+    
+    
+    func updateShopArrows(){
+        guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
+        else{
+            print("nope update arrows")
+            return
+        }
+        
+        guard let leftArrow = panel.childNode(withName: "ShopArrowLeft") else {
+            print("nope freccia sinistra")
+            return
+        }
+        guard let rightArrow = panel.childNode(withName: "ShopArrowRight") else {
+            print("nope freccia destra")
+            return
+        }
+        
+        if(currShopPageNum == 1){
+            leftArrow.setScale(0)
+            rightArrow.setScale(0.5)
+        }
+        else if(currShopPageNum == shopCharacters){
+            leftArrow.setScale(0.5)
+            rightArrow.setScale(0)
+        }else{
+            leftArrow.setScale(0.5)
+            rightArrow.setScale(0.5)
+        }
+    }
+    
+    
     
     //MARK: - Info Panel
     func setupInfoPanel() {

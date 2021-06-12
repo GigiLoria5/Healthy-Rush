@@ -132,9 +132,6 @@ extension GameOver {
     
     
     func createMessageNode(){
-        
-
-        
 //       messaggio a seconda del punteggio
         if(currScore > highScore){
 //          aggiunge scritta "new Record" alla scena
