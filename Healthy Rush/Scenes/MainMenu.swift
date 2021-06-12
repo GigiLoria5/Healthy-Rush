@@ -794,6 +794,11 @@ extension MainMenu {
             }
             // Animation activated
             theBoy.run(SKAction.repeatForever(SKAction.animate(with: theBoyFrames, timePerFrame: timePerFrameTheBoyAnimations)), withKey: "theBoyAnimation")
+            
+            loadNameCharacter(Labelname: "boyname", CharacterName: "Mike")
+            
+            loadHeartsCharacter(amount: 3)
+          
 
 //        pagina dedicata a girl
         case 2:
@@ -812,6 +817,10 @@ extension MainMenu {
             // Animation activated
             cuteGirl.run(SKAction.repeatForever(SKAction.animate(with: cuteGirlFrames, timePerFrame: timePerFrameCuteGirlAnimations)), withKey: "cuteGirlAnimation")
             
+            loadNameCharacter(Labelname: "girlname", CharacterName: "Peach")
+            
+            loadHeartsCharacter(amount: 3)
+            
 //        pagina dedicata a dino
         case 4:
             let dino = SKSpriteNode(imageNamed: "Dino/Idle (1)")
@@ -828,6 +837,10 @@ extension MainMenu {
             // Animation activated
             dino.run(SKAction.repeatForever(SKAction.animate(with: dinoFrames, timePerFrame: timePerFrameDino)), withKey: "DinoAnimation")
             
+            loadNameCharacter(Labelname: "dinoname", CharacterName: "Dino")
+            
+            loadHeartsCharacter(amount: 5)
+            
 //        pagina dedicata a indiana
         case 3:
             let indiana = SKSpriteNode(imageNamed: "indianaFemmina/Idle (1)")
@@ -843,6 +856,11 @@ extension MainMenu {
             }
             // Animation activated
             indiana.run(SKAction.repeatForever(SKAction.animate(with: indianaFrames, timePerFrame: timePerFrameIndiana)), withKey: "IndianaAnimation")
+            
+            loadNameCharacter(Labelname: "indianame", CharacterName: "Ellie")
+            
+            loadHeartsCharacter(amount: 4)
+            
         default:
             return
         }
@@ -860,19 +878,98 @@ extension MainMenu {
         case 1:
             let boy = panel.childNode(withName: "theBoy") as? SKSpriteNode
             boy?.removeFromParent()
+            unloadNameCharacter(Labelname: "boyname")
+            unloadHeartsCharacter(amount: 3)
         case 2:
             let girl = panel.childNode(withName: "cuteGirl") as? SKSpriteNode
             girl?.removeFromParent()
+            unloadNameCharacter(Labelname: "girlname")
+            unloadHeartsCharacter(amount: 3)
         case 4:
             let dino = panel.childNode(withName: "Dino") as? SKSpriteNode
             dino?.removeFromParent()
+            unloadNameCharacter(Labelname: "dinoname")
+            unloadHeartsCharacter(amount: 5)
         case 3:
             let indiana = panel.childNode(withName: "Indiana") as? SKSpriteNode
             indiana?.removeFromParent()
+            unloadNameCharacter(Labelname: "indianame")
+            unloadHeartsCharacter(amount: 4)
         default:
             return
         }
     }
+    
+    func loadNameCharacter(Labelname: String,CharacterName: String){
+        guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
+        else{
+            print("nope load nome")
+            return
+        }
+        let name = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+        name.name = Labelname
+        name.text = CharacterName
+        name.fontSize = 80
+        name.zPosition = 20
+        name.fontColor = .black
+        name.position = CGPoint(x: panel.frame.width/5,y: panel.frame.height/4)
+        panel.addChild(name)
+    }
+    func unloadNameCharacter(Labelname: String){
+        guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
+        else{
+            print("nope load nome")
+            return
+        }
+        let label = panel.childNode(withName: Labelname)
+        label?.removeFromParent()
+    }
+    
+    func loadHeartsCharacter(amount: Int){
+        var livesSprites = [SKSpriteNode]()
+        //add livesNumber hearts to the player
+        for i in 0..<amount{
+            livesSprites.append(SKSpriteNode(imageNamed: "life-on"))
+            setupLifePos(livesSprites[i], i: CGFloat(i+1), j: CGFloat(i*8))
+        }
+    }
+    
+    func setupLifePos(_ node: SKSpriteNode, i: CGFloat, j: CGFloat) {
+        guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
+        else{
+            print("nope setup hearts")
+            return
+        }
+        
+        node.setScale(0.5)
+        node.zPosition = 50.0
+        
+        var x = node.frame.width * i + j
+        var y = panel.frame.height/4 - node.size.height
+        if(i > 3){
+            x = node.frame.width * (i-3) + 2*j
+            y = panel.frame.height/4  - 2*node.size.height
+        }
+        
+        node.position = CGPoint(x: x, y: y)
+        node.name = "life \(Int(i-1))"
+        panel.addChild(node)
+    }
+    
+    func unloadHeartsCharacter(amount: Int){
+        
+        guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
+        else{
+            print("nope unload hearts")
+            return
+        }
+        
+        for i in 0..<amount{
+            let node = panel.childNode(withName: "life \(i)")
+            node?.removeFromParent()
+        }
+    }
+    
     
     
     func updateShopArrows(){
