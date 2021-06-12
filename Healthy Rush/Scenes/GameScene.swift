@@ -251,11 +251,6 @@ class GameScene: SKScene {
             }
             
             ScoreGenerator.sharedInstance.setScore(numScore) // save the last score
-            let highscore = ScoreGenerator.sharedInstance.getHighscore()
-            if numScore > highscore {
-                ScoreGenerator.sharedInstance.setHighscore(numScore)
-            }
-            
             let scene = GameOver(size: size)
             scene.scaleMode = scaleMode
             scene.fbUserLogged = self.fbUserLogged
@@ -714,6 +709,8 @@ extension GameScene: SKPhysicsContactDelegate {
             case PhysicsCategory.Obstacle:
                 setupGameOver()
                 run(soundCollision) // collision sound
+//        execute hurted animation
+                hurtedAnimation()
         
             case PhysicsCategory.Jewel:
                 if let node = other.node {

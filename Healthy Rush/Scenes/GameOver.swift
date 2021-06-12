@@ -16,14 +16,20 @@ class GameOver: SKScene {
     var currentUser: SparkUser!
     var viewController: GameViewController!
     
+//    punteggio corrente e massimo
+    let highScore = ScoreGenerator.sharedInstance.getHighscore()
+    let currScore = ScoreGenerator.sharedInstance.getScore()
+    
     override func didMove(to view: SKView) {
         createBGNodes()
         createGroundNodes()
-        createNode()
         
+        createMessageNode()
+//        stop the gameScene music
         SKTAudio.sharedInstance().stopBGMusic()
-        let soundGameOver = SKAction.playSoundFileNamed("gameOver.wav")
-        run(soundGameOver)
+//        play the music according to the current message shown
+        runMessageMusic()
+        
         
         run(.sequence([
             .wait(forDuration: 5.0),
@@ -82,7 +88,7 @@ extension GameOver {
         }
     }
     
-    func createNode() {
+    func createGameOverNode() {
         let gameOver = SKSpriteNode(imageNamed: "gameOver")
         gameOver.zPosition = 10.0
         gameOver.position = CGPoint(x: size.width/2.0,
@@ -93,5 +99,63 @@ extension GameOver {
         let scaleDown = SKAction.scale(to: 1.0, duration: 0.5)
         let fullScale = SKAction.sequence([scalepUp, scaleDown])
         gameOver.run(.repeatForever(fullScale))
+    }
+    
+    func createNewRecordNode(){
+        let newRecord = SKSpriteNode(imageNamed: "newRecord")
+        newRecord.zPosition = 10.0
+        newRecord.setScale(3)
+        newRecord.position = CGPoint(x: size.width/2.0,
+                                y: size.height/2.0)
+        addChild(newRecord)
+        
+        let scalepUp = SKAction.scale(to: 3.1, duration: 0.5)
+        let scaleDown = SKAction.scale(to: 3.0, duration: 0.5)
+        let fullScale = SKAction.sequence([scalepUp, scaleDown])
+        newRecord.run(.repeatForever(fullScale))
+    }
+    
+    func createFireworks(){
+        let leftEmitter = SKEmitterNode(fileNamed: "fireworks.sks")
+        let rightEmitter = SKEmitterNode(fileNamed: "fireworks.sks")
+        
+        leftEmitter?.position = CGPoint(x: size.width/4.0,y: size.height/2.0)
+        rightEmitter?.position = CGPoint(x: 3 * size.width/4.0,y: size.height/2.0)
+        
+        if((leftEmitter) != nil){
+            addChild(leftEmitter!)
+        }
+        if((rightEmitter) != nil){
+            addChild(rightEmitter!)
+        }
+    }
+    
+    
+    func createMessageNode(){
+        
+
+        
+//       messaggio a seconda del punteggio
+        if(currScore > highScore){
+//          aggiunge scritta "new Record" alla scena
+            createNewRecordNode()
+//            aggiunge effetto fuochi artificio
+            createFireworks()
+//            aggiorna il punteggio massimo
+            ScoreGenerator.sharedInstance.setHighscore(currScore)
+        }
+        else{
+            createGameOverNode()
+        }
+    }
+
+    func runMessageMusic(){
+        if(currScore > highScore){
+            let soundNewRecord = SKAction.playSoundFileNamed("newRecord.wav")
+            run(soundNewRecord)
+        }else{
+            let soundGameOver = SKAction.playSoundFileNamed("gameOver.wav")
+            run(soundGameOver)
+        }
     }
 }
