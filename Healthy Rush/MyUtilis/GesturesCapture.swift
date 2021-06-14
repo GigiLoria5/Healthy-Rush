@@ -12,7 +12,7 @@ class GesturesCapture {
     // For the swipe gestures
     private var touchStart: CGPoint?
     private var startTime : TimeInterval?
-    private let minSpeed:CGFloat = 1400
+    private let minSpeed:CGFloat = 1000
     private let maxSpeed:CGFloat = 6000
     private let minDistance:CGFloat = 25
     private let minDuration:TimeInterval = 0.1
