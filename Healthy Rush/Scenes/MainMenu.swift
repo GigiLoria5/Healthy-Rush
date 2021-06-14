@@ -34,11 +34,18 @@ class MainMenu: SKScene {
     var pageInfoNum : Int = 3
     var istanceInfoActive : Bool = false
     
-//    For the shop panel
+    //    For the shop panel
     var currShopPageNum : Int = 1
     var prevShopPageNum : Int = 1
     var shopCharacters : Int = 4
     var istanceShopActive : Bool = false
+    
+    // #Diamonds label
+    let numDiamondsLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold") // number of diamonds label
+    
+    let elliePrice = 250
+    let dinoPrice = 500
+    
     // For the top run panel
     var currTopRunPageNum : Int!
     var maxTopRunPageNum : Int!
@@ -153,14 +160,14 @@ class MainMenu: SKScene {
             UserDefaults.standard.set(!watchMode, forKey: "watchMode")
             UserDefaults.standard.set(false, forKey: "cameraMode")
             updateControllerChoicePanel()
-		case "shop":
+        case "shop":
             if(istanceInfoActive == false){
                 run(SKAction.playSoundFileNamed("buttonSound.wav"))
                 if(containerNode != nil) {
                     containerNode.removeFromParent() // Remove any other panel already active
                 }
                 setupShopPanel()
-				setupDiamondsCounter()
+                setupDiamondsCounter()
                 istanceShopActive = true
             }
             
@@ -178,6 +185,29 @@ class MainMenu: SKScene {
                 currShopPageNum -= 1
                 updateShop()
             }
+//       for the character choice
+        case "Mike1", "Mike1L":
+            UserDefaults.standard.setValue("TheBoy", forKey: playerSelectedKey)
+            updateCurrentShopPage(pageNum: currShopPageNum)
+        case "Peach1","Peach1L":
+            UserDefaults.standard.setValue("CuteGirl", forKey: playerSelectedKey)
+            updateCurrentShopPage(pageNum: currShopPageNum)
+        case "Ellie1","Ellie1L":
+            UserDefaults.standard.setValue("Ellie", forKey: playerSelectedKey)
+            updateCurrentShopPage(pageNum: currShopPageNum)
+            run(SKAction.playSoundFileNamed("indiana.wav"))
+        case "Dino1","Dino1L":
+            UserDefaults.standard.setValue("Dino", forKey: playerSelectedKey)
+            updateCurrentShopPage(pageNum: currShopPageNum)
+            run(SKAction.playSoundFileNamed("trex.wav"))
+//        buy a character
+        case "Ellie3","Ellie3L":
+            buyCharacter(name: "Ellie")
+        case "Dino3","Dino3L":
+            buyCharacter(name: "Dino")
+            
+            
+            
         case "info":
             if(istanceInfoActive == false){
                 run(SKAction.playSoundFileNamed("buttonSound.wav"))
@@ -229,7 +259,7 @@ class MainMenu: SKScene {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
-
+        
         // Find and save the gesture
         gestureCaptureIstance.findGesture(touches, scene: self)
         
@@ -367,7 +397,7 @@ extension MainMenu {
     func updatePlayerSelection() {
         let playerSelected = UserDefaults.standard.object(forKey: playerSelectedKey) as? String
         let zoomIn = SKAction.scale(by: 1.3, duration: 1) // animation select
-   
+        
         switch playerSelected! {
         case "TheBoy":
             let spriteNotSelected = self.childNode(withName: "cuteGirl") as! SKSpriteNode
@@ -474,7 +504,7 @@ extension MainMenu {
         controllerLblWatch.horizontalAlignmentMode = .center
         controllerLblWatch.lineBreakMode = .byWordWrapping
         controllerLblWatch.position = CGPoint(x: watchImage.position.x, y: watchImage.size.height/1.5 + watchImage.position.y)
-
+        
         //add text according to ios version
         if #available(iOS 14.0, *) {
             // Add text
@@ -490,7 +520,7 @@ extension MainMenu {
         updateControllerChoicePanel()
         
     }
-
+    
     func updateControllerChoicePanel(){
         let panel = containerNode.childNode(withName: "controllerRoot")as! SKSpriteNode
         let bgCamera = panel.childNode(withName: "cameraImage") as? SKSpriteNode
@@ -539,7 +569,7 @@ extension MainMenu {
         panel.zPosition = 20.0
         panel.position = .zero
         containerNode.addChild(panel)
-    
+        
         if(fbUserLogged) { // Show Top Run
             // This panel hides all the elements
             self.panelHider.name = "HighscorePanelHider"
@@ -574,7 +604,7 @@ extension MainMenu {
                 let sparkUsersStatsArray = sparkUsersStats.compactMap({$0})
                 self.maxTopRunElements = sparkUsersStatsArray.count
                 self.maxTopRunPageNum = Int(ceil(Double(self.maxTopRunElements)/4.0))
-            
+                
                 // Insert elements into the rank
                 for (index, element) in sparkUsersStats {
                     //print(element.data())
@@ -622,85 +652,85 @@ extension MainMenu {
                 print("Failed to fetch user")
                 return
             }
-        // Check if is currentUser
-        let isCurrentUser:Bool = (sparkUser.uid) == self.currentUser.uid
-        let userColor = UIColor(red: 0.25, green: 0.17, blue: 0.08, alpha: 1.00)
-        let notUserColor = UIColor(red: 0.84, green: 0.68, blue: 0.31, alpha: 1.00)
-        let rowColor = (isCurrentUser ? userColor : notUserColor)
-        let rowFontColor = (isCurrentUser ? UIColor.white : UIColor.black)
-        // Add new row
-        let row = SKSpriteNode(color: rowColor, size: CGSize(width: panel.frame.width-450, height: 110.0))
-        row.name = "row\(i)"
-        row.zPosition = 22.0
-        let indexPage = (((i - 1) % 4) + 1) // the position of an element in a page is from 1 to 4 for every page
-        row.position = CGPoint(x: 0.0,
-                               y: panel.frame.height/4.6 - (row.frame.height * CGFloat(indexPage-1)) - (10.0 * CGFloat(indexPage)))
-        panel.addChild(row)
-        row.drawBorder(color: .black, width: 2)
-        if(i > 4) { // Show only the first page
-            row.isHidden = true
-        }
-        // Add Position
-        let rank = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
-        rank.text = String(i)
-        rank.fontSize = 40.0
-        rank.zPosition = 25.0
-        rank.fontColor = rowFontColor
-        row.addChild(rank)
-        rank.position = CGPoint(x: -row.frame.width/2.0 + 35,
-                                y: -15.0)
-        // Add Image
-        // Fetch profile image
-        Spark.fetchProfileImage(sparkUser: sparkUser) { (message, err, image) in
-            if let err = err {
-                print("Error: \(message) \(err.localizedDescription)")
-                return
+            // Check if is currentUser
+            let isCurrentUser:Bool = (sparkUser.uid) == self.currentUser.uid
+            let userColor = UIColor(red: 0.25, green: 0.17, blue: 0.08, alpha: 1.00)
+            let notUserColor = UIColor(red: 0.84, green: 0.68, blue: 0.31, alpha: 1.00)
+            let rowColor = (isCurrentUser ? userColor : notUserColor)
+            let rowFontColor = (isCurrentUser ? UIColor.white : UIColor.black)
+            // Add new row
+            let row = SKSpriteNode(color: rowColor, size: CGSize(width: panel.frame.width-450, height: 110.0))
+            row.name = "row\(i)"
+            row.zPosition = 22.0
+            let indexPage = (((i - 1) % 4) + 1) // the position of an element in a page is from 1 to 4 for every page
+            row.position = CGPoint(x: 0.0,
+                                   y: panel.frame.height/4.6 - (row.frame.height * CGFloat(indexPage-1)) - (10.0 * CGFloat(indexPage)))
+            panel.addChild(row)
+            row.drawBorder(color: .black, width: 2)
+            if(i > 4) { // Show only the first page
+                row.isHidden = true
             }
-            guard let image = image else {
-                print("Failed to fetch image")
-                return
+            // Add Position
+            let rank = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+            rank.text = String(i)
+            rank.fontSize = 40.0
+            rank.zPosition = 25.0
+            rank.fontColor = rowFontColor
+            row.addChild(rank)
+            rank.position = CGPoint(x: -row.frame.width/2.0 + 35,
+                                    y: -15.0)
+            // Add Image
+            // Fetch profile image
+            Spark.fetchProfileImage(sparkUser: sparkUser) { (message, err, image) in
+                if let err = err {
+                    print("Error: \(message) \(err.localizedDescription)")
+                    return
+                }
+                guard let image = image else {
+                    print("Failed to fetch image")
+                    return
+                }
+                let texture = SKTexture(image: image)
+                let userImage = SKSpriteNode(texture: texture)
+                userImage.zPosition = 25.0
+                userImage.scale(to: CGSize(width: 100.0, height: 100.0))
+                userImage.position = CGPoint(x: -row.frame.width/2.0 + 120,
+                                             y: 0.0)
+                row.addChild(userImage)
             }
-            let texture = SKTexture(image: image)
-            let userImage = SKSpriteNode(texture: texture)
-            userImage.zPosition = 25.0
-            userImage.scale(to: CGSize(width: 100.0, height: 100.0))
-            userImage.position = CGPoint(x: -row.frame.width/2.0 + 120,
-                                         y: 0.0)
-            row.addChild(userImage)
-        }
-        // Add Name (only)
-        let userName = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
-        userName.text = (sparkUser.name).components(separatedBy: " ").first
-        if isCurrentUser {
-            userName.text?.append(" (Me)")
-        }
-        userName.fontSize = 40.0
-        userName.zPosition = 25.0
-        userName.fontColor = rowFontColor
-        userName.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        userName.position = CGPoint(x: -row.frame.width/2.0 + 120 + 60,
-                                    y: rank.position.y)
-        row.addChild(userName)
-        // Add Medal (1st, 2nd, 3rd)
-        if(i == 1 || i == 2 || i == 3) {
-            let userMedal = SKSpriteNode(imageNamed: "medal\(i)")
-            userMedal.zPosition = 25.0
-            userMedal.scale(to: CGSize(width: 70.0, height: 70.0))
-            userMedal.position = CGPoint(x: userName.position.x + userName.frame.width + userMedal.frame.width/2.5,
-                                    y: 0.0)
-            row.addChild(userMedal)
-        }
-        // Add score
-        let userScore = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
-        let userScoreValue = sparkUserStats.value(forKey: "record") as! Int
-        userScore.text = "\(userScoreValue)m"
-        userScore.fontSize = 40.0
-        userScore.zPosition = 25.0
-        userScore.fontColor = rowFontColor
-        userScore.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
-        userScore.position = CGPoint(x: row.frame.width/2.0 - 40 - userScore.frame.width,
-                                     y: rank.position.y)
-        row.addChild(userScore)
+            // Add Name (only)
+            let userName = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+            userName.text = (sparkUser.name).components(separatedBy: " ").first
+            if isCurrentUser {
+                userName.text?.append(" (Me)")
+            }
+            userName.fontSize = 40.0
+            userName.zPosition = 25.0
+            userName.fontColor = rowFontColor
+            userName.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+            userName.position = CGPoint(x: -row.frame.width/2.0 + 120 + 60,
+                                        y: rank.position.y)
+            row.addChild(userName)
+            // Add Medal (1st, 2nd, 3rd)
+            if(i == 1 || i == 2 || i == 3) {
+                let userMedal = SKSpriteNode(imageNamed: "medal\(i)")
+                userMedal.zPosition = 25.0
+                userMedal.scale(to: CGSize(width: 70.0, height: 70.0))
+                userMedal.position = CGPoint(x: userName.position.x + userName.frame.width + userMedal.frame.width/2.5,
+                                             y: 0.0)
+                row.addChild(userMedal)
+            }
+            // Add score
+            let userScore = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+            let userScoreValue = sparkUserStats.value(forKey: "record") as! Int
+            userScore.text = "\(userScoreValue)m"
+            userScore.fontSize = 40.0
+            userScore.zPosition = 25.0
+            userScore.fontColor = rowFontColor
+            userScore.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.left
+            userScore.position = CGPoint(x: row.frame.width/2.0 - 40 - userScore.frame.width,
+                                         y: rank.position.y)
+            row.addChild(userScore)
         }
     }
     
@@ -880,15 +910,13 @@ extension MainMenu {
                                                    y: 5.0)
         containerNode.addChild(diamondsAmountContainer)
         
-        // #Diamonds label
-        let numDiamondsLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold") // number of diamonds label
         if fbUserLogged {
             Spark.fetchCurrentSparkUserStats { message, err, sparkUserStats in
                 guard let sparkUserStats = sparkUserStats else {
                     print("Error: \(err!)")
                     return
                 }
-                numDiamondsLbl.text = String(sparkUserStats.diamonds)       // update label
+                self.numDiamondsLbl.text = String(sparkUserStats.diamonds)       // update label
                 self.currentUserStats.diamonds = sparkUserStats.diamonds    // update current amount to avoid bugs
             }
         } else {
@@ -977,13 +1005,13 @@ extension MainMenu {
         } else if currInfoPageNum > 1 && currInfoPageNum < pageInfoNum {
             panel.childNode(withName: "infoArrowLeft")?.setScale(0.5) //set the left arrow visible
             panel.childNode(withName: "infoArrowRight")?.setScale(0.5) //set the right arrow visible
-                if currInfoPageNum == 2{
-                    infoLbl?.verticalAlignmentMode = .top
-                    infoLbl?.fontSize = 50.0
-                    infoLbl?.text = "The sharp ones will steal a life from you, while the smooth rocks and trees will cause you to lose a diamond.\n"
-                    info1.setScale(0.5)
-                    info2.setScale(0.5)
-                }
+            if currInfoPageNum == 2{
+                infoLbl?.verticalAlignmentMode = .top
+                infoLbl?.fontSize = 50.0
+                infoLbl?.text = "The sharp ones will steal a life from you, while the smooth rocks and trees will cause you to lose a diamond.\n"
+                info1.setScale(0.5)
+                info2.setScale(0.5)
+            }
         } else if currInfoPageNum == pageInfoNum {
             info1.setScale(0)
             info2.setScale(0)
@@ -993,16 +1021,16 @@ extension MainMenu {
             infoLbl?.text = "Don't forget to check out our watch app for a better experience."
         }
     }
-	
-	
-	    
-//    MARK: Shop Panel
-//    generate the container of the shop
+    
+    
+    
+    //    MARK: Shop Panel
+    //    generate the container of the shop
     func setupShopPanel(){
-
+        
         // Create a Container
         setupContainer()
-
+        
         // Create a panel inside the container
         let panel = SKSpriteNode(imageNamed: "bigPanel")
         panel.name = "ShopPanel"
@@ -1010,17 +1038,17 @@ extension MainMenu {
         panel.zPosition = 20.0
         panel.position = .zero
         containerNode.addChild(panel)
-
-
+        
+        
         // add a right arrow to the panel
         let rightArrow = SKSpriteNode(imageNamed: "rightArrow")
         rightArrow.name = "ShopArrowRight"
         rightArrow.setScale(0.5)
         rightArrow.zPosition = 20.0
         rightArrow.position = CGPoint(x: panel.position.x + panel.size.width/2 - 60, y: panel.position.y/2)
-
+        
         panel.addChild(rightArrow)
-
+        
         // add left arrow
         let leftArrow = SKSpriteNode(imageNamed: "leftArrow")
         leftArrow.name = "ShopArrowLeft"
@@ -1032,9 +1060,9 @@ extension MainMenu {
         //execute the first update call
         updateShop()
     }
-//  loads the current page of the shop
-//  ad unloads the previous page to
-//  obtain a smooth transition and save memory
+    //  loads the current page of the shop
+    //  ad unloads the previous page to
+    //  obtain a smooth transition and save memory
     func updateShop(){
         loadShopPage(pageNum: currShopPageNum)
         if(currShopPageNum != prevShopPageNum){
@@ -1042,10 +1070,9 @@ extension MainMenu {
         }
         
         updateShopArrows()
-        
     }
-//    updates the shop page, loading sprites,
-//    number of character's lives and the selection/buy button
+    //    updates the shop page, loading sprites,
+    //    number of character's lives and the selection/buy button
     func loadShopPage(pageNum: Int){
         
         guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
@@ -1055,7 +1082,7 @@ extension MainMenu {
         }
         
         switch pageNum {
-//        pagina dedicata a boy
+        //        pagina dedicata a boy
         case 1:
             let theBoy = SKSpriteNode(imageNamed: "TheBoy/Idle (1)")
             theBoy.name = "theBoy"
@@ -1072,9 +1099,11 @@ extension MainMenu {
             theBoy.run(SKAction.repeatForever(SKAction.animate(with: theBoyFrames, timePerFrame: timePerFrameTheBoyAnimations)), withKey: "theBoyAnimation")
             
             loadNameCharacter(Labelname: "boyname", CharacterName: "Mike")
-            loadHeartsCharacter(amount: 3)
+            loadHeartsCharacter(amount: 3, pagenum: pageNum)
             
-//        pagina dedicata a girl
+            loadSelectionCharacter(name: "Mike")
+            
+        //        pagina dedicata a girl
         case 2:
             // Setup the girl
             let cuteGirl = SKSpriteNode(imageNamed: "CuteGirl/Idle (1)")
@@ -1092,9 +1121,30 @@ extension MainMenu {
             cuteGirl.run(SKAction.repeatForever(SKAction.animate(with: cuteGirlFrames, timePerFrame: timePerFrameCuteGirlAnimations)), withKey: "cuteGirlAnimation")
             
             loadNameCharacter(Labelname: "girlname", CharacterName: "Peach")
-            loadHeartsCharacter(amount: 3)
+            loadHeartsCharacter(amount: 3, pagenum: pageNum)
             
-//        pagina dedicata a dino
+            loadSelectionCharacter(name: "Peach")
+        //        pagina dedicata a indiana
+        case 3:
+            let ellie = SKSpriteNode(imageNamed: "indianaFemmina/Idle (1)")
+            ellie.name = "Indiana"
+            ellie.zPosition = 10.0
+            ellie.position = CGPoint(x: -3*ellie.frame.width/4, y:panel.position.y/2)
+            panel.addChild(ellie)
+            // Add animations
+            var indianaFrames = [SKTexture]()
+            for i in 2...10 {
+                let frameName = "indianaFemmina/Idle (\(i))"
+                indianaFrames.append(SKTexture(imageNamed: frameName))
+            }
+            // Animation activated
+            ellie.run(SKAction.repeatForever(SKAction.animate(with: indianaFrames, timePerFrame: timePerFrameIndiana)), withKey: "IndianaAnimation")
+            
+            loadNameCharacter(Labelname: "indianame", CharacterName: "Ellie")
+            loadHeartsCharacter(amount: 4, pagenum: pageNum)
+            
+            loadSelectionCharacter(name: "Ellie")
+        //        pagina dedicata a dino
         case 4:
             let dino = SKSpriteNode(imageNamed: "Dino/Idle (1)")
             dino.name = "Dino"
@@ -1111,39 +1161,20 @@ extension MainMenu {
             dino.run(SKAction.repeatForever(SKAction.animate(with: dinoFrames, timePerFrame: timePerFrameDino)), withKey: "DinoAnimation")
             
             loadNameCharacter(Labelname: "dinoname", CharacterName: "Dino")
-            loadHeartsCharacter(amount: 5)
+            loadHeartsCharacter(amount: 5, pagenum: pageNum)
             
-//        pagina dedicata a indiana
-        case 3:
-            let indiana = SKSpriteNode(imageNamed: "indianaFemmina/Idle (1)")
-            indiana.name = "Indiana"
-            indiana.zPosition = 10.0
-            indiana.position = CGPoint(x: -3*indiana.frame.width/4, y:panel.position.y/2)
-            panel.addChild(indiana)
-            // Add animations
-            var indianaFrames = [SKTexture]()
-            for i in 2...10 {
-                let frameName = "indianaFemmina/Idle (\(i))"
-                indianaFrames.append(SKTexture(imageNamed: frameName))
-            }
-            // Animation activated
-            indiana.run(SKAction.repeatForever(SKAction.animate(with: indianaFrames, timePerFrame: timePerFrameIndiana)), withKey: "IndianaAnimation")
-            
-            loadNameCharacter(Labelname: "indianame", CharacterName: "Ellie")
-            loadHeartsCharacter(amount: 4)
-            
+            loadSelectionCharacter(name: "Dino")
         default:
             return
         }
     }
     
-//  deallocates all the elements in the page
-//  with pageNum number
+    //  deallocates all the elements in the page
+    //  with pageNum number
     func unloadShopPage(pageNum: Int){
         
         guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
         else{
-            
             print("nope unload")
             return
         }
@@ -1152,28 +1183,32 @@ extension MainMenu {
             let boy = panel.childNode(withName: "theBoy") as? SKSpriteNode
             boy?.removeFromParent()
             unloadNameCharacter(Labelname: "boyname")
-            unloadHeartsCharacter(amount: 3)
+            unloadHeartsCharacter(amount: 3, pagenum: pageNum)
+            removeShopSelect(name: "Mike")
         case 2:
             let girl = panel.childNode(withName: "cuteGirl") as? SKSpriteNode
             girl?.removeFromParent()
             unloadNameCharacter(Labelname: "girlname")
-            unloadHeartsCharacter(amount: 3)
-        case 4:
-            let dino = panel.childNode(withName: "Dino") as? SKSpriteNode
-            dino?.removeFromParent()
-            unloadNameCharacter(Labelname: "dinoname")
-            unloadHeartsCharacter(amount: 5)
+            unloadHeartsCharacter(amount: 3, pagenum: pageNum)
+            removeShopSelect(name: "Peach")
         case 3:
             let indiana = panel.childNode(withName: "Indiana") as? SKSpriteNode
             indiana?.removeFromParent()
             unloadNameCharacter(Labelname: "indianame")
-            unloadHeartsCharacter(amount: 4)
+            unloadHeartsCharacter(amount: 4, pagenum: pageNum)
+            removeShopSelect(name: "Ellie")
+        case 4:
+            let dino = panel.childNode(withName: "Dino") as? SKSpriteNode
+            dino?.removeFromParent()
+            unloadNameCharacter(Labelname: "dinoname")
+            unloadHeartsCharacter(amount: 5, pagenum: pageNum)
+            removeShopSelect(name: "Dino")
         default:
             return
         }
     }
-//    a name to che corresponding character is generated and added
-//    to the shop panel
+    //    a name to che corresponding character is generated and added
+    //    to the shop panel
     func loadNameCharacter(Labelname: String,CharacterName: String){
         guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
         else{
@@ -1189,7 +1224,7 @@ extension MainMenu {
         name.position = CGPoint(x: panel.frame.width/5,y: panel.frame.height/4)
         panel.addChild(name)
     }
-//  removes the name from the scene
+    //  removes the name from the scene
     func unloadNameCharacter(Labelname: String){
         guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
         else{
@@ -1200,17 +1235,17 @@ extension MainMenu {
         label?.removeFromParent()
     }
     
-//  add the number of lives to associated characters in the shop
-    func loadHeartsCharacter(amount: Int){
+    //  add the number of lives to associated characters in the shop
+    func loadHeartsCharacter(amount: Int,  pagenum : Int){
         var livesSprites = [SKSpriteNode]()
         //add livesNumber hearts to the player
         for i in 0..<amount{
             livesSprites.append(SKSpriteNode(imageNamed: "life-on"))
-            setupLifePos(livesSprites[i], i: CGFloat(i+1), j: CGFloat(i*8))
+            setupLifePos(livesSprites[i], i: CGFloat(i+1), j: CGFloat(i*8), pagenum: pagenum)
         }
     }
-//  to position the lives in the panel
-    func setupLifePos(_ node: SKSpriteNode, i: CGFloat, j: CGFloat) {
+    //  to position the lives in the panel
+    func setupLifePos(_ node: SKSpriteNode, i: CGFloat, j: CGFloat, pagenum : Int) {
         guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
         else{
             print("nope setup hearts")
@@ -1228,11 +1263,11 @@ extension MainMenu {
         }
         
         node.position = CGPoint(x: x, y: y)
-        node.name = "life \(Int(i-1))"
+        node.name = "life \(Int(i-1)) - \(pagenum)"
         panel.addChild(node)
     }
-//  to remove the hearts from the corresponding shop page
-    func unloadHeartsCharacter(amount: Int){
+    //  to remove the hearts from the corresponding shop page
+    func unloadHeartsCharacter(amount: Int, pagenum : Int){
         
         guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
         else{
@@ -1241,16 +1276,16 @@ extension MainMenu {
         }
         
         for i in 0..<amount{
-            let node = panel.childNode(withName: "life \(i)")
+            let node = panel.childNode(withName: "life \(i) - \(pagenum)")
             node?.removeFromParent()
         }
     }
     
     
-//  to show the shop arrows according to the page
-//  in the first page only the right arrow is shown, can go only forward
-//  in intermediate pages both right and left arrow are shown
-//  in the last page only the left arrow is shown, can go only backwards
+    //  to show the shop arrows according to the page
+    //  in the first page only the right arrow is shown, can go only forward
+    //  in intermediate pages both right and left arrow are shown
+    //  in the last page only the left arrow is shown, can go only backwards
     func updateShopArrows(){
         guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
         else{
@@ -1278,5 +1313,206 @@ extension MainMenu {
             leftArrow.setScale(0.5)
             rightArrow.setScale(0.5)
         }
+    }
+    
+    func loadSelectionCharacter(name: String) {
+        
+        let playerSelected = UserDefaults.standard.object(forKey: playerSelectedKey) as? String
+        
+        switch name {
+        case "Mike":
+            if(playerSelected == "TheBoy"){
+                createShopSelect(type: "selected", selectBtnName: "Mike0", price: 0)
+            }else{
+                createShopSelect(type: "select", selectBtnName: "Mike1", price: 0)
+            }
+        case "Peach":
+            if(playerSelected == "CuteGirl"){
+                createShopSelect(type: "selected", selectBtnName: "Peach0", price: 0)
+            }else{
+                createShopSelect(type: "select", selectBtnName: "Peach1", price: 0)
+            }
+        case "Ellie":
+            if(fbUserLogged){
+                if(currentUserStats.ellieUnlocked){
+                    if(playerSelected == "Ellie"){
+                        createShopSelect(type: "selected", selectBtnName: "Ellie0", price: 0)
+                    }
+                    else{
+                        createShopSelect(type: "select", selectBtnName: "Ellie1", price: 0)
+                    }
+                }
+                else{
+                    if(currentUserStats.diamonds >= elliePrice){
+                        createShopSelect(type: "lockedWithMoney", selectBtnName: "Ellie3", price: elliePrice)
+                    }
+                    else{
+                        createShopSelect(type: "lockedNoMoney", selectBtnName: "Ellie4", price: elliePrice)
+                    }
+                }
+            }
+            else{
+                createShopSelect(type: "lockedFB", selectBtnName: "Ellie2", price: 0)
+            }
+            
+        case "Dino":
+            if(fbUserLogged){
+                if(currentUserStats.ellieUnlocked){
+                    if(playerSelected == "Dino"){
+                        createShopSelect(type: "selected", selectBtnName: "Dino0", price: 0)
+                    }
+                    else{
+                        createShopSelect(type: "select", selectBtnName: "Dino1", price: 0)
+                    }
+                }
+                else{
+                    if(currentUserStats.diamonds >= elliePrice){
+                        createShopSelect(type: "lockedWithMoney", selectBtnName: "Dino3", price: dinoPrice)
+                    }
+                    else{
+                        createShopSelect(type: "lockedNoMoney", selectBtnName: "Dino4", price: elliePrice)
+                    }
+                }
+            }
+            else{
+                createShopSelect(type: "lockedFB", selectBtnName: "Dino2", price: 0)
+            }
+            
+        default:
+            return
+        }
+    }
+    
+    func createShopSelect(type: String, selectBtnName: String,price: Int){
+        
+        guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
+        else{
+            print("nope load selection")
+            return
+        }
+        
+        let position = CGPoint(x: panel.position.x + panel.size.width/4 - 40, y: panel.position.y-panel.size.height/4 + 20)
+        
+        let buttonLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+        buttonLbl.fontColor = .black
+        buttonLbl.fontSize = 68
+        buttonLbl.position = CGPoint(x: 0, y: -15)
+        buttonLbl.zPosition = 19
+        buttonLbl.name = selectBtnName + "L"
+        
+        switch type {
+        case "selected":
+            let button = SKSpriteNode(imageNamed: "selectedBtn")
+            button.name = selectBtnName
+            button.position = position
+            buttonLbl.text = "Selected"
+            button.zPosition = 19
+            button.addChild(buttonLbl)
+            panel.addChild(button)
+        case "select":
+            let button = SKSpriteNode(imageNamed: "standardBtn")
+            button.name = selectBtnName
+            button.position = position
+            buttonLbl.text = "Select"
+            button.zPosition = 19
+            button.addChild(buttonLbl)
+            panel.addChild(button)
+        case "lockedFB": //offline mode, should connect to fb
+            let button = SKSpriteNode(imageNamed: "lockedBtn")
+            button.name = selectBtnName
+            button.position = position
+            buttonLbl.text = "Login\nto buy"
+            buttonLbl.numberOfLines = 2
+            buttonLbl.fontSize = 62
+            buttonLbl.position  = CGPoint(x: 0, y: button.position.y/2.5)
+            button.zPosition = 19
+            button.addChild(buttonLbl)
+            panel.addChild(button)
+        case "lockedNoMoney": // need more money to buy the character
+            let button = SKSpriteNode(imageNamed: "lockedBtn")
+            let diamond = SKSpriteNode(imageNamed: "jewel/0")
+            button.name = selectBtnName
+            button.position = position
+            buttonLbl.text = "\(price)"
+            button.zPosition = 19
+            
+            diamond.setScale(0.8)
+            diamond.position = CGPoint(x: position.x/2.5,y: 0)
+            diamond.zPosition = 19
+            buttonLbl.position.x -= 40
+            
+            button.addChild(buttonLbl)
+            button.addChild(diamond)
+            panel.addChild(button)
+        case "lockedWithMoney": //can buy character
+            let button = SKSpriteNode(imageNamed: "standardBtn")
+            let diamond = SKSpriteNode(imageNamed: "jewel/0")
+            button.name = selectBtnName
+            button.position = position
+            buttonLbl.text = "\(price)"
+            button.zPosition = 19
+            
+            diamond.setScale(0.8)
+            diamond.position = CGPoint(x: position.x/2.5,y: 0)
+            diamond.zPosition = 19
+            buttonLbl.position.x -= 40
+            
+            button.addChild(buttonLbl)
+            button.addChild(diamond)
+            panel.addChild(button)
+        default:
+            return
+        }
+    }
+    
+    func removeShopSelect(name: String){
+        
+        guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
+        else{
+            print("nope load selection")
+            return
+        }
+        
+        for i in 0...4{
+            let btnName = name + i.description
+            let button = panel.childNode(withName: btnName)
+            button?.removeAllChildren()
+            button?.removeFromParent()
+        }
+    }
+    
+    func buyCharacter(name : String){
+        if(name == "Ellie"){
+            currentUserStats.diamonds -= elliePrice
+            numDiamondsLbl.text = String(currentUserStats.diamonds)
+            currentUserStats.ellieUnlocked = true
+            run(SKAction.playSoundFileNamed("indiana.wav"))
+            if(!Spark.saveSparkUserStats(sparkUserStats: currentUserStats)){
+                //rollback in caso di errore
+                currentUserStats.diamonds += elliePrice
+                currentUserStats.ellieUnlocked = false
+            }
+            //aggiorna lo shop per consentire la selezione del personaggio Ellie
+            
+            updateCurrentShopPage(pageNum: currShopPageNum)
+            
+        }else if(name == "Dino"){
+            currentUserStats.diamonds -= dinoPrice
+            numDiamondsLbl.text = String(currentUserStats.diamonds)
+            currentUserStats.dinoUnlocked = true
+            run(SKAction.playSoundFileNamed("trex.wav"))
+            if(!Spark.saveSparkUserStats(sparkUserStats: currentUserStats)){
+                //rollback in caso di errore
+                currentUserStats.diamonds += dinoPrice
+                currentUserStats.dinoUnlocked = false
+            }
+           updateCurrentShopPage(pageNum: currShopPageNum)
+        }
+    }
+    
+    func updateCurrentShopPage(pageNum: Int){
+        //aggiorna lo shop per consentire la selezione del personaggio Dino
+        unloadShopPage(pageNum: currShopPageNum)
+        loadShopPage(pageNum: currShopPageNum)
     }
 }

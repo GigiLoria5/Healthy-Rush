@@ -21,6 +21,8 @@
 		AC261FA826774F7A00D1D5DA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC261FA626774F7A00D1D5DA /* Assets.xcassets */; };
 		AC261FA926774F7A00D1D5DA /* fireworks.sks in Resources */ = {isa = PBXBuildFile; fileRef = AC261FA726774F7A00D1D5DA /* fireworks.sks */; };
 		AC261FB12677525700D1D5DA /* newRecord.wav in Resources */ = {isa = PBXBuildFile; fileRef = AC261FB02677525700D1D5DA /* newRecord.wav */; };
+		AC6273222677AFE3005893A4 /* trex.wav in Resources */ = {isa = PBXBuildFile; fileRef = AC6273212677AFE3005893A4 /* trex.wav */; };
+		AC6273272677B232005893A4 /* indiana.wav in Resources */ = {isa = PBXBuildFile; fileRef = AC6273262677B232005893A4 /* indiana.wav */; };
 		CC15AEF425D91B010014EB61 /* GameOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC15AEF325D91B010014EB61 /* GameOver.swift */; };
 		CC15AEF725D9242D0014EB61 /* SKTAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC15AEF625D9242D0014EB61 /* SKTAudio.swift */; };
 		CC15AEFA25D9281B0014EB61 /* SKAction+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC15AEF925D9281B0014EB61 /* SKAction+Ext.swift */; };
@@ -120,6 +122,8 @@
 		AC261FA626774F7A00D1D5DA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AC261FA726774F7A00D1D5DA /* fireworks.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = fireworks.sks; sourceTree = "<group>"; };
 		AC261FB02677525700D1D5DA /* newRecord.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = newRecord.wav; sourceTree = "<group>"; };
+		AC6273212677AFE3005893A4 /* trex.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = trex.wav; sourceTree = "<group>"; };
+		AC6273262677B232005893A4 /* indiana.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = indiana.wav; sourceTree = "<group>"; };
 		AEA75BB2076C5AF43F3FE736 /* Pods_Healthy_Rush.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Healthy_Rush.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC15AEF325D91B010014EB61 /* GameOver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOver.swift; sourceTree = "<group>"; };
 		CC15AEF625D9242D0014EB61 /* SKTAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SKTAudio.swift; sourceTree = "<group>"; };
@@ -340,6 +344,8 @@
 		CC59DEE725D48B790089C664 /* Sound */ = {
 			isa = PBXGroup;
 			children = (
+				AC6273262677B232005893A4 /* indiana.wav */,
+				AC6273212677AFE3005893A4 /* trex.wav */,
 				AC261FB02677525700D1D5DA /* newRecord.wav */,
 				CC52E55425D9E337001F3A8C /* backgroundMusic.mp3 */,
 				CC52E55025D9E337001F3A8C /* diamond.wav */,
@@ -500,6 +506,7 @@
 				CC59DECE25D486DB0089C664 /* Main.storyboard in Resources */,
 				CC59DEC525D486DB0089C664 /* GameScene.sks in Resources */,
 				CC59DED025D486DC0089C664 /* Assets.xcassets in Resources */,
+				AC6273272677B232005893A4 /* indiana.wav in Resources */,
 				CC52E55625D9E337001F3A8C /* gameOver.wav in Resources */,
 				AC261FA826774F7A00D1D5DA /* Assets.xcassets in Resources */,
 				CC51944325E2DECB002E2DEA /* buttonSound.wav in Resources */,
@@ -512,6 +519,7 @@
 				CC59DEC725D486DB0089C664 /* Actions.sks in Resources */,
 				CC52E55925D9E337001F3A8C /* backgroundMusic.mp3 in Resources */,
 				AC261FB12677525700D1D5DA /* newRecord.wav in Resources */,
+				AC6273222677AFE3005893A4 /* trex.wav in Resources */,
 				CC52E55725D9E337001F3A8C /* collision.wav in Resources */,
 				CC4F27982635EE57001CF955 /* GoogleService-Info.plist in Resources */,
 			);
