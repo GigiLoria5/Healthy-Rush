@@ -724,6 +724,7 @@ extension MainMenu {
     }
     
 //    MARK: Shop Panel
+//    generate the container of the shop
     func setupShopPanel(){
 
         // Create a Container
@@ -755,12 +756,13 @@ extension MainMenu {
         leftArrow.position = CGPoint(x: -(panel.position.x + panel.size.width/2 - 60), y: panel.position.y/2)
         panel.addChild(leftArrow)
         
-        //first call
+        //execute the first update call
         updateShop()
     }
+//  loads the current page of the shop
+//  ad unloads the previous page to
+//  obtain a smooth transition and save memory
     func updateShop(){
-//        print(currShopPageNum,prevShopPageNum)
-        
         loadShopPage(pageNum: currShopPageNum)
         if(currShopPageNum != prevShopPageNum){
             unloadShopPage(pageNum: prevShopPageNum)
@@ -769,6 +771,8 @@ extension MainMenu {
         updateShopArrows()
         
     }
+//    updates the shop page, loading sprites,
+//    number of character's lives and the selection/buy button
     func loadShopPage(pageNum: Int){
         
         guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
@@ -776,7 +780,6 @@ extension MainMenu {
             print("nope load")
             return
         }
-        
         
         switch pageNum {
 //        pagina dedicata a boy
@@ -796,10 +799,8 @@ extension MainMenu {
             theBoy.run(SKAction.repeatForever(SKAction.animate(with: theBoyFrames, timePerFrame: timePerFrameTheBoyAnimations)), withKey: "theBoyAnimation")
             
             loadNameCharacter(Labelname: "boyname", CharacterName: "Mike")
-            
             loadHeartsCharacter(amount: 3)
-          
-
+            
 //        pagina dedicata a girl
         case 2:
             // Setup the girl
@@ -818,7 +819,6 @@ extension MainMenu {
             cuteGirl.run(SKAction.repeatForever(SKAction.animate(with: cuteGirlFrames, timePerFrame: timePerFrameCuteGirlAnimations)), withKey: "cuteGirlAnimation")
             
             loadNameCharacter(Labelname: "girlname", CharacterName: "Peach")
-            
             loadHeartsCharacter(amount: 3)
             
 //        pagina dedicata a dino
@@ -838,7 +838,6 @@ extension MainMenu {
             dino.run(SKAction.repeatForever(SKAction.animate(with: dinoFrames, timePerFrame: timePerFrameDino)), withKey: "DinoAnimation")
             
             loadNameCharacter(Labelname: "dinoname", CharacterName: "Dino")
-            
             loadHeartsCharacter(amount: 5)
             
 //        pagina dedicata a indiana
@@ -858,14 +857,15 @@ extension MainMenu {
             indiana.run(SKAction.repeatForever(SKAction.animate(with: indianaFrames, timePerFrame: timePerFrameIndiana)), withKey: "IndianaAnimation")
             
             loadNameCharacter(Labelname: "indianame", CharacterName: "Ellie")
-            
             loadHeartsCharacter(amount: 4)
             
         default:
             return
         }
-        
     }
+    
+//  deallocates all the elements in the page
+//  with pageNum number
     func unloadShopPage(pageNum: Int){
         
         guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
@@ -899,7 +899,8 @@ extension MainMenu {
             return
         }
     }
-    
+//    a name to che corresponding character is generated and added
+//    to the shop panel
     func loadNameCharacter(Labelname: String,CharacterName: String){
         guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
         else{
@@ -915,6 +916,7 @@ extension MainMenu {
         name.position = CGPoint(x: panel.frame.width/5,y: panel.frame.height/4)
         panel.addChild(name)
     }
+//  removes the name from the scene
     func unloadNameCharacter(Labelname: String){
         guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
         else{
@@ -925,6 +927,7 @@ extension MainMenu {
         label?.removeFromParent()
     }
     
+//  add the number of lives to associated characters in the shop
     func loadHeartsCharacter(amount: Int){
         var livesSprites = [SKSpriteNode]()
         //add livesNumber hearts to the player
@@ -933,7 +936,7 @@ extension MainMenu {
             setupLifePos(livesSprites[i], i: CGFloat(i+1), j: CGFloat(i*8))
         }
     }
-    
+//  to position the lives in the panel
     func setupLifePos(_ node: SKSpriteNode, i: CGFloat, j: CGFloat) {
         guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
         else{
@@ -955,7 +958,7 @@ extension MainMenu {
         node.name = "life \(Int(i-1))"
         panel.addChild(node)
     }
-    
+//  to remove the hearts from the corresponding shop page
     func unloadHeartsCharacter(amount: Int){
         
         guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
@@ -971,7 +974,10 @@ extension MainMenu {
     }
     
     
-    
+//  to show the shop arrows according to the page
+//  in the first page only the right arrow is shown, can go only forward
+//  in intermediate pages both right and left arrow are shown
+//  in the last page only the left arrow is shown, can go only backwards
     func updateShopArrows(){
         guard let panel = containerNode.childNode(withName: "ShopPanel") as? SKSpriteNode
         else{
