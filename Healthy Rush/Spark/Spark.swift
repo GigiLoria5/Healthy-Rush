@@ -26,9 +26,9 @@ class Spark {
     // MARK: Firestore Database
     static var firestoreDatabase: Firestore = {
         let db = Firestore.firestore()
-        let settings = db.settings
-//      settings.areTimestampsInSnapshotsEnabled = true // it should be default true
-        db.settings = settings
+//        let settings = db.settings
+//        settings.areTimestampsInSnapshotsEnabled = true // it should be true by default
+//        db.settings = settings
         return db
     }()
     
@@ -37,7 +37,7 @@ class Spark {
     static func logout(completion: @escaping (_ result: Bool, _ error: Error?) ->()) {
         do {
             try Auth.auth().signOut() // signOut Firebase
-            LoginManager().logOut()  // signOut Facebook and clear Token Access
+            LoginManager().logOut()   // signOut Facebook and clear Token Access
             print("Successfully signed out")
             completion(true, nil)
         } catch let err {
@@ -108,7 +108,7 @@ class Spark {
                 let documentData = [SparkKeys.SparkUser.uid: uid,
                                     SparkKeys.SparkUser.name: name,
                                     SparkKeys.SparkUser.email: email,
-                                    SparkKeys.SparkUser.profileImageUrl: profileImageFacebookUrl /* remember to change this to the Firebase Storage url later on*/] as [String : Any]
+                                    SparkKeys.SparkUser.profileImageUrl: profileImageFacebookUrl] as [String : Any]
                 
                 let sparkUser = SparkUser(documentData: documentData)
                 saveUserIntoFirebaseDatabase(profileImageData: data, sparkUser: sparkUser, completion: completion)
@@ -140,7 +140,6 @@ class Spark {
                 }
                 
                 if result {
-                    
                     saveSparkUser(profileImageData: profileImageData, sparkUser: sparkUser, completion: completion)
                     
                 } else {
@@ -215,9 +214,9 @@ class Spark {
     }
     
     // MARK: -
-    // MARK: Fetch Spark User with uid
+    // MARK: Fetch All Spark User Order By Name
     static func fetchAllSparkUsers(completion: @escaping (_ message: String, _ error: Error?, _ sparkUsers: EnumeratedSequence<[QueryDocumentSnapshot]>?) ->()) {
-        Firestore_Users_Collection.getDocuments { (snapshot, err) in
+        Firestore_Users_Collection.order(by: "name", descending: false).getDocuments { (snapshot, err) in
             if let err = err { completion("Failed to fetch document with error:", err, nil); return }
             guard let snapshot = snapshot else {
                 completion("Failed to get spark user from snapshot.", nil, nil); return }
@@ -263,6 +262,81 @@ class Spark {
     static func getDownloadUrl(from path: String, completion: @escaping (String?, Error?) -> Void) {
         Storage.storage().reference().child(path).downloadURL { (url, err) in
             completion(url?.absoluteString, err)
+        }
+    }
+    
+    // MARK: -
+    // MARK: Fetch Current Spark User Stats
+    static func fetchCurrentSparkUserStats(completion: @escaping (_ message: String, _ error: Error?, _ sparkUserStats: SparkUserStats?) ->()) {
+        if Auth.auth().currentUser != nil {
+            guard let uid = Auth.auth().currentUser?.uid else { completion("Failed to fetch user uid.", nil, nil); return }
+            fetchSparkUserStats(uid, completion: completion)
+        }
+    }
+    
+    // MARK: -
+    // MARK: Fetch Spark User Stats with uid
+    static func fetchSparkUserStats(_ uid: String, completion: @escaping (_ message: String, _ error: Error?, _ sparkUserStats: SparkUserStats?) ->()) {
+        Firestore_Stats_Collection.whereField(SparkKeys.SparkUserStats.uid, isEqualTo: uid).getDocuments { (snapshot, err) in
+            if let err = err { completion("Failed to fetch document with error:", err, nil); return }
+            guard let snapshot = snapshot, let sparkUserStats = snapshot.documents.first.flatMap({SparkUserStats(documentData: $0.data())}) else { completion("Failed to get spark user stats from snapshot.", nil, nil); return }
+            completion("Successfully fetched spark user stats", nil, sparkUserStats)
+        }
+    }
+    
+    // MARK: -
+    // MARK: Update Spark User Stats with uid and diamonds to add
+    static func updateSparkUserStats(uid: String, localRecord record: Int, diamondsToAdd diamonds: Int,  completion: @escaping (_ message: String, _ error: Error?, _ sparkUserStats: SparkUserStats?) ->()) {
+        // Get the current User Stats
+        Spark.fetchSparkUserStats(uid) { message, err, sparkUserStatsFetched in
+            var sparkUserStatsUpdated: SparkUserStats! // to be inserted
+            // Check if the Spark User is already in the db
+            if sparkUserStatsFetched == nil { // Spark User Stats Not Found
+                // So we create a new Spark User Stats for that user
+                sparkUserStatsUpdated = SparkUserStats(uid: uid, record: record, diamonds: diamonds, ellieUnlocked: false, dinoUnlocked: false)
+            } else {  // We have the Spark User Stats
+                sparkUserStatsUpdated = SparkUserStats(uid: uid, record: record > sparkUserStatsFetched!.record ? record : sparkUserStatsFetched!.record, diamonds: sparkUserStatsFetched!.diamonds + diamonds, ellieUnlocked: sparkUserStatsFetched!.ellieUnlocked, dinoUnlocked: sparkUserStatsFetched!.dinoUnlocked)
+            }
+            // and we save the new user into the db
+            if (!saveSparkUserStats(sparkUserStats: sparkUserStatsUpdated)) {
+                completion("Failed to save spark user stats with error:", err, nil)
+            } else {
+                completion("Successfully saved spark user stats", nil, sparkUserStatsUpdated)
+            }
+            return
+        }
+    }
+    
+    // MARK: -
+    // MARK: Save Spark User Stats
+    static func saveSparkUserStats(sparkUserStats: SparkUserStats) -> Bool {
+        // Data
+        let documentPath = sparkUserStats.uid
+        let documentData = [SparkKeys.SparkUserStats.uid: sparkUserStats.uid,
+                            SparkKeys.SparkUserStats.record: sparkUserStats.record,
+                            SparkKeys.SparkUserStats.ellieUnlocked: sparkUserStats.ellieUnlocked,
+                            SparkKeys.SparkUserStats.dinoUnlocked: sparkUserStats.dinoUnlocked,
+                            SparkKeys.SparkUserStats.diamonds: sparkUserStats.diamonds] as [String : Any]
+        // Saving
+        var saveFlag = true // true indicates no errors
+        Spark.Firestore_Stats_Collection.document(documentPath).setData(documentData) { err in
+            if let err = err {
+                print("Error updating user stats: \(err)")
+                saveFlag = false
+            }
+        }
+        print("User stats successfully saved")
+        return saveFlag
+    }
+    
+    // MARK: -
+    // MARK: Fetch All Spark User Stats Order By Record
+    static func fetchAllSparkUsersStats(completion: @escaping (_ message: String, _ error: Error?, _ sparkUsersStats: EnumeratedSequence<[QueryDocumentSnapshot]>?) ->()) {
+        Firestore_Stats_Collection.order(by: "record", descending: true).getDocuments { (snapshot, err) in
+            if let err = err { completion("Failed to fetch document with error:", err, nil); return }
+            guard let snapshot = snapshot else {
+                completion("Failed to get spark user stats from snapshot.", nil, nil); return }
+            completion("Successfully fetched spark user stats", nil, snapshot.documents.enumerated())
         }
     }
     

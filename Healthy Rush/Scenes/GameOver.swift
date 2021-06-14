@@ -13,24 +13,24 @@ class GameOver: SKScene {
     
     // User Status and ViewController Reference
     var fbUserLogged : Bool!
-    var currentUser: SparkUser!
-    var viewController: GameViewController!
-    
-//    punteggio corrente e massimo
-    let highScore = ScoreGenerator.sharedInstance.getHighscore()
-    let currScore = ScoreGenerator.sharedInstance.getScore()
-    
-    override func didMove(to view: SKView) {
+    var currentUser: SparkUser!             // uid, email, name, profileImageUrl
+    var currentUserStats: SparkUserStats!   // uid, diamonds, dinoUnlocked, ellieUnlocked, record
+	var viewController: GameViewController!
+	
+	//last match info
+	let newRecordSet = ScoreGenerator.sharedInstance.getNewRecordSet()
+	
+	
+	override func didMove(to view: SKView) {
         createBGNodes()
         createGroundNodes()
-        
+        createSummary()
         createMessageNode()
 //        stop the gameScene music
         SKTAudio.sharedInstance().stopBGMusic()
 //        play the music according to the current message shown
         runMessageMusic()
-        
-        
+		
         run(.sequence([
             .wait(forDuration: 5.0),
             .run {
@@ -38,17 +38,18 @@ class GameOver: SKScene {
                 scene.scaleMode = self.scaleMode
                 scene.fbUserLogged = self.fbUserLogged
                 scene.currentUser = self.currentUser
+				scene.currentUserStats = self.currentUserStats
                 scene.viewController = self.viewController
                 self.view!.presentScene(scene, transition: .doorsCloseVertical(withDuration: 0.5))
             }
         ]))
     }
-    
-    override func update(_ currentTime: TimeInterval) {
+	
+	    override func update(_ currentTime: TimeInterval) {
         moveNodes()
-    }
+		}
 }
-
+	
 //MARK: - Configurations
 extension GameOver {
     func createBGNodes() {
@@ -61,6 +62,19 @@ extension GameOver {
             bgNode.zPosition = -1.0
             addChild(bgNode)
         }
+    }
+    
+    func createGameOverNode() {
+        let gameOver = SKSpriteNode(imageNamed: "gameOver")
+        gameOver.zPosition = 10.0
+        gameOver.position = CGPoint(x: size.width/2.0,
+                                y: size.height/2.0 + gameOver.frame.height/2.0)
+        addChild(gameOver)
+        
+        let scalepUp = SKAction.scale(to: 1.1, duration: 0.5)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.5)
+        let fullScale = SKAction.sequence([scalepUp, scaleDown])
+        gameOver.run(.repeatForever(fullScale))
     }
     
     func createGroundNodes() {
@@ -86,22 +100,9 @@ extension GameOver {
                 }
             }
         }
-    }
-    
-    func createGameOverNode() {
-        let gameOver = SKSpriteNode(imageNamed: "gameOver")
-        gameOver.zPosition = 10.0
-        gameOver.position = CGPoint(x: size.width/2.0,
-                                y: size.height/2.0 + gameOver.frame.height/2.0)
-        addChild(gameOver)
-        
-        let scalepUp = SKAction.scale(to: 1.1, duration: 0.5)
-        let scaleDown = SKAction.scale(to: 1.0, duration: 0.5)
-        let fullScale = SKAction.sequence([scalepUp, scaleDown])
-        gameOver.run(.repeatForever(fullScale))
-    }
-    
-    func createNewRecordNode(){
+    }	
+	
+	func createNewRecordNode(){
         let newRecord = SKSpriteNode(imageNamed: "newRecord")
         newRecord.zPosition = 10.0
         newRecord.setScale(3)
@@ -115,7 +116,8 @@ extension GameOver {
         newRecord.run(.repeatForever(fullScale))
     }
     
-    func createFireworks(){
+
+	func createFireworks(){
         let leftEmitter = SKEmitterNode(fileNamed: "fireworks.sks")
         let rightEmitter = SKEmitterNode(fileNamed: "fireworks.sks")
         
@@ -130,16 +132,13 @@ extension GameOver {
         }
     }
     
-    
     func createMessageNode(){
 //       messaggio a seconda del punteggio
-        if(currScore > highScore){
+        if(newRecordSet){
 //          aggiunge scritta "new Record" alla scena
             createNewRecordNode()
 //            aggiunge effetto fuochi artificio
             createFireworks()
-//            aggiorna il punteggio massimo
-            ScoreGenerator.sharedInstance.setHighscore(currScore)
         }
         else{
             createGameOverNode()
@@ -147,12 +146,19 @@ extension GameOver {
     }
 
     func runMessageMusic(){
-        if(currScore > highScore){
+        if(newRecordSet){
             let soundNewRecord = SKAction.playSoundFileNamed("newRecord.wav")
             run(soundNewRecord)
         }else{
             let soundGameOver = SKAction.playSoundFileNamed("gameOver.wav")
             run(soundGameOver)
         }
+    }
+    
+    func createSummary() {
+        let newRecordSet = ScoreGenerator.sharedInstance.getNewRecordSet()
+        let scoreLastMatch = ScoreGenerator.sharedInstance.getScore()
+        let diamondsCollected = ScoreGenerator.sharedInstance.getDiamondsLastMatch()
+        print("Summary: new record? \(newRecordSet); score: \(scoreLastMatch)m; diamonds collected: \(diamondsCollected)")
     }
 }

@@ -43,7 +43,6 @@ static GTMSessionFetcherRetryBlock _retryWhenOffline;
   /// Stored Auth reference, if it exists. This needs to be stored for `copyWithZone:`.
   id<FIRAuthInterop> _Nullable _auth;
   id<FIRAppCheckInterop> _Nullable _appCheck;
-  BOOL _usesEmulator;
   NSTimeInterval _maxUploadRetryTime;
   NSTimeInterval _maxDownloadRetryTime;
   NSTimeInterval _maxOperationRetryTime;
@@ -334,7 +333,6 @@ static GTMSessionFetcherRetryBlock _retryWhenOffline;
                        @"reference or trying to load data."];
   }
 
-  _usesEmulator = YES;
   _scheme = @"http";
   _host = host;
   _port = @(port);
@@ -362,7 +360,6 @@ static GTMSessionFetcherRetryBlock _retryWhenOffline;
                                                       bucket:_storageBucket
                                                         auth:_auth
                                                     appCheck:_appCheck];
-    _fetcherServiceForApp.allowLocalhostRequest = _usesEmulator;
   }
 }
 

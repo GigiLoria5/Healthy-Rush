@@ -16,8 +16,17 @@ struct SparkKeys {
         static let profileImageUrl = "profileImageUrl"
     }
     
+    struct SparkUserStats {
+        static let uid = "uid"
+        static let record = "record"
+        static let diamonds = "diamonds"
+        static let ellieUnlocked = "ellieUnlocked"
+        static let dinoUnlocked = "dinoUnlocked"
+    }
+    
     struct CollectionPath {
         static let users = "users"
+        static let stats = "stats"
     }
     
     struct StorageFolder {

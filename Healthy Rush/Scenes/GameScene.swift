@@ -28,7 +28,7 @@ class GameScene: SKScene {
     var visioPoseController : VisioController!
     
     // Settings
-    var isTimeMaxObstacle: CGFloat = 8.5 // Max spawn time
+    var isTimeMaxObstacle: CGFloat = 7.8 // Max spawn time
     var isTimeMinObstacle: CGFloat = 3.5 // Min spawn time
     var isTimeMaxJewel: CGFloat = 7.0 // Max spawn time
     var isTimeMinJewel: CGFloat = 3.0 // Min spawn time
@@ -45,7 +45,8 @@ class GameScene: SKScene {
     
     // User Status and ViewController Reference
     var fbUserLogged : Bool!
-    var currentUser: SparkUser!
+    var currentUser: SparkUser!             // uid, email, name, profileImageUrl
+    var currentUserStats: SparkUserStats!   // uid, diamonds, dinoUnlocked, ellieUnlocked, record
     var viewController: GameViewController!
     
     // Gesture Captures
@@ -58,14 +59,17 @@ class GameScene: SKScene {
     var playerPosY: CGFloat = 0.0
     
     // In-game utilities
-    var numScore: Int = 0
+    var numDiamonds: Int = 0 // num of diamonds of this game
+    var numMeters: Int = 0   // score
+    var startPoint: Int = 0  // to calculate the meters ran
     var gameOver = false
     var livesNumber: Int = 3
     
     // Add labels, icons and buttons
     var lifeNodes: [SKSpriteNode] = []
-    var scoreLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
-    var jewelIcon: SKSpriteNode!
+    var diamondsCountLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+    var diamondsIcon: SKSpriteNode!
+    var metersLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
     var pauseNode: SKSpriteNode!
     var containerNode = SKNode()
     
@@ -130,7 +134,7 @@ class GameScene: SKScene {
         
         // Start Spawning
         if(!cameraMode){
-            startSpawning(dispatch: .now() + 1.5)
+            readyGoExecute()
         }
         
         // Save this for the gameover
@@ -191,6 +195,7 @@ class GameScene: SKScene {
     }
 
     override func update(_ currentTime: TimeInterval) {
+        // Calculate the time and then moving both camera and player
         if lastUpdateTime > 0 {
             dt = currentTime - lastUpdateTime
         } else {
@@ -200,15 +205,18 @@ class GameScene: SKScene {
         moveCamera()
         movePlayer()
         
+        // Update meters ran
+        numMeters = (Int((player.position.x)) - startPoint)/Int((CGFloat(50000.0)/cameraMovePointPerSecond))
+            // when the cameraMovePointPerSecond is incresead, the speed with which you travel the meters increases and
+            // therefore the denominator is smaller
+        metersLbl.text = "\(numMeters)m"
+
         if onGround && !isPaused{
-            
                 if (appDI.jump){
                     executeJump()
                 }
             if #available(iOS 14.0, *) {
-                
                 let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
-                
                 if (cameraMode){
                     if(visioPoseController.getCurrentPose() == .jumping){
                         executeJump()
@@ -242,19 +250,41 @@ class GameScene: SKScene {
             appDI.jump = false
         }
         
+        // If gameOver is Found
         if gameOver {
-            
+            // Stop capturing movements
             let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
-            
             if(cameraMode){
                 visioPoseController.stopCapture()
             }
             
-            ScoreGenerator.sharedInstance.setScore(numScore) // save the last score
+            // Save scores
+            ScoreGenerator.sharedInstance.setScore(numMeters) // last score saved only locally
+            ScoreGenerator.sharedInstance.setDiamondsLastMatch(numDiamonds) // last diamonds collected saved only locally
+            let highscore = ScoreGenerator.sharedInstance.getHighscore()
+            var newRecordSet = false // whether or not a new record is set
+            if numMeters > highscore { // set if it's the highscore
+                ScoreGenerator.sharedInstance.setHighscore(numMeters) // here will be the record both user logged and not
+                newRecordSet = true
+            }
+            ScoreGenerator.sharedInstance.setNewRecordSet(newRecordSet) // update if this was a new record or not
+            if fbUserLogged { // If the user is logged the diamonds will be added to the current amount
+                self.currentUserStats.diamonds += numDiamonds
+                self.currentUserStats.record = ScoreGenerator.sharedInstance.getHighscore() // in case it's changed
+                if(!Spark.saveSparkUserStats(sparkUserStats: self.currentUserStats)) {
+                    print("Error while updating the Spark User Stats")
+                }
+            } else { // We save the diamonds amount locally
+                let newDiamondsAmount = ScoreGenerator.sharedInstance.isDiamondsPresent() ? ScoreGenerator.sharedInstance.getDiamonds() + numDiamonds : numDiamonds
+                ScoreGenerator.sharedInstance.setDiamonds(newDiamondsAmount)
+            }
+            
+            // Present game over scene
             let scene = GameOver(size: size)
             scene.scaleMode = scaleMode
             scene.fbUserLogged = self.fbUserLogged
             scene.currentUser = self.currentUser
+            scene.currentUserStats = self.currentUserStats
             scene.viewController = self.viewController
             view!.presentScene(scene, transition: .doorsCloseVertical(withDuration: 0.8))
         }
@@ -288,7 +318,7 @@ extension GameScene {
         createPlayer()
         setupPhysics()
         setupLife()
-        setupScore()
+        setupNumDiamonds()
         setupPause()
         setupCamera()
         setupReadyGo()
@@ -296,6 +326,12 @@ extension GameScene {
     
     func startSpawning(dispatch: DispatchTime){
         DispatchQueue.main.asyncAfter(deadline: dispatch) {
+            // Setup meters counter
+            self.startPoint = Int(self.player.position.x)
+            self.numMeters = 0
+            self.setupNumMeters() // The setup is here because the update functions is already active
+             // and it will show the meters counter label after the game is started
+            // Setup obstacles and diamonds
             self.setupObstacles()
             self.spawnObstacles()
             self.setupJewel()
@@ -398,7 +434,7 @@ extension GameScene {
     func moveCamera() {
         let amountToMove = CGPoint(x: cameraMovePointPerSecond * CGFloat(dt), y: 0.0) // s = v * t
         cameraNode.position += amountToMove
-        
+                
         // Background - we use this function to loop over all sprites called BG & Ground
         enumerateChildNodes(withName: "*") { node, _ in
             if (node.name == "BG" || node.name == "Ground") {
@@ -550,31 +586,52 @@ extension GameScene {
         cameraNode.addChild(node)
     }
     
-    func setupScore() {
+    func setupNumDiamonds() {
         // Icon
-        jewelIcon = SKSpriteNode(imageNamed: "jewel/0")
-        jewelIcon.setScale(0.6)
-        jewelIcon.zPosition = 50.0
-        jewelIcon.position = CGPoint(x: -playableRect.width/2.0 + jewelIcon.frame.width, y: playableRect.height/2.0 - lifeNodes[0].frame.height - jewelIcon.frame.height/2.0)
-        cameraNode.addChild(jewelIcon)
+        diamondsIcon = SKSpriteNode(imageNamed: "jewel/0")
+        diamondsIcon.setScale(0.6)
+        diamondsIcon.zPosition = 50.0
+        diamondsIcon.position = CGPoint(x: -playableRect.width/2.0 + diamondsIcon.frame.width, y: playableRect.height/2.0 - lifeNodes[0].frame.height - diamondsIcon.frame.height/2.0)
+        cameraNode.addChild(diamondsIcon)
         
-        // Score Label
-        scoreLbl.text = "\(numScore)"
-        scoreLbl.fontSize = 60.0
-        scoreLbl.horizontalAlignmentMode = .left
-        scoreLbl.verticalAlignmentMode = .top
-        scoreLbl.zPosition = 50.0
-        scoreLbl.position = CGPoint(x: -playableRect.width/2.0 + jewelIcon.frame.width * 2.0 - 10.0,
-                                    y: jewelIcon.position.y + jewelIcon.frame.height/2.0 - 8.0)
-        cameraNode.addChild(scoreLbl)
+        // Diamonds Count Label
+        diamondsCountLbl.text = "\(numDiamonds)"
+        diamondsCountLbl.fontSize = 60.0
+        diamondsCountLbl.horizontalAlignmentMode = .left
+        diamondsCountLbl.verticalAlignmentMode = .top
+        diamondsCountLbl.zPosition = 50.0
+        diamondsCountLbl.position = CGPoint(x: -playableRect.width/2.0 + diamondsIcon.frame.width * 2.0 - 10.0,
+                                    y: diamondsIcon.position.y + diamondsIcon.frame.height/2.0 - 8.0)
+        cameraNode.addChild(diamondsCountLbl)
+    }
+    
+    func setupNumMeters() {
+        // Setup Wrapper Label
+        let metersContainer = SKSpriteNode(imageNamed: "scoreContainerNoIcon")
+        metersContainer.xScale = 0.95
+        metersContainer.yScale = 0.55
+        metersContainer.zPosition = 41.0
+        metersContainer.position = CGPoint(x: 65,
+                                     y: playableRect.height/2.0 - metersContainer.frame.height/2.0 - 4)
+        cameraNode.addChild(metersContainer)
+        
+        // Setup Label
+        metersLbl.text = "\(numMeters)m"
+        metersLbl.fontSize = 60.0
+        metersLbl.horizontalAlignmentMode = .left
+        metersLbl.verticalAlignmentMode = .top
+        metersLbl.zPosition = 50.0
+        metersLbl.position = CGPoint(x: 0.0,
+                                     y: playableRect.height/2.0 - metersLbl.frame.height/2.0)
+        cameraNode.addChild(metersLbl)
     }
     
     func setupPause() {
         pauseNode = SKSpriteNode(imageNamed: "pause")
-        pauseNode.setScale(0.625)
+        pauseNode.setScale(0.7)
         pauseNode.zPosition = 50.0
         pauseNode.name = "pause"
-        pauseNode.position = CGPoint(x: playableRect.width/2.0 - pauseNode.frame.width/2.0 - 30.0,
+        pauseNode.position = CGPoint(x: playableRect.width/2.0 - pauseNode.frame.width/2.0 - 45.0,
                                      y: playableRect.height/2.0 - pauseNode.frame.height/2.0 - 10.0)
         cameraNode.addChild(pauseNode)
     }
@@ -652,7 +709,7 @@ extension GameScene {
     
     func readyGoExecute() {
         let scaleUp = SKAction.scale(to:3.0, duration: 1)
-        let scaleDown = SKAction.scale(to: 1.0, duration: 1)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 2)
         let animation = SKAction.sequence([scaleUp,scaleDown])
         
         addChild(readyNode)
@@ -684,9 +741,8 @@ extension GameScene: SKPhysicsContactDelegate {
         
         switch other.categoryBitMask {
             case PhysicsCategory.Block:
-                cameraMovePointPerSecond += 50  // if hit the game will be harder
                 // Drop animation
-                if numScore > 0 {
+                if numDiamonds > 0 {
                     let jewelDropped = SKSpriteNode(imageNamed: "jewel/0")
                     jewelDropped.name = "JewelDropped"
                     jewelDropped.zPosition = 20.0
@@ -702,28 +758,34 @@ extension GameScene: SKPhysicsContactDelegate {
                     jewelDropped.run(.sequence([.wait(forDuration: 3.0), .removeFromParent()]))
                 }
                 // Update Score and run sound
-                numScore -= 1 // you lose a jewel
-                if numScore <= 0 { numScore = 0 }
-                scoreLbl.text = "\(numScore)"
+                numDiamonds -= 1 // you lose a jewel
+                if numDiamonds <= 0 { numDiamonds = 0 }
+                diamondsCountLbl.text = "\(numDiamonds)"
         
             case PhysicsCategory.Obstacle:
                 setupGameOver()
                 run(soundCollision) // collision sound
-//        execute hurted animation
-                hurtedAnimation()
         
             case PhysicsCategory.Jewel:
                 if let node = other.node {
                     node.removeFromParent()
-                    numScore += 1
-                    scoreLbl.text = "\(numScore)"
-                    if numScore % 5 == 0 {
-                        cameraMovePointPerSecond += 25 // every 5 jewela the game will be harder
+                    numDiamonds += 1
+                    diamondsCountLbl.text = "\(numDiamonds)"
+                    if numDiamonds % 5 == 0 {
+                        cameraMovePointPerSecond += 25 // every 5 jewels the game will be harder
                     }
                     // Play jewel sound if possible
                     run(soundJewel)
                 }
             default: break
+        }
+    }
+    
+    func didEnd(_ contact: SKPhysicsContact) {
+        let other = contact.bodyA.categoryBitMask == PhysicsCategory.Player ? contact.bodyB : contact.bodyA
+        
+        if(other.categoryBitMask == PhysicsCategory.Block){
+            cameraMovePointPerSecond += 50  // if hit the game will be harder
         }
     }
 }

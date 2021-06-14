@@ -7,10 +7,11 @@
 
 import Foundation
 
-protocol DocumentSerializable {
+protocol DocumentSerializable { // To save inside database
     init?(documentData: [String: Any])
 }
 
+// SparkUser with all the "personal" informations
 struct SparkUser {
     let uid: String
     let name: String
@@ -39,5 +40,41 @@ extension SparkUser: DocumentSerializable {
                   name: name,
                   email: email,
                   profileImageUrl: profileImageUrl)
+    }
+}
+
+// SparkUser with all the stats
+struct SparkUserStats {
+    let uid: String
+    var record: Int
+    var diamonds: Int
+    var ellieUnlocked: Bool
+    var dinoUnlocked: Bool
+    
+    var dictionary: [String: Any] {
+        return [
+            SparkKeys.SparkUserStats.uid: uid,
+            SparkKeys.SparkUserStats.record: record,
+            SparkKeys.SparkUserStats.diamonds: diamonds,
+            SparkKeys.SparkUserStats.ellieUnlocked: ellieUnlocked,
+            SparkKeys.SparkUserStats.dinoUnlocked: dinoUnlocked
+        ]
+    }
+}
+
+extension SparkUserStats: DocumentSerializable {
+    init?(documentData: [String : Any]) {
+        guard
+            let uid = documentData[SparkKeys.SparkUserStats.uid] as? String,
+            let record = documentData[SparkKeys.SparkUserStats.record] as? Int,
+            let diamonds = documentData[SparkKeys.SparkUserStats.diamonds] as? Int,
+            let ellieUnlocked = documentData[SparkKeys.SparkUserStats.ellieUnlocked] as? Bool,
+            let dinoUnlocked = documentData[SparkKeys.SparkUserStats.dinoUnlocked] as? Bool
+            else { return nil }
+        self.init(uid: uid,
+                  record: record,
+                  diamonds: diamonds,
+                  ellieUnlocked: ellieUnlocked,
+                  dinoUnlocked: dinoUnlocked)
     }
 }
