@@ -28,15 +28,13 @@ class GameScene: SKScene {
     var visioPoseController : VisioController!
     
     // Settings
-    var isTimeMaxObstacle: CGFloat = 7.8 // Max spawn time
-    var isTimeMinObstacle: CGFloat = 3.5 // Min spawn time
+    var isTimeMaxObstacle: CGFloat = ControllerSetting.sharedInstance.isControllerSet() ? 7.8 : 5.0 // Max spawn time
+    var isTimeMinObstacle: CGFloat = ControllerSetting.sharedInstance.isControllerSet() ? 3.5 : 2.5 // Min spawn time
     var isTimeMaxJewel: CGFloat = 7.0 // Max spawn time
     var isTimeMinJewel: CGFloat = 3.0 // Min spawn time
-    var timePerFramePlayerRun: TimeInterval = 0.075 // Animation speed
+    var timePerFramePlayerRun: TimeInterval = PlayerSetting.sharedInstance.playerRunTimeFrame[PlayerSetting.sharedInstance.getPlayerSelected()]! // Animation speed
     var timePerFrameJewelAnimation: TimeInterval = 0.15 // Animation speed
-    var playerSelectedName = UserDefaults.standard.object(forKey: "PlayerSelected") as? String // Optional name
-    var playerSelectedRunIndex = 10 // the max index of the run animation
-    var playerSelectedJumpIndex = 10 // the max index of the jump animation
+    var playerSelectedName = PlayerSetting.sharedInstance.getPlayerSelected() // returns theBoy, cuteGirl, ellie, dino
     var maxIndexObstacles = 6 // obstacle-index for setupObstacle
     var maxIndexBlocks = 3 // block-index for setupObstacle
     var groundSelected = Int.random(in: 1...4) // ground selected randomly
@@ -63,7 +61,7 @@ class GameScene: SKScene {
     var numMeters: Int = 0   // score
     var startPoint: Int = 0  // to calculate the meters ran
     var gameOver = false
-    var livesNumber: Int = 3
+    var livesNumber = PlayerSetting.sharedInstance.playerLives[PlayerSetting.sharedInstance.getPlayerSelected()]!
     
     // Add labels, icons and buttons
     var lifeNodes: [SKSpriteNode] = []
@@ -111,21 +109,14 @@ class GameScene: SKScene {
     override func didMove(to view: SKView) {
         // Prevent lock
         UIApplication.shared.isIdleTimerDisabled = true
-        // Update the maxIndex for the animations
-        if playerSelectedName! == "TheBoy" {
-            playerSelectedRunIndex = 15
-            playerSelectedJumpIndex = 15
-        } else if playerSelectedName! == "CuteGirl" {
-            playerSelectedRunIndex = 20
-            playerSelectedJumpIndex = 30
-        }
         
         // Setting up camera and watch mode
-        let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
-        let watchMode = UserDefaults.standard.bool(forKey: "watchMode")
+        let cameraMode = ControllerSetting.sharedInstance.getCameraMode()
+        let watchMode = ControllerSetting.sharedInstance.getWatchMode()
+        
         if(cameraMode){
             setupCameraModality()
-        } else if(watchMode){
+        } else if(watchMode) {
             setupWatchModality()
         }
         
@@ -133,7 +124,7 @@ class GameScene: SKScene {
         setupNodes()
         
         // Start Spawning
-        if(!cameraMode){
+        if(!cameraMode) {
             readyGoExecute()
         }
         
@@ -163,8 +154,8 @@ class GameScene: SKScene {
             isPaused = false
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
         } else if node.name == "quit" {
-            let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
-            if(cameraMode){
+            let cameraMode = ControllerSetting.sharedInstance.getCameraMode()
+            if(cameraMode) {
                 visioPoseController.stopCapture()
             }
             isPaused = false
@@ -177,7 +168,7 @@ class GameScene: SKScene {
             view!.presentScene(scene, transition: .doorsCloseVertical(withDuration: 0.8))
         } else {
             // Jump Touch
-            if onGround && !isPaused {
+            if onGround && !isPaused && !ControllerSetting.sharedInstance.isControllerSet() {
                 executeJump()
             }
         }
@@ -210,13 +201,18 @@ class GameScene: SKScene {
             // when the cameraMovePointPerSecond is incresead, the speed with which you travel the meters increases and
             // therefore the denominator is smaller
         metersLbl.text = "\(numMeters)m"
+        
+        // run readyGo animation if not already executed
+        if(!readyGoExecuted && !isPaused) {
+            readyGoUpdate()
+        }
 
         if onGround && !isPaused{
                 if (appDI.jump){
                     executeJump()
                 }
             if #available(iOS 14.0, *) {
-                let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
+                let cameraMode = ControllerSetting.sharedInstance.getCameraMode()
                 if (cameraMode){
                     if(visioPoseController.getCurrentPose() == .jumping){
                         executeJump()
@@ -229,9 +225,7 @@ class GameScene: SKScene {
                         }
                     }
                 }
-                if(!readyGoExecuted){
-                    readyGoUpdate()
-                }
+
             }
         }
         
@@ -253,9 +247,15 @@ class GameScene: SKScene {
         // If gameOver is Found
         if gameOver {
             // Stop capturing movements
-            let cameraMode = UserDefaults.standard.bool(forKey: "cameraMode")
+            let cameraMode = ControllerSetting.sharedInstance.getCameraMode()
+            let watchMode = ControllerSetting.sharedInstance.getWatchMode()
+            
             if(cameraMode){
                 visioPoseController.stopCapture()
+            }
+            if(watchMode){
+                appDI.endDate = Date()
+                appDI.session.sendMessage(["startDate" : appDI.startDate!, "endDate" : appDI.endDate!], replyHandler: nil, errorHandler: nil)
             }
             
             // Save scores
@@ -325,6 +325,13 @@ extension GameScene {
     }
     
     func startSpawning(dispatch: DispatchTime){
+        
+        //start capturing with watch
+        let watchMode = ControllerSetting.sharedInstance.getWatchMode()
+        if(watchMode){
+            appDI.startDate = Date()
+        }
+        
         DispatchQueue.main.asyncAfter(deadline: dispatch) {
             // Setup meters counter
             self.startPoint = Int(self.player.position.x)
@@ -372,7 +379,7 @@ extension GameScene {
     }
     
     func createPlayer() {
-        player = SKSpriteNode(imageNamed: "\(playerSelectedName!)/Run (1)")
+        player = SKSpriteNode(imageNamed: "\(playerSelectedName)/Run (1)")
         player.name = "Player"
         if groundSelected == 3 { // darker background
             let darker = SKAction.colorize(with: .black, colorBlendFactor: 0.2, duration: 0.0)
@@ -380,7 +387,8 @@ extension GameScene {
         }
         player.zPosition = 5.0
         player.setScale(0.4)
-        player.position = CGPoint(x: frame.width/2.0, y: ground.frame.maxY + player.frame.height/2.0)
+        let deltaYPos = (playerSelectedName == PlayerName.dino.rawValue || playerSelectedName == PlayerName.ellie.rawValue) ? 13.0 : 0.0
+        player.position = CGPoint(x: frame.width/2.0, y: ground.frame.maxY + player.frame.height/2.0 - CGFloat(deltaYPos))
         player.physicsBody = SKPhysicsBody(rectangleOf: player.size)
         player.physicsBody!.affectedByGravity = false
         player.physicsBody!.restitution = 0.0
@@ -395,8 +403,8 @@ extension GameScene {
     func playerRunAnimationStart() {
         // If empty the texture array will be filled up
         if playerRunningFrames.isEmpty {
-            for i in 1...playerSelectedRunIndex {
-                let frameName = "\(playerSelectedName!)/Run (\(i))"
+            for i in 1...PlayerSetting.sharedInstance.getPlayerSelectedRunIndex() {
+                let frameName = "\(playerSelectedName)/Run (\(i))"
                 playerRunningFrames.append(SKTexture(imageNamed: frameName))
             }
         }
@@ -411,8 +419,8 @@ extension GameScene {
     func playerJumpAnimationStart() {
         // If empty the texture array will be filled up
         if playerJumpingFrames.isEmpty {
-            for i in 1...playerSelectedJumpIndex {
-                let frameName = "\(playerSelectedName!)/Jump (\(i))"
+            for i in 1...PlayerSetting.sharedInstance.getPlayerSelectedJumpIndex() {
+                let frameName = "\(playerSelectedName)/Jump (\(i))"
                 playerJumpingFrames.append(SKTexture(imageNamed: frameName))
             }
         }
@@ -698,13 +706,12 @@ extension GameScene {
     func setupReadyGo() {
         readyNode = SKSpriteNode(imageNamed: "ready")
         goNode = SKSpriteNode(imageNamed: "go")
-        readyNode.zPosition = 100.0
+        readyNode.zPosition = 55.0 // because the pause node is 60
         readyNode.position = CGPoint(x: size.width/2.0,
                                 y: size.height/2.0 + readyNode.frame.height/2.0)
-        goNode.zPosition = 100.0
+        goNode.zPosition = 55.0
         goNode.position = CGPoint(x: size.width/2.0,
                                 y: size.height/2.0 + goNode.frame.height/2.0)
-        
     }
     
     func readyGoExecute() {

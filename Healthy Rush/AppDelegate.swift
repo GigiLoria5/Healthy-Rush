@@ -18,6 +18,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
     var window: UIWindow?
     var jump: Bool = false // var which will be sent
     
+    // Apple Watch Data Capturing
+    var startDate: Date?
+    var endDate: Date?
+    var averageHeartRate: Double?
+    var averageRespiratoryRate: Double?
+    //kcal burned during activity
+    var sumActiveEnergyBurned: Double?
+    
     func sessionDidBecomeInactive(_ session: WCSession) {
         // Called when the session prepares to stop communicating with the current Apple Watch
     }
@@ -32,7 +40,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
     }
     
     func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
-        jump = (message["movement"] != nil)
+        jump = (message["jump"] != nil)
+        
+        if let averageHeartRateOrNil = message["averageHeartRate"] {
+            self.averageHeartRate = (averageHeartRateOrNil as! Double)
+        }
+        
+        if let averageRespiratoryRateOrNil = message["averageRespiratoryRate"] {
+            self.averageRespiratoryRate = (averageRespiratoryRateOrNil as! Double)
+        }
+        
+        if let sumActiveEnergyBurnedOrNil = message["sumActiveEnergyBurned"] {
+            self.sumActiveEnergyBurned = (sumActiveEnergyBurnedOrNil as! Double)
+        }
     }
 
 

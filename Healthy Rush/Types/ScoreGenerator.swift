@@ -91,3 +91,4 @@ class ScoreGenerator {
         return UserDefaults.standard.object(forKey: ScoreGenerator.keyDiamondsLastMatch) != nil
     }
 }
+

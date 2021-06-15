@@ -2,7 +2,7 @@
 //  NotificationController.swift
 //  Healthy Rush WatchApp Extension
 //
-//  Created by Emanuele Iaccarino on 18/02/21.
+//  Created by Francesco Manna.
 //
 
 import WatchKit

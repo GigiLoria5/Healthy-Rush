@@ -11,23 +11,29 @@
 		62B125C425DEE04500B7471E /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 62B125C225DEE04500B7471E /* Interface.storyboard */; };
 		62B125C625DEE04500B7471E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62B125C525DEE04500B7471E /* Assets.xcassets */; };
 		62B125CD25DEE04500B7471E /* Healthy Rush WatchApp Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 62B125CC25DEE04500B7471E /* Healthy Rush WatchApp Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		62B125D225DEE04500B7471E /* InterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62B125D125DEE04500B7471E /* InterfaceController.swift */; };
-		62B125D425DEE04500B7471E /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62B125D325DEE04500B7471E /* ExtensionDelegate.swift */; };
-		62B125D625DEE04500B7471E /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62B125D525DEE04500B7471E /* NotificationController.swift */; };
-		62B125D825DEE04500B7471E /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62B125D725DEE04500B7471E /* ComplicationController.swift */; };
 		62B125DA25DEE04500B7471E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 62B125D925DEE04500B7471E /* Assets.xcassets */; };
 		62B125DF25DEE04500B7471E /* Healthy Rush WatchApp.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 62B125C025DEE04500B7471E /* Healthy Rush WatchApp.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		62EA6C0D25E17371006DF000 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62EA6C0C25E17371006DF000 /* Types.swift */; };
 		AC261FA826774F7A00D1D5DA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC261FA626774F7A00D1D5DA /* Assets.xcassets */; };
 		AC261FA926774F7A00D1D5DA /* fireworks.sks in Resources */ = {isa = PBXBuildFile; fileRef = AC261FA726774F7A00D1D5DA /* fireworks.sks */; };
 		AC261FB12677525700D1D5DA /* newRecord.wav in Resources */ = {isa = PBXBuildFile; fileRef = AC261FB02677525700D1D5DA /* newRecord.wav */; };
+		AC2BC32A2678AEF500C05B01 /* ControllerSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2BC3292678AEF500C05B01 /* ControllerSetting.swift */; };
+		AC2BC32F2678AEFC00C05B01 /* PlayerSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2BC32E2678AEFC00C05B01 /* PlayerSetting.swift */; };
+		AC2BC3352678D3B400C05B01 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2BC3342678D3B400C05B01 /* HealthKit.framework */; };
+		AC2BC33A2678D5EC00C05B01 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2BC3392678D5EC00C05B01 /* AppDelegate.swift */; };
+		AC2BC3442678D62200C05B01 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2BC3412678D62100C05B01 /* GameScene.swift */; };
+		AC2BC3452678D62200C05B01 /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2BC3422678D62200C05B01 /* MainMenu.swift */; };
+		AC2BC3462678D62200C05B01 /* GameOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2BC3432678D62200C05B01 /* GameOver.swift */; };
+		AC2BC3512678D6E300C05B01 /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2BC34D2678D6E200C05B01 /* ComplicationController.swift */; };
+		AC2BC3522678D6E300C05B01 /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2BC34E2678D6E200C05B01 /* ExtensionDelegate.swift */; };
+		AC2BC3532678D6E300C05B01 /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2BC34F2678D6E300C05B01 /* NotificationController.swift */; };
+		AC2BC3542678D6E300C05B01 /* InterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2BC3502678D6E300C05B01 /* InterfaceController.swift */; };
+		AC2BC35C2678D79400C05B01 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC2BC35B2678D79400C05B01 /* Assets.xcassets */; };
 		AC6273222677AFE3005893A4 /* trex.wav in Resources */ = {isa = PBXBuildFile; fileRef = AC6273212677AFE3005893A4 /* trex.wav */; };
 		AC6273272677B232005893A4 /* indiana.wav in Resources */ = {isa = PBXBuildFile; fileRef = AC6273262677B232005893A4 /* indiana.wav */; };
-		CC15AEF425D91B010014EB61 /* GameOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC15AEF325D91B010014EB61 /* GameOver.swift */; };
 		CC15AEF725D9242D0014EB61 /* SKTAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC15AEF625D9242D0014EB61 /* SKTAudio.swift */; };
 		CC15AEFA25D9281B0014EB61 /* SKAction+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC15AEF925D9281B0014EB61 /* SKAction+Ext.swift */; };
 		CC37F64225D88D71003BA290 /* ScoreGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC37F64125D88D71003BA290 /* ScoreGenerator.swift */; };
-		CC37F64525D89006003BA290 /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC37F64425D89006003BA290 /* MainMenu.swift */; };
 		CC4F27472635E0D9001CF955 /* SparkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4F27422635E0D9001CF955 /* SparkService.swift */; };
 		CC4F27482635E0D9001CF955 /* SparkSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4F27432635E0D9001CF955 /* SparkSetup.swift */; };
 		CC4F27492635E0D9001CF955 /* SparkKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC4F27442635E0D9001CF955 /* SparkKeys.swift */; };
@@ -47,13 +53,10 @@
 		CC57C07726569A380084CE20 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC57C07226569A380084CE20 /* Common.swift */; };
 		CC57C07826569A380084CE20 /* BodyPoseProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC57C07326569A380084CE20 /* BodyPoseProcessor.swift */; };
 		CC57C07926569A380084CE20 /* VisioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC57C07426569A380084CE20 /* VisioController.swift */; };
-		CC59DEC325D486DB0089C664 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC59DEC225D486DB0089C664 /* AppDelegate.swift */; };
 		CC59DEC525D486DB0089C664 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = CC59DEC425D486DB0089C664 /* GameScene.sks */; };
 		CC59DEC725D486DB0089C664 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = CC59DEC625D486DB0089C664 /* Actions.sks */; };
-		CC59DEC925D486DB0089C664 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC59DEC825D486DB0089C664 /* GameScene.swift */; };
 		CC59DECB25D486DB0089C664 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC59DECA25D486DB0089C664 /* GameViewController.swift */; };
 		CC59DECE25D486DB0089C664 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CC59DECC25D486DB0089C664 /* Main.storyboard */; };
-		CC59DED025D486DC0089C664 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CC59DECF25D486DC0089C664 /* Assets.xcassets */; };
 		CC59DEF525D48F000089C664 /* CGPoint+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC59DEF425D48F000089C664 /* CGPoint+Ext.swift */; };
 		CC59DEF925D4989A0089C664 /* CGFloat+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC59DEF825D4989A0089C664 /* CGFloat+Ext.swift */; };
 		CC5BFE35261CE71B001030FB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CC5BFE34261CE71B001030FB /* LaunchScreen.storyboard */; };
@@ -111,10 +114,6 @@
 		62B125C525DEE04500B7471E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		62B125C725DEE04500B7471E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		62B125CC25DEE04500B7471E /* Healthy Rush WatchApp Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Healthy Rush WatchApp Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		62B125D125DEE04500B7471E /* InterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfaceController.swift; sourceTree = "<group>"; };
-		62B125D325DEE04500B7471E /* ExtensionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionDelegate.swift; sourceTree = "<group>"; };
-		62B125D525DEE04500B7471E /* NotificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationController.swift; sourceTree = "<group>"; };
-		62B125D725DEE04500B7471E /* ComplicationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationController.swift; sourceTree = "<group>"; };
 		62B125D925DEE04500B7471E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		62B125DB25DEE04500B7471E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		62B125DC25DEE04500B7471E /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
@@ -122,14 +121,25 @@
 		AC261FA626774F7A00D1D5DA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AC261FA726774F7A00D1D5DA /* fireworks.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = fireworks.sks; sourceTree = "<group>"; };
 		AC261FB02677525700D1D5DA /* newRecord.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = newRecord.wav; sourceTree = "<group>"; };
+		AC2BC3292678AEF500C05B01 /* ControllerSetting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerSetting.swift; sourceTree = "<group>"; };
+		AC2BC32E2678AEFC00C05B01 /* PlayerSetting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerSetting.swift; sourceTree = "<group>"; };
+		AC2BC3332678D3B400C05B01 /* Healthy Rush WatchApp Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Healthy Rush WatchApp Extension.entitlements"; sourceTree = "<group>"; };
+		AC2BC3342678D3B400C05B01 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS7.2.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
+		AC2BC3392678D5EC00C05B01 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		AC2BC3412678D62100C05B01 /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
+		AC2BC3422678D62200C05B01 /* MainMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
+		AC2BC3432678D62200C05B01 /* GameOver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameOver.swift; sourceTree = "<group>"; };
+		AC2BC34D2678D6E200C05B01 /* ComplicationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComplicationController.swift; sourceTree = "<group>"; };
+		AC2BC34E2678D6E200C05B01 /* ExtensionDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtensionDelegate.swift; sourceTree = "<group>"; };
+		AC2BC34F2678D6E300C05B01 /* NotificationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationController.swift; sourceTree = "<group>"; };
+		AC2BC3502678D6E300C05B01 /* InterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InterfaceController.swift; sourceTree = "<group>"; };
+		AC2BC35B2678D79400C05B01 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AC6273212677AFE3005893A4 /* trex.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = trex.wav; sourceTree = "<group>"; };
 		AC6273262677B232005893A4 /* indiana.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = indiana.wav; sourceTree = "<group>"; };
 		AEA75BB2076C5AF43F3FE736 /* Pods_Healthy_Rush.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Healthy_Rush.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		CC15AEF325D91B010014EB61 /* GameOver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOver.swift; sourceTree = "<group>"; };
 		CC15AEF625D9242D0014EB61 /* SKTAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SKTAudio.swift; sourceTree = "<group>"; };
 		CC15AEF925D9281B0014EB61 /* SKAction+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SKAction+Ext.swift"; sourceTree = "<group>"; };
 		CC37F64125D88D71003BA290 /* ScoreGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreGenerator.swift; sourceTree = "<group>"; };
-		CC37F64425D89006003BA290 /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		CC4F27422635E0D9001CF955 /* SparkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SparkService.swift; sourceTree = "<group>"; };
 		CC4F27432635E0D9001CF955 /* SparkSetup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SparkSetup.swift; sourceTree = "<group>"; };
 		CC4F27442635E0D9001CF955 /* SparkKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SparkKeys.swift; sourceTree = "<group>"; };
@@ -150,13 +160,10 @@
 		CC57C07326569A380084CE20 /* BodyPoseProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BodyPoseProcessor.swift; sourceTree = "<group>"; };
 		CC57C07426569A380084CE20 /* VisioController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisioController.swift; sourceTree = "<group>"; };
 		CC59DEBF25D486DB0089C664 /* Healthy Rush.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Healthy Rush.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CC59DEC225D486DB0089C664 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CC59DEC425D486DB0089C664 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		CC59DEC625D486DB0089C664 /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
-		CC59DEC825D486DB0089C664 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		CC59DECA25D486DB0089C664 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		CC59DECD25D486DB0089C664 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		CC59DECF25D486DC0089C664 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CC59DED125D486DC0089C664 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CC59DEF425D48F000089C664 /* CGPoint+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Ext.swift"; sourceTree = "<group>"; };
 		CC59DEF825D4989A0089C664 /* CGFloat+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Ext.swift"; sourceTree = "<group>"; };
@@ -180,6 +187,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC2BC3352678D3B400C05B01 /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -197,6 +205,7 @@
 		33372384452366211DB8CA22 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AC2BC3342678D3B400C05B01 /* HealthKit.framework */,
 				AEA75BB2076C5AF43F3FE736 /* Pods_Healthy_Rush.framework */,
 			);
 			name = Frameworks;
@@ -215,10 +224,11 @@
 		62B125D025DEE04500B7471E /* Healthy Rush WatchApp Extension */ = {
 			isa = PBXGroup;
 			children = (
-				62B125D125DEE04500B7471E /* InterfaceController.swift */,
-				62B125D325DEE04500B7471E /* ExtensionDelegate.swift */,
-				62B125D525DEE04500B7471E /* NotificationController.swift */,
-				62B125D725DEE04500B7471E /* ComplicationController.swift */,
+				AC2BC34D2678D6E200C05B01 /* ComplicationController.swift */,
+				AC2BC34E2678D6E200C05B01 /* ExtensionDelegate.swift */,
+				AC2BC3502678D6E300C05B01 /* InterfaceController.swift */,
+				AC2BC34F2678D6E300C05B01 /* NotificationController.swift */,
+				AC2BC3332678D3B400C05B01 /* Healthy Rush WatchApp Extension.entitlements */,
 				62B125D925DEE04500B7471E /* Assets.xcassets */,
 				62B125DB25DEE04500B7471E /* Info.plist */,
 				62B125DC25DEE04500B7471E /* PushNotificationPayload.apns */,
@@ -296,7 +306,7 @@
 			children = (
 				CC4F27972635EE57001CF955 /* GoogleService-Info.plist */,
 				CCBD64CC261A37E400FD5995 /* Healthy Rush.entitlements */,
-				CC59DEC225D486DB0089C664 /* AppDelegate.swift */,
+				AC2BC3392678D5EC00C05B01 /* AppDelegate.swift */,
 				CC59DEC425D486DB0089C664 /* GameScene.sks */,
 				CC59DEC625D486DB0089C664 /* Actions.sks */,
 				CC4F27412635E0BF001CF955 /* Spark */,
@@ -314,8 +324,8 @@
 		CC59DED825D4870C0089C664 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				AC2BC35B2678D79400C05B01 /* Assets.xcassets */,
 				CC59DECC25D486DB0089C664 /* Main.storyboard */,
-				CC59DECF25D486DC0089C664 /* Assets.xcassets */,
 				CC5BFE34261CE71B001030FB /* LaunchScreen.storyboard */,
 				CC59DED125D486DC0089C664 /* Info.plist */,
 			);
@@ -334,9 +344,9 @@
 		CC59DEDB25D487270089C664 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
-				CC59DEC825D486DB0089C664 /* GameScene.swift */,
-				CC37F64425D89006003BA290 /* MainMenu.swift */,
-				CC15AEF325D91B010014EB61 /* GameOver.swift */,
+				AC2BC3432678D62200C05B01 /* GameOver.swift */,
+				AC2BC3412678D62100C05B01 /* GameScene.swift */,
+				AC2BC3422678D62200C05B01 /* MainMenu.swift */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -377,6 +387,8 @@
 			isa = PBXGroup;
 			children = (
 				CC37F64125D88D71003BA290 /* ScoreGenerator.swift */,
+				AC2BC3292678AEF500C05B01 /* ControllerSetting.swift */,
+				AC2BC32E2678AEFC00C05B01 /* PlayerSetting.swift */,
 				62EA6C0C25E17371006DF000 /* Types.swift */,
 			);
 			path = Types;
@@ -455,6 +467,7 @@
 					};
 					62B125CB25DEE04500B7471E = {
 						CreatedOnToolsVersion = 12.4;
+						LastSwiftMigration = 1240;
 					};
 					CC59DEBE25D486DB0089C664 = {
 						CreatedOnToolsVersion = 12.4;
@@ -505,8 +518,8 @@
 			files = (
 				CC59DECE25D486DB0089C664 /* Main.storyboard in Resources */,
 				CC59DEC525D486DB0089C664 /* GameScene.sks in Resources */,
-				CC59DED025D486DC0089C664 /* Assets.xcassets in Resources */,
 				AC6273272677B232005893A4 /* indiana.wav in Resources */,
+				AC2BC35C2678D79400C05B01 /* Assets.xcassets in Resources */,
 				CC52E55625D9E337001F3A8C /* gameOver.wav in Resources */,
 				AC261FA826774F7A00D1D5DA /* Assets.xcassets in Resources */,
 				CC51944325E2DECB002E2DEA /* buttonSound.wav in Resources */,
@@ -574,10 +587,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				62B125D625DEE04500B7471E /* NotificationController.swift in Sources */,
-				62B125D825DEE04500B7471E /* ComplicationController.swift in Sources */,
-				62B125D425DEE04500B7471E /* ExtensionDelegate.swift in Sources */,
-				62B125D225DEE04500B7471E /* InterfaceController.swift in Sources */,
+				AC2BC3532678D6E300C05B01 /* NotificationController.swift in Sources */,
+				AC2BC3542678D6E300C05B01 /* InterfaceController.swift in Sources */,
+				AC2BC3522678D6E300C05B01 /* ExtensionDelegate.swift in Sources */,
+				AC2BC3512678D6E300C05B01 /* ComplicationController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -588,14 +601,16 @@
 				CC59DEF525D48F000089C664 /* CGPoint+Ext.swift in Sources */,
 				CC4F274B2635E0D9001CF955 /* SparkModels.swift in Sources */,
 				CC15AEF725D9242D0014EB61 /* SKTAudio.swift in Sources */,
+				AC2BC3462678D62200C05B01 /* GameOver.swift in Sources */,
 				CC57C07826569A380084CE20 /* BodyPoseProcessor.swift in Sources */,
-				CC59DEC925D486DB0089C664 /* GameScene.swift in Sources */,
+				AC2BC32A2678AEF500C05B01 /* ControllerSetting.swift in Sources */,
+				AC2BC32F2678AEFC00C05B01 /* PlayerSetting.swift in Sources */,
 				CC57C07626569A380084CE20 /* VideoCapture.swift in Sources */,
+				AC2BC33A2678D5EC00C05B01 /* AppDelegate.swift in Sources */,
 				CC37F64225D88D71003BA290 /* ScoreGenerator.swift in Sources */,
 				CC15AEFA25D9281B0014EB61 /* SKAction+Ext.swift in Sources */,
+				AC2BC3452678D62200C05B01 /* MainMenu.swift in Sources */,
 				CC86DA402673A0960004A5CE /* SKNodeExtension.swift in Sources */,
-				CC15AEF425D91B010014EB61 /* GameOver.swift in Sources */,
-				CC37F64525D89006003BA290 /* MainMenu.swift in Sources */,
 				CCD7EA962675E62400362135 /* CircularProgressBar.swift in Sources */,
 				CC57C07926569A380084CE20 /* VisioController.swift in Sources */,
 				CC59DECB25D486DB0089C664 /* GameViewController.swift in Sources */,
@@ -603,10 +618,10 @@
 				CC4F274A2635E0D9001CF955 /* Spark.swift in Sources */,
 				CC4F27482635E0D9001CF955 /* SparkSetup.swift in Sources */,
 				62EA6C0D25E17371006DF000 /* Types.swift in Sources */,
+				AC2BC3442678D62200C05B01 /* GameScene.swift in Sources */,
 				CC86DA422673B8EE0004A5CE /* GesturesCapture.swift in Sources */,
 				CC4F27492635E0D9001CF955 /* SparkKeys.swift in Sources */,
 				CC57C07726569A380084CE20 /* Common.swift in Sources */,
-				CC59DEC325D486DB0089C664 /* AppDelegate.swift in Sources */,
 				CC57C07526569A380084CE20 /* AVCaptureVideoOrientation+Extension.swift in Sources */,
 				CC4F27472635E0D9001CF955 /* SparkService.swift in Sources */,
 			);
@@ -691,6 +706,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "Healthy Rush WatchApp Extension/Healthy Rush WatchApp Extension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 86RN233R34;
 				INFOPLIST_FILE = "Healthy Rush WatchApp Extension/Info.plist";
@@ -703,6 +720,7 @@
 				PRODUCT_NAME = "${TARGET_NAME}";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 7.2;
@@ -713,6 +731,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "Healthy Rush WatchApp Extension/Healthy Rush WatchApp Extension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 86RN233R34;
 				INFOPLIST_FILE = "Healthy Rush WatchApp Extension/Info.plist";

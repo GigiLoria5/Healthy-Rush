@@ -41,5 +41,9 @@
 	</array>
 	<key>WKExtensionDelegateClassName</key>
 	<string>$(PRODUCT_MODULE_NAME).ExtensionDelegate</string>
+	<key>NSHealthShareUsageDescription</key>
+    <string>condivisione</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>aggiornamento</string>
 </dict>
 </plist>
