@@ -26,6 +26,7 @@ class MainMenu: SKScene {
     var timePerFrameCuteGirlAnimations: TimeInterval = 0.065 // Animations speed
     var timePerFrameDino : TimeInterval = 0.095
     var timePerFrameIndiana : TimeInterval = 0.075
+    var arrowsScale = CGFloat(0.7) // for the left and right arrow of info and shop panel
     
     // For the info panel
     var currInfoPageNum : Int = 1
@@ -886,9 +887,10 @@ extension MainMenu {
         // add a right arrow to the panel
         let rightArrow = SKSpriteNode(imageNamed: "rightArrow")
         rightArrow.name = "infoArrowRight"
-        rightArrow.setScale(0.7)
+        rightArrow.setScale(arrowsScale)
         rightArrow.zPosition = 20.0
-        rightArrow.position = CGPoint(x: panel.position.x + panel.size.width/2 - 60, y: panel.position.y/2)
+        rightArrow.position = CGPoint(x: panel.position.x + panel.size.width/2 - 50,
+                                      y: panel.position.y/2)
         
         panel.addChild(rightArrow)
         
@@ -897,7 +899,7 @@ extension MainMenu {
         leftArrow.name = "infoArrowLeft"
         leftArrow.setScale(0) // invisible arrow (no dimension)
         leftArrow.zPosition = 20.0
-        leftArrow.position = CGPoint(x: -(panel.position.x + panel.size.width/2 - 60), y: panel.position.y/2)
+        leftArrow.position = CGPoint(x: -(panel.position.x + panel.size.width/2 - 50), y: panel.position.y/2)
         panel.addChild(leftArrow)
         
         // add info images to panel
@@ -945,16 +947,16 @@ extension MainMenu {
             infoImg1.setScale(0)
             infoImg2.setScale(0)
         case 2:
-            panel.childNode(withName: "infoArrowLeft")?.setScale(0.7) //set the left arrow visible
-            panel.childNode(withName: "infoArrowRight")?.setScale(0.7) //set the right arrow visible
+            panel.childNode(withName: "infoArrowLeft")?.setScale(arrowsScale) //set the left arrow visible
+            panel.childNode(withName: "infoArrowRight")?.setScale(arrowsScale) //set the right arrow visible
             infoLbl?.verticalAlignmentMode = .top
             infoLbl?.fontSize = 50.0
             infoLbl?.text = "Sharp objects will steal a life from you, while smooth rocks and trees will cause you to lose a diamond.\n"
             infoImg1.setScale(0.5)
             infoImg2.setScale(0.5)
         case 3:
-            panel.childNode(withName: "infoArrowLeft")?.setScale(0.7) //set the left arrow visible
-            panel.childNode(withName: "infoArrowRight")?.setScale(0.7) //set the right arrow visible
+            panel.childNode(withName: "infoArrowLeft")?.setScale(arrowsScale) //set the left arrow visible
+            panel.childNode(withName: "infoArrowRight")?.setScale(arrowsScale) //set the right arrow visible
             infoLbl?.verticalAlignmentMode = .center
             infoLbl?.fontSize = 65.0
             infoLbl?.text = "By collecting diamonds along the way, you can unlock new characters in the shop."
@@ -993,7 +995,7 @@ extension MainMenu {
         // add a right arrow to the panel
         let rightArrow = SKSpriteNode(imageNamed: "rightArrow")
         rightArrow.name = "ShopArrowRight"
-        rightArrow.setScale(0.7)
+        rightArrow.setScale(arrowsScale)
         rightArrow.zPosition = 20.0
         rightArrow.position = CGPoint(x: panel.position.x + panel.size.width/2 - 60, y: panel.position.y/2)
         
@@ -1255,14 +1257,14 @@ extension MainMenu {
         
         if(currShopPageNum == 1){
             leftArrow.setScale(0)
-            rightArrow.setScale(0.7)
+            rightArrow.setScale(arrowsScale)
         }
         else if(currShopPageNum == shopCharacters){
-            leftArrow.setScale(0.7)
+            leftArrow.setScale(arrowsScale)
             rightArrow.setScale(0)
         }else{
-            leftArrow.setScale(0.7)
-            rightArrow.setScale(0.7)
+            leftArrow.setScale(arrowsScale)
+            rightArrow.setScale(arrowsScale)
         }
     }
     
@@ -1473,3 +1475,4 @@ extension MainMenu {
         loadShopPage(pageNum: currShopPageNum)
     }
 }
+

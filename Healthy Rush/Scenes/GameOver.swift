@@ -26,11 +26,10 @@ class GameOver: SKScene {
         createGroundNodes()
         createMessageNode()
         createPlayerDeath()
-//        stop the gameScene music
-        SKTAudio.sharedInstance().stopBGMusic()
-//        play the music according to the current message shown
-        runMessageMusic()
+        SKTAudio.sharedInstance().stopBGMusic() // stop the gameScene music
+        runMessageMusic() // play the music according to the current message shown
         
+        // After 5 seconds the summary appears
         run(.sequence([
             .wait(forDuration: 5.0),
             .run {
@@ -39,14 +38,13 @@ class GameOver: SKScene {
         ]))
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
         super.touchesBegan(touches, with: event)
         
         guard let touch = touches.first else { return }
         let node = atPoint(touch.location(in: self))
         
         switch node.name {
-        case "home": // home button
+        case "home": // Home button
             run(SKAction.playSoundFileNamed("buttonSound.wav"))
             run(.sequence([
                 .wait(forDuration: 0.5),
@@ -72,12 +70,11 @@ class GameOver: SKScene {
         default:
             return
         }
-        
     }
     
-        override func update(_ currentTime: TimeInterval) {
-        moveNodes()
-        }
+    override func update(_ currentTime: TimeInterval) {
+        moveNodes() // move background
+    }
 }
     
 //MARK: - Configurations
@@ -199,9 +196,6 @@ extension GameOver {
         let avgBPM = ControllerSetting.sharedInstance.getWatchMode() ? "\(String(describing: appDI.averageHeartRate))" : "Watch Only"
         let avgBreathRate = ControllerSetting.sharedInstance.getWatchMode() ? "\(String(describing: appDI.averageRespiratoryRate))" : "Watch Only"
         
-        print("Summary: new record? \(newRecordSet); score: \(scoreLastMatch)m; diamonds collected: \(diamondsCollected); kcal \(kcalBurned); avgBPM \(avgBPM); avgBreath \(avgBreathRate)")
-    
-        
         let panelImage = SKSpriteNode(imageNamed: newRecordSet ? "summaryNewRecord" : "summary")
         
         panelImage.name = "Summary"
@@ -233,9 +227,7 @@ extension GameOver {
         diamondsLbl.fontColor = fontColor
         diamondsLbl.position = CGPoint(x: scoreLbl.position.x,
                                        y: scoreLbl.position.y - 2.8 * diamondsLbl.frame.height)
-        
         let deltaY = 2.7 * diamondsLbl.frame.height
-        
         panelImage.addChild(diamondsLbl)
         
         
@@ -256,39 +248,46 @@ extension GameOver {
         bpmLbl.text = String(avgBPM)
         bpmLbl.fontColor = fontColor
         bpmLbl.position = CGPoint(x: scoreLbl.position.x,
-                                       y: caloriesLbl.position.y - deltaY)
-        
+                                  y: caloriesLbl.position.y - deltaY)
         panelImage.addChild(bpmLbl)
         
         let breathLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         breathLbl.name = "breathLbl"
         breathLbl.fontSize = fontSize
         breathLbl.zPosition = panelImage.zPosition + 1
-        //breathLbl.text = String(avgBreathRate)
-        breathLbl.text = String(44)
+        breathLbl.text = String(avgBreathRate)
         breathLbl.fontColor = fontColor
         breathLbl.position = CGPoint(x: scoreLbl.position.x,
-                                       y: bpmLbl.position.y - deltaY)
+                                     y: bpmLbl.position.y - deltaY)
         panelImage.addChild(breathLbl)
         
+        let buttonPanel = SKSpriteNode(imageNamed: "scoreContainerNoIcon")
+        buttonPanel.name = "ButtonPanel"
+        buttonPanel.xScale = 0.678
+        buttonPanel.zRotation = CGFloat(90).degreesToRadiants()
+        buttonPanel.zPosition = panelImage.zPosition + 2
+        buttonPanel.position = CGPoint(x: panelImage.frame.width/2.0,
+                                       y: -buttonPanel.frame.width/1.6)
+        panelImage.addChild(buttonPanel)
         
-        //return to menu button
+        // Return to menu button
         let menuButton = SKSpriteNode(imageNamed: "home")
         menuButton.name = "home"
+        menuButton.yScale = 1.475
+        menuButton.zRotation = CGFloat(-90).degreesToRadiants()
         menuButton.zPosition = panelImage.zPosition + 1
-        menuButton.position = CGPoint(x: -menuButton.frame.width/2, y: -panelImage.frame.height/1.92)
-        menuButton.setScale(0.8)
-        
-        panelImage.addChild(menuButton)
+        menuButton.position = CGPoint(x: menuButton.frame.height,
+                                      y: 0.0)
+        buttonPanel.addChild(menuButton)
         
         let playButton = SKSpriteNode(imageNamed: "playSmall")
         playButton.name = "play"
+        playButton.yScale = 1.475
+        playButton.zRotation = CGFloat(-90).degreesToRadiants()
         playButton.zPosition = panelImage.zPosition + 1
-        playButton.position = CGPoint(x: menuButton.frame.width/2, y: -panelImage.frame.height/1.92)
-        playButton.setScale(0.8)
-        
-        panelImage.addChild(playButton)
-        
+        playButton.position = CGPoint(x: -playButton.frame.height,
+                                      y: 0.0)
+        buttonPanel.addChild(playButton)
     }
     
     
@@ -315,4 +314,5 @@ extension GameOver {
         player.run(SKAction.animate(with: playerFrames, timePerFrame: PlayerSetting.sharedInstance.playerRunTimeFrame[playerName]!), withKey: "\(playerName)Animation")
     }
 }
+
 
