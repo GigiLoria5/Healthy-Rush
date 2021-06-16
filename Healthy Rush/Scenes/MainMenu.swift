@@ -78,7 +78,13 @@ class MainMenu: SKScene {
                 self.currentUser = sparkUser
             })
             Spark.fetchCurrentSparkUserStats { message, err, sparkUserStats in
+                guard let sparkUserStats = sparkUserStats else {
+                    print("Error: \(err!)")
+                    return
+                }
+                // We have the Spark User Stats
                 self.currentUserStats = sparkUserStats
+                ScoreGenerator.sharedInstance.setHighscore(self.currentUserStats.record) // update record
             }
         }
         // Setup Menu
@@ -86,11 +92,12 @@ class MainMenu: SKScene {
         setupNodes()    // Setup Buttons and other panel
         
         SKTAudio.sharedInstance().playBGMusic("backgroundMusic.mp3") // play bg music
+        
         // First time setting here
-        // Tutorial
         if (UserDefaults.standard.object(forKey: "tutorialFirstTime") == nil) {
-            cleanContainerNode() // Remove any other panel already active
-            currInfoPageNum = 1  // Reset the page number
+            // Tutorial
+            cleanContainerNode()      // Remove any other panel already active
+            currInfoPageNum = 1       // Reset the page number
             setupInfoPanel()
             UserDefaults.standard.setValue(false, forKey: "tutorialFirstTime")
         }
@@ -423,7 +430,7 @@ extension MainMenu {
         let footerLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         footerLbl.name = "ControllerFooter"
         footerLbl.text = "Initial text"
-        footerLbl.fontSize = 40.0
+        footerLbl.fontSize = 37.0
         footerLbl.zPosition = 25.0
         footerLbl.fontColor = .black
         footerLbl.preferredMaxLayoutWidth = panel.frame.width/1.5
@@ -460,6 +467,9 @@ extension MainMenu {
         let cameraMode = ControllerSetting.sharedInstance.getCameraMode()
         let watchMode = ControllerSetting.sharedInstance.getWatchMode()
         
+        let selectedColor = UIColor.red
+        let notSelectedColor = UIColor.black
+        
         // Update Watch Image
         bgWatch?.texture = SKTexture(imageNamed: ControllerSetting.sharedInstance.getWatchMode() ? "watchApp" : "watchLogo")
         
@@ -467,14 +477,18 @@ extension MainMenu {
             bgWatch?.colorBlendFactor = blendFactor
             bgCamera?.colorBlendFactor = 0
             labelCamera?.text = "Camera Selected"
+            labelCamera?.fontColor = selectedColor
             labelWatch?.text = "Apple Watch"
+            labelWatch?.fontColor = notSelectedColor
             labelFooter?.text = "Place the phone about 1m away from you and make sure no one else is around"
         }
         else if (watchMode){ // Watch tracking selected
             bgCamera?.colorBlendFactor = blendFactor
             bgWatch?.colorBlendFactor = 0
             labelWatch?.text = "Watch Selected"
+            labelWatch?.fontColor = selectedColor
             labelCamera?.text = "Camera Tracking"
+            labelCamera?.fontColor = notSelectedColor
             labelFooter?.text = "Before starting your game, activate the watch application (start tracking)"
         }
         else if(!cameraMode && !watchMode) { // No controller
@@ -484,6 +498,8 @@ extension MainMenu {
                 labelCamera?.text = "Camera Tracking"
                 bgCamera?.colorBlendFactor = 0
             }
+            labelCamera?.fontColor = notSelectedColor
+            labelWatch?.fontColor = notSelectedColor
             labelFooter?.text = "No controller selected, you can control the character by pressing on the screen"
         }
                 
@@ -976,7 +992,7 @@ extension MainMenu {
     
     
         
-    //    MARK: Shop Panel
+    //
     //    generate the container of the shop
     func setupShopPanel(){
         

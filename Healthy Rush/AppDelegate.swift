@@ -23,7 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
     var endDate: Date?
     var averageHeartRate: Double?
     var averageRespiratoryRate: Double?
-    //kcal burned during activity
     var sumActiveEnergyBurned: Double?
     
     func sessionDidBecomeInactive(_ session: WCSession) {
@@ -44,14 +43,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         
         if let averageHeartRateOrNil = message["averageHeartRate"] {
             self.averageHeartRate = (averageHeartRateOrNil as! Double)
+        } else {
+            self.averageHeartRate = 0.0
         }
         
         if let averageRespiratoryRateOrNil = message["averageRespiratoryRate"] {
             self.averageRespiratoryRate = (averageRespiratoryRateOrNil as! Double)
+        } else {
+            self.averageRespiratoryRate = 0.0
         }
         
         if let sumActiveEnergyBurnedOrNil = message["sumActiveEnergyBurned"] {
             self.sumActiveEnergyBurned = (sumActiveEnergyBurnedOrNil as! Double)
+        } else {
+            self.sumActiveEnergyBurned = 0.0
         }
     }
 
@@ -98,7 +103,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
                 annotation: options[UIApplication.OpenURLOptionsKey.annotation]
             )
 
-        }  
+        }
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -123,4 +128,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
 
 
 }
+
 

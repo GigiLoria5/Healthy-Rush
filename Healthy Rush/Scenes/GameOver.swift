@@ -123,7 +123,7 @@ extension GameOver {
         enumerateChildNodes(withName: "*") { node, _ in
             if (node.name == "background" || node.name == "ground") {
                 let node = node as! SKSpriteNode
-                node.position.x -= 8.0
+                node.position.x -= 6.0
                 
                 if node.position.x < -self.frame.width {
                     node.position.x += node.frame.width * 3.0
@@ -137,7 +137,7 @@ extension GameOver {
         newRecord.zPosition = 10.0
         newRecord.setScale(3)
         newRecord.position = CGPoint(x: size.width/2.0,
-                                y: size.height/2.0)
+                                     y: size.height/2.0)
         addChild(newRecord)
         
         let scalepUp = SKAction.scale(to: 3.1, duration: 0.5)
@@ -189,6 +189,7 @@ extension GameOver {
     }
     
     func createSummary() {
+        // Getting the values for the summary
         let newRecordSet = ScoreGenerator.sharedInstance.getNewRecordSet()
         let scoreLastMatch = ScoreGenerator.sharedInstance.getScore()
         let diamondsCollected = ScoreGenerator.sharedInstance.getDiamondsLastMatch()
@@ -196,18 +197,19 @@ extension GameOver {
         let avgBPM = ControllerSetting.sharedInstance.getWatchMode() ? "\(String(describing: appDI.averageHeartRate))" : "Watch Only"
         let avgBreathRate = ControllerSetting.sharedInstance.getWatchMode() ? "\(String(describing: appDI.averageRespiratoryRate))" : "Watch Only"
         
+        // Panel Image (Container)
         let panelImage = SKSpriteNode(imageNamed: newRecordSet ? "summaryNewRecord" : "summary")
-        
         panelImage.name = "Summary"
         panelImage.zPosition = 50
         panelImage.position = CGPoint(x: self.size.width/2, y: self.size.height/1.95)
         panelImage.setScale(0.9)
-        
         addChild(panelImage)
         
+        // Some general settings for the labels
         let fontSize = CGFloat(46)
         let fontColor = UIColor.white
         
+        // Last Score Label
         let scoreLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         scoreLbl.name = "scoreLbl"
         scoreLbl.fontSize = fontSize
@@ -218,8 +220,8 @@ extension GameOver {
                                     y: scoreLbl.frame.height/1.8)
         panelImage.addChild(scoreLbl)
         
+        // Number of diamonds Label
         let diamondsLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
-        
         diamondsLbl.name = "diamondsLbl"
         diamondsLbl.fontSize = fontSize
         diamondsLbl.zPosition = panelImage.zPosition + 1
@@ -227,10 +229,11 @@ extension GameOver {
         diamondsLbl.fontColor = fontColor
         diamondsLbl.position = CGPoint(x: scoreLbl.position.x,
                                        y: scoreLbl.position.y - 2.8 * diamondsLbl.frame.height)
-        let deltaY = 2.7 * diamondsLbl.frame.height
         panelImage.addChild(diamondsLbl)
         
+        let deltaY = 2.7 * diamondsLbl.frame.height // In order to pos
         
+        // Calories Burned (Watch Only)
         let caloriesLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         caloriesLbl.name = "caloriesLbl"
         caloriesLbl.fontSize = fontSize
@@ -241,6 +244,7 @@ extension GameOver {
                                        y: diamondsLbl.position.y - deltaY)
         panelImage.addChild(caloriesLbl)
         
+        // Average Bpm (Watch Only)
         let bpmLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         bpmLbl.name = "bpmLbl"
         bpmLbl.fontSize = fontSize
@@ -251,6 +255,7 @@ extension GameOver {
                                   y: caloriesLbl.position.y - deltaY)
         panelImage.addChild(bpmLbl)
         
+        // Average Breath (Watch Only)
         let breathLbl = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
         breathLbl.name = "breathLbl"
         breathLbl.fontSize = fontSize
@@ -261,6 +266,7 @@ extension GameOver {
                                      y: bpmLbl.position.y - deltaY)
         panelImage.addChild(breathLbl)
         
+        // Buttons Container
         let buttonPanel = SKSpriteNode(imageNamed: "scoreContainerNoIcon")
         buttonPanel.name = "ButtonPanel"
         buttonPanel.xScale = 0.678
@@ -280,6 +286,7 @@ extension GameOver {
                                       y: 0.0)
         buttonPanel.addChild(menuButton)
         
+        // New Match button
         let playButton = SKSpriteNode(imageNamed: "playSmall")
         playButton.name = "play"
         playButton.yScale = 1.475
@@ -292,17 +299,14 @@ extension GameOver {
     
     
     func createPlayerDeath(){
-        
         let ground = self.childNode(withName: "ground")!
-        
         let playerName = PlayerSetting.sharedInstance.getPlayerSelected()
-        
         let player = SKSpriteNode(imageNamed: "\(playerName)/Dead (1)")
         player.name = playerName
         player.zPosition = 10.0
         player.position = CGPoint(x: frame.width/2.0, y: ground.frame.maxY + player.frame.height/3.0)
-        
         addChild(player)
+        
         // Add animations
         var playerFrames = [SKTexture]()
         for i in 2...PlayerSetting.sharedInstance.getPlayerSelectedDeadIndex(){
@@ -312,6 +316,14 @@ extension GameOver {
     
         // Animation activated
         player.run(SKAction.animate(with: playerFrames, timePerFrame: PlayerSetting.sharedInstance.playerRunTimeFrame[playerName]!), withKey: "\(playerName)Animation")
+        
+        // Remove the player after 5 seconds (when the summary appears)
+        run(.sequence([
+            .wait(forDuration: 5.0),
+            .run {
+                player.removeFromParent()
+            }
+        ]))
     }
 }
 
