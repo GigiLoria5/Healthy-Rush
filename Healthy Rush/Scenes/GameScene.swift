@@ -255,7 +255,9 @@ class GameScene: SKScene {
             }
             if(watchMode){
                 appDI.endDate = Date()
-                appDI.session.sendMessage(["startDate" : appDI.startDate!, "endDate" : appDI.endDate!], replyHandler: nil, errorHandler: nil)
+                appDI.session.sendMessage(["endDate" : appDI.endDate!], replyHandler: nil, errorHandler: nil)
+                appDI.startDate = nil
+                appDI.endDate = nil
             }
             
             // Save scores
@@ -329,7 +331,9 @@ extension GameScene {
         //start capturing with watch
         let watchMode = ControllerSetting.sharedInstance.getWatchMode()
         if(watchMode){
+            appDI.resetHealthData()
             appDI.startDate = Date()
+            appDI.session.sendMessage(["startDate" : appDI.startDate!], replyHandler: nil, errorHandler: nil)
         }
         
         DispatchQueue.main.asyncAfter(deadline: dispatch) {
@@ -386,7 +390,7 @@ extension GameScene {
             player.run(darker)
         }
         player.zPosition = 5.0
-        player.setScale(0.4)
+        player.setScale(playerSelectedName == PlayerName.dino.rawValue ? 0.55 : 0.4)
         let deltaYPos = (playerSelectedName == PlayerName.dino.rawValue || playerSelectedName == PlayerName.ellie.rawValue) ? 13.0 : 0.0
         player.position = CGPoint(x: frame.width/2.0, y: ground.frame.maxY + player.frame.height/2.0 - CGFloat(deltaYPos))
         player.physicsBody = SKPhysicsBody(rectangleOf: player.size)
@@ -796,4 +800,3 @@ extension GameScene: SKPhysicsContactDelegate {
         }
     }
 }
-

@@ -11,7 +11,25 @@ import CoreMotion
 import WatchConnectivity
 import HealthKit
 
-class InterfaceController: WKInterfaceController, WCSessionDelegate, WKExtendedRuntimeSessionDelegate {
+class InterfaceController: WKInterfaceController, WCSessionDelegate, WKExtendedRuntimeSessionDelegate, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate {
+    
+    func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
+        //
+    }
+    
+    func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {
+        //
+    }
+    
+    
+    func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState, from fromState: HKWorkoutSessionState, date: Date) {
+        //
+    }
+    
+    func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {
+        //
+    }
+    
     
     // MARK: - Extendend Session Functions
     
@@ -36,9 +54,45 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate, WKExtendedR
     func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
         if let start = message["startDate"] {
             startDate = start as! Date
+            print("La data di inizio è \(startDate)")
+            workoutSession.startActivity(with: startDate)
+            print("attività iniziata")
+            workoutBuilder.beginCollection(withStart: startDate) { success, errorOrNil in
+                
+                guard success else {
+                    print("errore nel builder begin")
+                    return
+                }
+                
+                print("Il workout è iniziato.")
+                
+            }
         }
         if let end = message["endDate"] {
             endDate = end as! Date
+            print("La data di fine è \(endDate)")
+            workoutSession.end()
+            print("attività finita")
+            workoutBuilder.endCollection(withEnd: endDate) { success, errorOrNil in
+                
+                guard success else {
+                    print("errore nel builder end")
+                    return
+                }
+                
+                self.workoutBuilder.finishWorkout { workoutOrNil, errorOrNil2 in
+                    
+                    guard workoutOrNil != nil else {
+                        print("problema workout")
+                        return
+                    }
+                    
+                    print("Durata Workout: \(workoutOrNil?.duration)")
+                    
+                }
+                
+            }
+            
             sendHealthData()
         }
     }
@@ -49,9 +103,14 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate, WKExtendedR
     
     // TODO: Check which variables can be nil or which should be initialized here
     var healthStore: HKHealthStore!
+    let workoutType = HKQuantityType.workoutType()
     let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)!
     let activeEnergyBurnedType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!
-    let respiratoryRateType = HKQuantityType.quantityType(forIdentifier: .respiratoryRate)!
+    let basalEnergyBurnedType = HKQuantityType.quantityType(forIdentifier: .basalEnergyBurned)!
+    
+    let configuration = HKWorkoutConfiguration()
+    var workoutSession: HKWorkoutSession!
+    var workoutBuilder: HKLiveWorkoutBuilder!
     
     var startDate = Date()
     var endDate = Date()
@@ -157,6 +216,7 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate, WKExtendedR
             let average = statistics.averageQuantity()
             let averageHeartRate = average?.doubleValue(for: HKUnit.count().unitDivided(by: HKUnit.minute()))
             self.session.sendMessage(["averageHeartRate" : averageHeartRate!], replyHandler: nil, errorHandler: nil)
+            print(averageHeartRate)
             
         }
         
@@ -170,25 +230,27 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate, WKExtendedR
             let sum = statistics.sumQuantity()
             let sumActiveEnergyBurned = sum?.doubleValue(for: HKUnit.kilocalorie())
             self.session.sendMessage(["sumActiveEnergyBurned" : sumActiveEnergyBurned!], replyHandler: nil, errorHandler: nil)
+            print(sumActiveEnergyBurned)
             
         }
         
-        let sampleQueryRespiratoryRate = HKStatisticsQuery(quantityType: respiratoryRateType, quantitySamplePredicate: samplePeriod, options: .discreteAverage) { query, statisticsOrNil, errorOrNil in
+        let sampleQueryBasalEnergyBurned = HKStatisticsQuery(quantityType: basalEnergyBurnedType, quantitySamplePredicate: samplePeriod, options: .cumulativeSum) { query, statisticsOrNil, errorOrNil in
             
             guard let statistics = statisticsOrNil else {
-                print("No active respiratory rate data.")
+                print("No active exercise time data.")
                 return
             }
             
-            let average = statistics.averageQuantity()
-            let averageRespiratoryRate = average?.doubleValue(for: HKUnit.count().unitDivided(by: HKUnit.second()))
-            self.session.sendMessage(["averageRespiratoryRate" : averageRespiratoryRate!], replyHandler: nil, errorHandler: nil)
+            let sum = statistics.sumQuantity()
+            let sumBasalEnergyBurned = sum?.doubleValue(for: HKUnit.kilocalorie())
+            self.session.sendMessage(["sumBasalEnergyBurned" : sumBasalEnergyBurned!], replyHandler: nil, errorHandler: nil)
+            print(sumBasalEnergyBurned)
             
         }
         
         healthStore.execute(sampleQueryHeartRate)
         healthStore.execute(sampleQueryActiveEnergyBurned)
-        healthStore.execute(sampleQueryRespiratoryRate)
+        healthStore.execute(sampleQueryBasalEnergyBurned)
         
     }
     
@@ -196,7 +258,7 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate, WKExtendedR
     
     override init() {
         
-        // TODO: Change code order 
+        // TODO: Change code order
         
         super.init()
         
@@ -205,7 +267,7 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate, WKExtendedR
         }
         healthStore = HKHealthStore()
         
-        let allTypes = Set([activeEnergyBurnedType, heartRateType, respiratoryRateType])
+        let allTypes = Set([activeEnergyBurnedType, heartRateType, basalEnergyBurnedType, workoutType])
         healthStore.requestAuthorization(toShare: allTypes, read: allTypes) { success, error in
             if success {
                 print("Authorization request succeded.")
@@ -213,6 +275,22 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate, WKExtendedR
                 print("Authorization request failed.")
             }
         }
+        
+        configuration.activityType = .other
+        configuration.locationType = .indoor
+        
+        do {
+            self.workoutSession = try HKWorkoutSession(healthStore: healthStore, configuration: configuration)
+            self.workoutBuilder = workoutSession.associatedWorkoutBuilder()
+        } catch {
+            print("configurazione non valida")
+            return
+        }
+        
+        workoutBuilder.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore, workoutConfiguration: configuration)
+        workoutSession.delegate = self
+        workoutBuilder.delegate = self
+        
         
         extendedSession = WKExtendedRuntimeSession()
         extendedSession.delegate = self
@@ -236,4 +314,5 @@ class InterfaceController: WKInterfaceController, WCSessionDelegate, WKExtendedR
     
     
 }
+
 

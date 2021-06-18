@@ -76,16 +76,16 @@ class MainMenu: SKScene {
         if(fbUserLogged) {
             Spark.fetchCurrentSparkUser(completion: { message, err, sparkUser in
                 self.currentUser = sparkUser
-            })
-            Spark.fetchCurrentSparkUserStats { message, err, sparkUserStats in
-                guard let sparkUserStats = sparkUserStats else {
-                    print("Error: \(err!)")
-                    return
+                Spark.fetchCurrentSparkUserStats { message, err, sparkUserStats in
+                    guard let sparkUserStats = sparkUserStats else {
+                        print("Error: \(err!)")
+                        return
+                    }
+                    // We have the Spark User Stats
+                    self.currentUserStats = sparkUserStats
+                    ScoreGenerator.sharedInstance.setHighscore(self.currentUserStats.record) // update record
                 }
-                // We have the Spark User Stats
-                self.currentUserStats = sparkUserStats
-                ScoreGenerator.sharedInstance.setHighscore(self.currentUserStats.record) // update record
-            }
+            })
         }
         // Setup Menu
         setupBG()       // Setup Background Image and Logo
@@ -1491,4 +1491,3 @@ extension MainMenu {
         loadShopPage(pageNum: currShopPageNum)
     }
 }
-

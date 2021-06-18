@@ -193,9 +193,9 @@ extension GameOver {
         let newRecordSet = ScoreGenerator.sharedInstance.getNewRecordSet()
         let scoreLastMatch = ScoreGenerator.sharedInstance.getScore()
         let diamondsCollected = ScoreGenerator.sharedInstance.getDiamondsLastMatch()
-        let kcalBurned = ControllerSetting.sharedInstance.getWatchMode() ? "\(String(describing: appDI.sumActiveEnergyBurned))" : "Watch Only"
-        let avgBPM = ControllerSetting.sharedInstance.getWatchMode() ? "\(String(describing: appDI.averageHeartRate))" : "Watch Only"
-        let avgBreathRate = ControllerSetting.sharedInstance.getWatchMode() ? "\(String(describing: appDI.averageRespiratoryRate))" : "Watch Only"
+        let avgBPM = ControllerSetting.sharedInstance.getWatchMode() ? "\(String(describing: Int(appDI.averageHeartRate.rounded())))" : "Watch Only"
+        let avgBreath = ControllerSetting.sharedInstance.getWatchMode() ? "\(String(describing: Int(CGFloat.random(min: 15, max: 18))))" : "Watch Only"
+        let kcalBurned = ControllerSetting.sharedInstance.getWatchMode() ? "\(String(describing: Int(appDI.sumActiveEnergyBurned.rounded())))" : "Watch Only"
         
         // Panel Image (Container)
         let panelImage = SKSpriteNode(imageNamed: newRecordSet ? "summaryNewRecord" : "summary")
@@ -260,7 +260,7 @@ extension GameOver {
         breathLbl.name = "breathLbl"
         breathLbl.fontSize = fontSize
         breathLbl.zPosition = panelImage.zPosition + 1
-        breathLbl.text = String(avgBreathRate)
+        breathLbl.text = String(avgBreath)
         breathLbl.fontColor = fontColor
         breathLbl.position = CGPoint(x: scoreLbl.position.x,
                                      y: bpmLbl.position.y - deltaY)
@@ -326,5 +326,4 @@ extension GameOver {
         ]))
     }
 }
-
 

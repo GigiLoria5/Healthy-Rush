@@ -21,9 +21,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
     // Apple Watch Data Capturing
     var startDate: Date?
     var endDate: Date?
-    var averageHeartRate: Double?
-    var averageRespiratoryRate: Double?
-    var sumActiveEnergyBurned: Double?
+    var averageHeartRate: Double = 0.0
+    var sumBasalEnergyBurned: Double = 0.0
+    var sumActiveEnergyBurned: Double = 0.0
     
     func sessionDidBecomeInactive(_ session: WCSession) {
         // Called when the session prepares to stop communicating with the current Apple Watch
@@ -42,22 +42,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, WCSessionDelegate {
         jump = (message["jump"] != nil)
         
         if let averageHeartRateOrNil = message["averageHeartRate"] {
-            self.averageHeartRate = (averageHeartRateOrNil as! Double)
-        } else {
-            self.averageHeartRate = 0.0
+            self.averageHeartRate = (averageHeartRateOrNil as? Double ?? 0.0)
+            print("BPM: \(self.averageHeartRate)")
         }
         
-        if let averageRespiratoryRateOrNil = message["averageRespiratoryRate"] {
-            self.averageRespiratoryRate = (averageRespiratoryRateOrNil as! Double)
-        } else {
-            self.averageRespiratoryRate = 0.0
+        if let sumBasalEnergyOrNil = message["sumBasalEnergyBurned"] {
+            self.sumBasalEnergyBurned = (sumBasalEnergyOrNil as? Double ?? 0.0)
+            print("Basal energy: \(self.sumBasalEnergyBurned)")
         }
         
         if let sumActiveEnergyBurnedOrNil = message["sumActiveEnergyBurned"] {
-            self.sumActiveEnergyBurned = (sumActiveEnergyBurnedOrNil as! Double)
-        } else {
-            self.sumActiveEnergyBurned = 0.0
+            self.sumActiveEnergyBurned = (sumActiveEnergyBurnedOrNil as? Double ?? 0.0)
+            print("Active energy: \(self.sumActiveEnergyBurned)")
         }
+    }
+    
+    func resetHealthData() {
+        averageHeartRate = 0
+        sumBasalEnergyBurned = 0
+        sumActiveEnergyBurned = 0
     }
 
 
